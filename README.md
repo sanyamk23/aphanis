@@ -64,6 +64,8 @@ pip install -e .
 Automatically install the Untrace AI skill into your global `~/.claude/skills/` directory:
 
 ```bash
+python3 -m untrace.cli install-claude-code
+# OR if untrace is on your PATH:
 untrace install-claude-code
 ```
 
@@ -80,7 +82,7 @@ claude mcp add untrace -- python3 -m untrace.cli server
 Run the installer command to view your configuration snippet:
 
 ```bash
-untrace install-claude-desktop
+python3 -m untrace.cli install-claude-desktop
 ```
 
 Add the generated config to your `claude_desktop_config.json`:
@@ -104,19 +106,21 @@ Add the generated config to your `claude_desktop_config.json`:
 
 ## 💻 Command Line Interface (CLI)
 
+You can run commands using `python3 -m untrace.cli` (or `untrace` if installed):
+
 ```bash
 # Clean raw text from invisible zero-width watermarks
-untrace clean-text "Delve\u200b into crucial\ufeff matters."
+python3 -m untrace.cli clean-text "Delve\u200b into crucial\ufeff matters."
 
 # Clean text with statistical AI vocabulary rephrasing
-untrace clean-text "Furthermore, we must delve into this crucial testament." --perturb
+python3 -m untrace.cli clean-text "Furthermore, we must delve into this crucial testament." --perturb
 
 # Clean document or image file metadata (PDF, DOCX, SVG, PNG, JPEG, HTML, MD)
-untrace clean-file document.pdf
-untrace clean-file vector_art.svg
+python3 -m untrace.cli clean-file document.pdf
+python3 -m untrace.cli clean-file vector_art.svg
 
 # Apply LSB pixel noise jitter to an image to disrupt spatial watermarks
-untrace clean-file photo.png --jitter
+python3 -m untrace.cli clean-file photo.png --jitter
 ```
 
 ---
