@@ -8,7 +8,8 @@ import os
 import shutil
 from pathlib import Path
 
-from untrace.cleaner import clean_text, clean_file, StatisticalPerturber
+from untrace.cleaner import clean_text, clean_file, StatisticalPerturber, FileMetadataSanitizer
+from untrace.watcher import DirectoryWatcher
 from untrace.mcp_server import main as run_server
 
 
@@ -18,7 +19,6 @@ def install_claude_code():
     target_dir = home / ".claude" / "skills" / "remove-ai-marks"
     target_dir.mkdir(parents=True, exist_ok=True)
 
-    # Path to SKILL.md inside current package/repo
     curr_dir = Path(__file__).parent.parent
     skill_src = curr_dir / ".claude" / "skills" / "remove-ai-marks" / "SKILL.md"
 
@@ -51,6 +51,18 @@ def install_claude_desktop():
     print("\n(Path on macOS: ~/Library/Application Support/Claude/claude_desktop_config.json)\n")
 
 
+def clean_directory(dir_path: str, perturb: bool = True):
+    """Recursively cleans all files in a directory."""
+    target_path = Path(dir_path).resolve()
+    if not target_path.exists():
+        print(f"❌ Path not found: {dir_path}")
+        sys.exit(1)
+
+    watcher = DirectoryWatcher(str(target_path), perturb_stats=perturb)
+    count = watcher.scan_and_clean()
+    print(f"\n🎉 Finished recursively sanitizing {count} files in {target_path}")
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog="untrace",
@@ -64,9 +76,19 @@ def main():
     clean_text_parser.add_argument("--perturb", action="store_true", help="Rephrase statistical AI vocabulary markers")
 
     # clean-file
-    clean_file_parser = subparsers.add_parser("clean-file", help="Sanitize file metadata and zero-width watermarks")
-    clean_file_parser.add_argument("path", help="Path to file (PNG, JPEG, SVG, PDF, DOCX, HTML, MD)")
+    clean_file_parser = subparsers.add_parser("clean-file", help="Sanitize file metadata, AI comments, and zero-width watermarks")
+    clean_file_parser.add_argument("path", help="Path to file (PNG, JPEG, SVG, PDF, DOCX, HTML, MD, PY, JS, TS)")
     clean_file_parser.add_argument("--jitter", action="store_true", help="Apply sub-pixel LSB noise jitter to images")
+    clean_file_parser.add_argument("--perturb", action="store_true", help="Rephrase statistical AI vocabulary")
+
+    # clean-dir
+    clean_dir_parser = subparsers.add_parser("clean-dir", help="Recursively sanitize all files in a directory")
+    clean_dir_parser.add_argument("path", nargs="?", default=".", help="Directory path to clean (default: current directory)")
+    clean_dir_parser.add_argument("--no-perturb", action="store_true", help="Disable vocabulary rephrasing")
+
+    # watch
+    watch_parser = subparsers.add_parser("watch", help="Watch directory in real time and automatically sanitize created/edited files")
+    watch_parser.add_argument("path", nargs="?", default=".", help="Directory path to watch (default: current directory)")
 
     # server
     subparsers.add_parser("server", help="Launch Model Context Protocol (MCP) server for Claude Desktop")
@@ -86,9 +108,16 @@ def main():
         sys.stdout.write(cleaned)
 
     elif args.command == "clean-file":
-        success, msg = clean_file(args.path, disrupt_image_pixels=args.jitter)
+        success, msg = clean_file(args.path, disrupt_image_pixels=args.jitter, perturb_stats=args.perturb)
         print(msg)
         sys.exit(0 if success else 1)
+
+    elif args.command == "clean-dir":
+        clean_directory(args.path, perturb=not args.no_perturb)
+
+    elif args.command == "watch":
+        watcher = DirectoryWatcher(args.path)
+        watcher.start()
 
     elif args.command == "server":
         run_server()

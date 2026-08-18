@@ -109,18 +109,24 @@ Add the generated config to your `claude_desktop_config.json`:
 You can run commands using `python3 -m untrace.cli` (or `untrace` if installed):
 
 ```bash
-# Clean raw text from invisible zero-width watermarks
-python3 -m untrace.cli clean-text "Delve\u200b into crucial\ufeff matters."
+# Real-time watcher: Automatically sanitizes files in workspace as Claude writes them
+untrace watch .
+
+# Recursively clean an entire codebase or project directory
+untrace clean-dir ./my-project
+
+# Clean raw text from zero-width watermarks and em-dashes
+untrace clean-text "Delve\u200b into crucial\ufeff matters — today."
 
 # Clean text with statistical AI vocabulary rephrasing
-python3 -m untrace.cli clean-text "Furthermore, we must delve into this crucial testament." --perturb
+untrace clean-text "Furthermore, we must delve into this crucial testament." --perturb
 
-# Clean document or image file metadata (PDF, DOCX, SVG, PNG, JPEG, HTML, MD)
-python3 -m untrace.cli clean-file document.pdf
-python3 -m untrace.cli clean-file vector_art.svg
+# Clean document, code file, or image metadata (PDF, DOCX, SVG, PNG, JPEG, HTML, MD, PY, JS, TS)
+untrace clean-file document.pdf
+untrace clean-file vector_art.svg
 
 # Apply LSB pixel noise jitter to an image to disrupt spatial watermarks
-python3 -m untrace.cli clean-file photo.png --jitter
+untrace clean-file photo.png --jitter
 ```
 
 ---
