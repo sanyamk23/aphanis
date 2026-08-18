@@ -31,7 +31,7 @@ class DirectoryWatcher:
             return True
         return False
 
-    def scan_and_clean((self) -> int:
+    def scan_and_clean(self) -> int:
         cleaned_count = 0
         for root, dirs, files in os.walk(self.watch_path):
             # Exclude ignored directories in place
