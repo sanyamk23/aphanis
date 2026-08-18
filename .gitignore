@@ -23,3 +23,8 @@ wheels/
 .DS_Store
 .vscode/
 .idea/
+.swarm/
+.claude-flow/
+.claude/
+*.db
+

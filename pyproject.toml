@@ -4,18 +4,20 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "untrace-ai"
-version = "1.0.0"
-description = "Untrace AI - Ultimate AI Provenance, Watermark & Metadata Sanitizer for LLMs, Claude, and Media."
+version = "1.2.0"
+description = "Untrace AI :: Enterprise Zero-Trust AI Provenance Firewall & Stealth Engine for LLMs, Claude, and Media Assets."
 readme = "README.md"
 authors = [
     { name = "Sanya", email = "sanya@example.com" }
 ]
 keywords = [
+    "ai-provenance-firewall",
+    "stealth-engine",
     "watermark-remover",
+    "stego-risk-matrix",
     "c2pa",
-    "ai-watermark",
     "zero-width-spaces",
-    "provenance",
+    "shannon-entropy",
     "claude-skill",
     "mcp-server",
     "llm-hygiene"

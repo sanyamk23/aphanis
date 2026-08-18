@@ -325,11 +325,22 @@ class AuditTool:
             issues.append(f"Found {len(comment_matches)} AI code comment signatures")
 
         is_clean = (len(issues) == 0)
-        return {
+        report = {
             "status": "CLEAN" if is_clean else "WATERMARKED_OR_TELLTALES_DETECTED",
             "score": 100 if is_clean else max(0, 100 - (len(issues) * 20)),
             "issues": issues
         }
+
+        # Include Statistical Entropy & 4-Vector Stego Risk Matrix
+        try:
+            from untrace.entropy import EntropyAnalyzer
+            from untrace.stealth import StegoRiskMatrix
+            report["entropy"] = EntropyAnalyzer.analyze(text)
+            report["risk_matrix"] = StegoRiskMatrix.evaluate(text)
+        except Exception:
+            pass
+
+        return report
 
 
 class FileMetadataSanitizer:
@@ -358,10 +369,16 @@ class FileMetadataSanitizer:
         return UnicodeSanitizer.clean(cleaned)
 
     @classmethod
-    def clean_file(cls, file_path: str, disrupt_image_pixels: bool = False, perturb_stats: bool = False) -> Tuple[bool, str]:
+    def clean_file(cls, file_path: str, disrupt_image_pixels: bool = False, perturb_stats: bool = False, rules_engine: Optional[Any] = None, mode: Optional[Any] = None) -> Tuple[bool, str]:
         """Detects file type and cleans watermarks, AI comments, and metadata."""
         if not os.path.exists(file_path):
             return False, f"File not found: {file_path}"
+
+        if mode:
+            from untrace.stealth import StealthProfile
+            prof = StealthProfile(mode)
+            perturb_stats = prof.perturb_stats
+            disrupt_image_pixels = prof.disrupt_image_jitter
 
         ext = os.path.splitext(file_path)[1].lower()
 
@@ -372,6 +389,8 @@ class FileMetadataSanitizer:
                 cleaned = cls.clean_markdown_or_text(content)
                 if perturb_stats:
                     cleaned = StatisticalPerturber.perturb(cleaned)
+                if rules_engine:
+                    cleaned = rules_engine.apply_rules(cleaned)
                 with open(file_path, 'w', encoding='utf-8') as f:
                     f.write(cleaned)
                 return True, f"Sanitized code/text file: {file_path}"
@@ -380,6 +399,8 @@ class FileMetadataSanitizer:
                 with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
                     content = f.read()
                 cleaned = cls.clean_svg(content)
+                if rules_engine:
+                    cleaned = rules_engine.apply_rules(cleaned)
                 with open(file_path, 'w', encoding='utf-8') as f:
                     f.write(cleaned)
                 return True, f"Sanitized SVG file: {file_path}"
@@ -388,6 +409,8 @@ class FileMetadataSanitizer:
                 with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
                     content = f.read()
                 cleaned = cls.clean_html(content)
+                if rules_engine:
+                    cleaned = rules_engine.apply_rules(cleaned)
                 with open(file_path, 'w', encoding='utf-8') as f:
                     f.write(cleaned)
                 return True, f"Sanitized HTML file: {file_path}"
@@ -420,6 +443,8 @@ class FileMetadataSanitizer:
                     cp.title = ""
                     for p in doc.paragraphs:
                         p.text = UnicodeSanitizer.clean(p.text)
+                        if rules_engine:
+                            p.text = rules_engine.apply_rules(p.text)
                     doc.save(file_path)
                     return True, f"Sanitized DOCX core properties & paragraphs: {file_path}"
                 except Exception as e:
@@ -429,6 +454,8 @@ class FileMetadataSanitizer:
                 with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
                     content = f.read()
                 cleaned = UnicodeSanitizer.clean(content)
+                if rules_engine:
+                    cleaned = rules_engine.apply_rules(cleaned)
                 with open(file_path, 'w', encoding='utf-8') as f:
                     f.write(cleaned)
                 return True, f"Sanitized raw file: {file_path}"
@@ -437,21 +464,54 @@ class FileMetadataSanitizer:
             return False, f"Error processing file {file_path}: {str(e)}"
 
 
-def clean_text(text: str, perturb_stats: bool = False, clean_ai_comments: bool = True) -> str:
-    """Helper function to clean raw text from zero-width watermarks, AI comments, and optional statistical markers."""
+def clean_text(text: str, perturb_stats: bool = False, clean_ai_comments: bool = True, rules_engine: Optional[Any] = None, mode: Optional[Any] = None, humanize: bool = True) -> str:
+    """Helper function to clean raw text from zero-width watermarks, AI comments, statistical markers, and automatically humanize tone."""
+    if mode:
+        from untrace.stealth import StealthProfile
+        prof = StealthProfile(mode)
+        perturb_stats = prof.perturb_stats
+        clean_ai_comments = prof.clean_ai_comments
+
     cleaned = UnicodeSanitizer.clean(text)
     if clean_ai_comments:
         cleaned = AICommentSanitizer.clean(cleaned)
     if perturb_stats:
         cleaned = StatisticalPerturber.perturb(cleaned)
+    if rules_engine:
+        cleaned = rules_engine.apply_rules(cleaned)
+    if humanize:
+        from untrace.humanizer import HumanizerEngine
+        cleaned = HumanizerEngine.humanize(cleaned)
     return cleaned
 
 
-def clean_file(file_path: str, disrupt_image_pixels: bool = False, perturb_stats: bool = False) -> Tuple[bool, str]:
-    """Helper function to clean file metadata and watermarks."""
-    return FileMetadataSanitizer.clean_file(file_path, disrupt_image_pixels=disrupt_image_pixels, perturb_stats=perturb_stats)
+def clean_file(file_path: str, disrupt_image_pixels: bool = False, perturb_stats: bool = False, rules_engine: Optional[Any] = None, mode: Optional[Any] = None, humanize: bool = True) -> Tuple[bool, str]:
+    """Helper function to clean file metadata, watermarks, and humanize text content."""
+    res, msg = FileMetadataSanitizer.clean_file(file_path, disrupt_image_pixels=disrupt_image_pixels, perturb_stats=perturb_stats, rules_engine=rules_engine, mode=mode)
+    if res and humanize and os.path.exists(file_path):
+        ext = os.path.splitext(file_path)[1].lower()
+        if ext in ['.md', '.txt', '.py', '.js', '.ts', '.jsx', '.tsx', '.json', '.html', '.htm', '.docx']:
+            try:
+                from untrace.humanizer import HumanizerEngine
+                if ext == '.docx':
+                    import docx
+                    doc = docx.Document(file_path)
+                    for p in doc.paragraphs:
+                        p.text = HumanizerEngine.humanize(p.text)
+                    doc.save(file_path)
+                else:
+                    with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                        content = f.read()
+                    h_content = HumanizerEngine.humanize(content)
+                    with open(file_path, 'w', encoding='utf-8') as f:
+                        f.write(h_content)
+            except Exception:
+                pass
+    return res, msg
 
 
 def audit_text(text: str) -> Dict[str, Any]:
     """Audits input text for zero-width characters, AI comments, em-dashes, and telltales."""
     return AuditTool.audit_text(text)
+
+

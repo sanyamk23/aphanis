@@ -1,5 +1,5 @@
 """
-Untrace AI - Model Context Protocol (MCP) Server for Claude Desktop & Agents.
+Untrace AI :: Zero-Trust AI Provenance Firewall & Automatic Humanizer - MCP Server.
 """
 
 import sys
@@ -8,6 +8,9 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from untrace.cleaner import clean_text, clean_file, StatisticalPerturber
+from untrace.entropy import EntropyAnalyzer
+from untrace.stealth import StegoRiskMatrix
+from untrace.humanizer import HumanizerEngine
 
 
 def create_mcp_server():
@@ -15,42 +18,57 @@ def create_mcp_server():
     try:
         from mcp.server.fastmcp import FastMCP
         mcp = FastMCP(
-            name="Untrace AI",
-            instructions="Provenance & AI Watermark Sanitizer: Strips zero-width tracking marks, C2PA/EXIF metadata, and statistical LLM watermarks."
+            name="Untrace AI Firewall & Humanizer",
+            instructions="Zero-Trust AI Provenance Firewall & Humanizer Engine: Strips zero-width watermarks, C2PA metadata, and automatically converts AI text into a natural human tone."
         )
 
         @mcp.tool()
-        def sanitize_text(text: str, perturb_statistical_watermarks: bool = False) -> str:
+        def sanitize_text(text: str, mode: str = "paranoid", perturb_statistical_watermarks: bool = False, humanize: bool = True) -> str:
             """
-            Strips zero-width spaces, invisible unicode characters, tag characters, homoglyphs, and optionally statistical AI watermarks from text.
+            Sanitizes text and automatically humanizes tone using Stealth Engine profiles.
             
             :param text: Raw input text to sanitize.
-            :param perturb_statistical_watermarks: Set to true to rephrase common AI statistical vocabulary markers.
-            :return: Cleaned text free of invisible watermarks.
+            :param mode: Stealth profile preset (paranoid, aggressive, standard, minimal).
+            :param perturb_statistical_watermarks: Rephrase common AI statistical vocabulary markers.
+            :param humanize: Synthesize contractions and eliminate robotic filler phrases for a human tone.
+            :return: Cleaned and humanized text free of invisible watermarks.
             """
-            return clean_text(text, perturb_stats=perturb_statistical_watermarks)
+            return clean_text(text, perturb_stats=perturb_statistical_watermarks, mode=mode, humanize=humanize)
 
         @mcp.tool()
-        def sanitize_file(file_path: str, disrupt_image_pixels: bool = False) -> str:
+        def humanize_text_tool(text: str) -> str:
             """
-            Strips EXIF, C2PA, XMP metadata, XML/HTML comments, and zero-width characters from PNG, JPEG, SVG, PDF, DOCX, HTML, or Markdown files.
+            Transforms formal robotic AI output into natural conversational human text (contractions, phrase reduction).
             
-            :param file_path: Absolute path to the file to sanitize.
-            :param disrupt_image_pixels: Apply sub-pixel LSB noise jitter to disrupt spatial image watermarks.
-            :return: Outcome status message.
+            :param text: Input text.
+            :return: Humanized text.
             """
-            success, msg = clean_file(file_path, disrupt_image_pixels=disrupt_image_pixels)
+            return HumanizerEngine.humanize(text)
+
+        @mcp.tool()
+        def sanitize_file(file_path: str, mode: str = "paranoid", disrupt_image_pixels: bool = False) -> str:
+            """
+            Sanitizes file metadata, C2PA manifests, comments, and humanizes text content.
+            
+            :param file_path: Absolute path to file.
+            :param mode: Stealth profile preset.
+            :param disrupt_image_pixels: Apply sub-pixel LSB noise jitter to disrupt spatial image watermarks.
+            :return: Status message.
+            """
+            success, msg = clean_file(file_path, disrupt_image_pixels=disrupt_image_pixels, mode=mode)
             return msg
 
         @mcp.tool()
-        def perturb_text(text: str) -> str:
+        def evaluate_risk_matrix(text: str) -> str:
             """
-            Rephrases statistical AI marker vocabulary (e.g. 'delve', 'testament', 'spearhead', 'crucial', 'tapestry') to defeat statistical n-gram AI detectors.
+            Evaluates the 4-Vector Stego Risk Matrix (Unicode, Statistical Model, Metadata, Spatial Frequency).
             
             :param text: Input text string.
-            :return: Rephrased text.
+            :return: JSON formatted 4-Vector Risk Assessment report.
             """
-            return StatisticalPerturber.perturb(text)
+            import json
+            matrix = StegoRiskMatrix.evaluate(text)
+            return json.dumps(matrix, indent=2)
 
         return mcp
 
@@ -59,7 +77,7 @@ def create_mcp_server():
 
         class FallbackStdioMCPServer:
             def run(self):
-                print("Running Stdio Fallback MCP Server for Untrace AI", file=sys.stderr)
+                print("Running Stdio Fallback MCP Server for Untrace AI Firewall", file=sys.stderr)
                 while True:
                     line = sys.stdin.readline()
                     if not line:
@@ -77,7 +95,7 @@ def create_mcp_server():
                                 "result": {
                                     "protocolVersion": "2024-11-05",
                                     "capabilities": {"tools": {}},
-                                    "serverInfo": {"name": "Untrace AI", "version": "1.0.0"}
+                                    "serverInfo": {"name": "Untrace AI Firewall & Humanizer", "version": "1.3.0"}
                                 }
                             }
                         elif method == "tools/list":
@@ -88,26 +106,36 @@ def create_mcp_server():
                                     "tools": [
                                         {
                                             "name": "sanitize_text",
-                                            "description": "Strip zero-width spaces & invisible watermarks from text",
+                                            "description": "Sanitize and humanize text using Stealth Engine presets",
                                             "inputSchema": {
                                                 "type": "object",
                                                 "properties": {
                                                     "text": {"type": "string"},
-                                                    "perturb_statistical_watermarks": {"type": "boolean"}
+                                                    "mode": {"type": "string"}
                                                 },
                                                 "required": ["text"]
                                             }
                                         },
                                         {
-                                            "name": "sanitize_file",
-                                            "description": "Strip metadata and watermarks from files",
+                                            "name": "humanize_text_tool",
+                                            "description": "Transform text into conversational human tone",
                                             "inputSchema": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "file_path": {"type": "string"},
-                                                    "disrupt_image_pixels": {"type": "boolean"}
+                                                    "text": {"type": "string"}
                                                 },
-                                                "required": ["file_path"]
+                                                "required": ["text"]
+                                            }
+                                        },
+                                        {
+                                            "name": "evaluate_risk_matrix",
+                                            "description": "Evaluate 4-Vector Stego Risk Matrix",
+                                            "inputSchema": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "text": {"type": "string"}
+                                                },
+                                                "required": ["text"]
                                             }
                                         }
                                     ]
@@ -117,9 +145,11 @@ def create_mcp_server():
                             name = params.get("name")
                             args = params.get("arguments", {})
                             if name == "sanitize_text":
-                                res = clean_text(args.get("text", ""), args.get("perturb_statistical_watermarks", False))
-                            elif name == "sanitize_file":
-                                _, res = clean_file(args.get("file_path", ""), args.get("disrupt_image_pixels", False))
+                                res = clean_text(args.get("text", ""), mode=args.get("mode", "paranoid"))
+                            elif name == "humanize_text_tool":
+                                res = HumanizerEngine.humanize(args.get("text", ""))
+                            elif name == "evaluate_risk_matrix":
+                                res = json.dumps(StegoRiskMatrix.evaluate(args.get("text", "")), indent=2)
                             else:
                                 res = "Unknown tool"
 
