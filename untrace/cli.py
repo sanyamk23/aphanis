@@ -1,5 +1,5 @@
 """
-Untrace AI :: Zero-Trust AI Provenance Firewall & Stealth Engine - CLI.
+Untrace AI :: Zero-Trust AI Provenance Firewall & Enterprise Stealth Engine - CLI.
 """
 
 import argparse
@@ -16,6 +16,10 @@ from untrace.rules import RuleEngine
 from untrace.stealth import StegoRiskMatrix, StealthMode
 from untrace.dashboard import launch_dashboard
 from untrace.humanizer import HumanizerEngine, humanize_text
+from untrace.clipboard import ClipboardDaemon
+from untrace.hooks import HookInstaller
+from untrace.cert import AuditCertificateGenerator
+from untrace.heatmap import HeatmapRenderer
 
 
 ASCII_BANNER = r"""
@@ -24,7 +28,7 @@ ASCII_BANNER = r"""
  | |_| | .` | | | |   / / _ \ (__| _| / _ \ | | 
   \___/|_|\_| |_| |_|_\/_/ \_\___|___/_/ \_\___|
 
-🛡️ UNTRACE AI :: Enterprise Zero-Trust Provenance Firewall v1.2
+🛡️ UNTRACE AI :: Enterprise Zero-Trust Provenance Firewall v1.4.0
 """
 
 
@@ -118,15 +122,17 @@ def main():
     clean_text_parser = subparsers.add_parser("clean-text", help="Sanitize inline text string or stdin (humanized by default)")
     clean_text_parser.add_argument("text", nargs="?", help="Text string to clean. If empty, reads from stdin.")
     clean_text_parser.add_argument("--mode", choices=["paranoid", "aggressive", "standard", "minimal"], default="paranoid", help="Stealth profile preset")
+    clean_text_parser.add_argument("--tone", choices=["conversational", "casual", "tech-lead", "academic", "executive"], default="conversational", help="Humanizer tone persona")
     clean_text_parser.add_argument("--perturb", action="store_true", help="Rephrase statistical AI vocabulary markers")
     clean_text_parser.add_argument("--rules", help="Path to custom rules JSON file (.untracerules.json)")
     clean_text_parser.add_argument("--no-humanize", action="store_true", help="Disable automatic natural tone humanization")
 
     # clean-file
     clean_file_parser = subparsers.add_parser("clean-file", help="Sanitize file metadata, AI comments, zero-width watermarks (humanized by default)")
-    clean_file_parser.add_argument("path", help="Path to file (PNG, JPEG, SVG, PDF, DOCX, HTML, MD, PY, JS, TS)")
+    clean_file_parser.add_argument("path", help="Path to file (PNG, JPEG, SVG, PDF, DOCX, IPYNB, PPTX, XLSX, HTML, MD, PY, JS, TS)")
     clean_file_parser.add_argument("--mode", choices=["paranoid", "aggressive", "standard", "minimal"], default="paranoid", help="Stealth profile preset")
     clean_file_parser.add_argument("--jitter", action="store_true", help="Apply sub-pixel LSB noise jitter to images")
+    clean_file_parser.add_argument("--dct-jitter", action="store_true", help="Apply 2D DCT spectral noise modulation to images")
     clean_file_parser.add_argument("--perturb", action="store_true", help="Rephrase statistical AI vocabulary")
     clean_file_parser.add_argument("--rules", help="Path to custom rules JSON file (.untracerules.json)")
     clean_file_parser.add_argument("--no-humanize", action="store_true", help="Disable automatic natural tone humanization")
@@ -142,6 +148,25 @@ def main():
     # humanize
     humanize_parser = subparsers.add_parser("humanize", help="Transform AI text tone into conversational human phrasing")
     humanize_parser.add_argument("input", nargs="?", help="Text string or file path to humanize. If empty, reads from stdin.")
+    humanize_parser.add_argument("--tone", choices=["conversational", "casual", "tech-lead", "academic", "executive"], default="conversational", help="Humanizer tone persona")
+
+    # clipboard
+    clip_parser = subparsers.add_parser("clipboard", help="Run real-time background clipboard hygiene daemon")
+    clip_parser.add_argument("--mode", choices=["paranoid", "aggressive", "standard", "minimal"], default="paranoid", help="Stealth profile preset")
+
+    # install-hook / init-github-action
+    subparsers.add_parser("install-hook", help="Install .git/hooks/pre-commit provenance hygiene hook")
+    subparsers.add_parser("init-github-action", help="Generate .github/workflows/untrace-hygiene.yml workflow")
+
+    # cert
+    cert_parser = subparsers.add_parser("cert", help="Generate SHA-256 Zero-Trust Clean Certificate")
+    cert_parser.add_argument("input", help="Text string or file path to certify")
+    cert_parser.add_argument("-o", "--output", help="Output JSON certificate file path")
+
+    # heatmap
+    heatmap_parser = subparsers.add_parser("heatmap", help="Generate visual HTML forensics heatmap")
+    heatmap_parser.add_argument("input", help="Text string or file path to analyze")
+    heatmap_parser.add_argument("-o", "--output", default="untrace_heatmap.html", help="Output HTML heatmap file path")
 
     # matrix / audit / check
     matrix_parser = subparsers.add_parser("matrix", help="Evaluate 4-Vector Stego Risk Matrix for text string or file")
@@ -196,12 +221,13 @@ def main():
         else:
             input_text = sys.stdin.read()
         should_humanize = not args.no_humanize
-        cleaned = clean_text(input_text, perturb_stats=args.perturb, rules_engine=rules_engine, mode=args.mode, humanize=should_humanize)
+        cleaned = clean_text(input_text, perturb_stats=args.perturb, rules_engine=rules_engine, mode=args.mode, humanize=should_humanize, tone=args.tone)
         sys.stdout.write(cleaned)
 
     elif args.command == "clean-file":
         should_humanize = not args.no_humanize
-        success, msg = clean_file(args.path, disrupt_image_pixels=args.jitter, perturb_stats=args.perturb, rules_engine=rules_engine, mode=args.mode, humanize=should_humanize)
+        use_jitter = args.jitter or args.dct_jitter
+        success, msg = clean_file(args.path, disrupt_image_pixels=use_jitter, perturb_stats=args.perturb, rules_engine=rules_engine, mode=args.mode, humanize=should_humanize)
         print(msg)
         sys.exit(0 if success else 1)
 
@@ -218,8 +244,42 @@ def main():
         else:
             target_input = sys.stdin.read()
         
-        humanized = HumanizerEngine.humanize(target_input)
+        humanized = HumanizerEngine.humanize(target_input, tone=args.tone)
         sys.stdout.write(humanized)
+
+    elif args.command == "clipboard":
+        daemon = ClipboardDaemon()
+        daemon.start(mode=args.mode)
+
+    elif args.command == "install-hook":
+        msg = HookInstaller.install_git_hook()
+        print(f"✅ {msg}")
+
+    elif args.command == "init-github-action":
+        msg = HookInstaller.generate_github_action()
+        print(f"✅ {msg}")
+
+    elif args.command == "cert":
+        target_input = args.input
+        source_name = target_input
+        if os.path.exists(target_input):
+            with open(target_input, 'r', encoding='utf-8', errors='ignore') as f:
+                target_input = f.read()
+        
+        cleaned = clean_text(target_input)
+        cert_data = AuditCertificateGenerator.generate_certificate(target_input, cleaned, source_name=source_name)
+        out_file = AuditCertificateGenerator.save_certificate_file(cert_data, output_path=args.output)
+        print(f"✅ Generated SHA-256 Zero-Trust Clean Certificate: {out_file}")
+        print(f"Certificate ID: {cert_data['certificate_id']}")
+
+    elif args.command == "heatmap":
+        target_input = args.input
+        if os.path.exists(target_input):
+            with open(target_input, 'r', encoding='utf-8', errors='ignore') as f:
+                target_input = f.read()
+
+        out_file = HeatmapRenderer.save_heatmap_file(target_input, output_path=args.output)
+        print(f"🔥 Generated Forensics Heatmap: {out_file}")
 
     elif args.command in ["matrix", "check"]:
         target_input = args.input

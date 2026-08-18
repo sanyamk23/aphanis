@@ -1,7 +1,6 @@
 """
-Untrace AI - Automatic Natural Humanizer Engine.
-Transforms formal, passive, and uniform LLM outputs into natural, conversational,
-and human tone content.
+Untrace AI - Automatic Natural Humanizer Engine with Tone Personas.
+Transforms formal, passive, and uniform LLM outputs into natural human tone.
 """
 
 import re
@@ -92,16 +91,41 @@ class HumanizerEngine:
         r'\bas a matter of fact,\b': 'in fact,',
     }
 
+    # Persona specific overrides
+    TECH_LEAD_SWAPS: Dict[str, str] = {
+        r'\butilize\b': 'use',
+        r'\butilizes\b': 'uses',
+        r'\butilizing\b': 'using',
+        r'\barchitected\b': 'built',
+        r'\bleverage\b': 'use',
+    }
+
+    ACADEMIC_SWAPS: Dict[str, str] = {
+        r'\bdelve\b': 'investigate',
+        r'\btestament\b': 'evidence',
+        r'\bspearhead\b': 'direct',
+    }
+
     @classmethod
-    def humanize(cls, text: str, apply_contractions: bool = True, reduce_fillers: bool = True, adapt_transitions: bool = True) -> str:
+    def humanize(cls, text: str, apply_contractions: bool = True, reduce_fillers: bool = True, adapt_transitions: bool = True, tone: str = "conversational") -> str:
         """
         Transforms text into natural human tone by synthesizing contractions,
-        reducing passive filler phrases, and softening formulaic transitions.
+        reducing passive filler phrases, and applying tone personas (conversational, casual, tech-lead, academic, executive).
         """
         if not text or not text.strip():
             return text
 
         result = text
+        tone = (tone or "conversational").lower()
+
+        # Tone specific adjustments
+        if tone == "tech-lead":
+            for pattern, replacement in cls.TECH_LEAD_SWAPS.items():
+                result = re.sub(pattern, replacement, result, flags=re.IGNORECASE)
+        elif tone == "academic":
+            apply_contractions = False # Academic style avoids contractions but strips LLM clichés
+            for pattern, replacement in cls.ACADEMIC_SWAPS.items():
+                result = re.sub(pattern, replacement, result, flags=re.IGNORECASE)
 
         # 1. Reduce wordy filler phrases
         if reduce_fillers:
@@ -145,6 +169,6 @@ class HumanizerEngine:
         return result
 
 
-def humanize_text(text: str, apply_contractions: bool = True, reduce_fillers: bool = True) -> str:
+def humanize_text(text: str, apply_contractions: bool = True, reduce_fillers: bool = True, tone: str = "conversational") -> str:
     """Helper function to convert text into natural human tone."""
-    return HumanizerEngine.humanize(text, apply_contractions=apply_contractions, reduce_fillers=reduce_fillers)
+    return HumanizerEngine.humanize(text, apply_contractions=apply_contractions, reduce_fillers=reduce_fillers, tone=tone)

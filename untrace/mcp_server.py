@@ -11,6 +11,7 @@ from untrace.cleaner import clean_text, clean_file, StatisticalPerturber
 from untrace.entropy import EntropyAnalyzer
 from untrace.stealth import StegoRiskMatrix
 from untrace.humanizer import HumanizerEngine
+from untrace.cert import AuditCertificateGenerator
 
 
 def create_mcp_server():
@@ -23,7 +24,7 @@ def create_mcp_server():
         )
 
         @mcp.tool()
-        def sanitize_text(text: str, mode: str = "paranoid", perturb_statistical_watermarks: bool = False, humanize: bool = True) -> str:
+        def sanitize_text(text: str, mode: str = "paranoid", perturb_statistical_watermarks: bool = False, humanize: bool = True, tone: str = "conversational") -> str:
             """
             Sanitizes text and automatically humanizes tone using Stealth Engine profiles.
             
@@ -31,19 +32,21 @@ def create_mcp_server():
             :param mode: Stealth profile preset (paranoid, aggressive, standard, minimal).
             :param perturb_statistical_watermarks: Rephrase common AI statistical vocabulary markers.
             :param humanize: Synthesize contractions and eliminate robotic filler phrases for a human tone.
+            :param tone: Humanizer tone persona (conversational, casual, tech-lead, academic, executive).
             :return: Cleaned and humanized text free of invisible watermarks.
             """
-            return clean_text(text, perturb_stats=perturb_statistical_watermarks, mode=mode, humanize=humanize)
+            return clean_text(text, perturb_stats=perturb_statistical_watermarks, mode=mode, humanize=humanize, tone=tone)
 
         @mcp.tool()
-        def humanize_text_tool(text: str) -> str:
+        def humanize_text_tool(text: str, tone: str = "conversational") -> str:
             """
             Transforms formal robotic AI output into natural conversational human text (contractions, phrase reduction).
             
             :param text: Input text.
+            :param tone: Humanizer tone persona (conversational, casual, tech-lead, academic, executive).
             :return: Humanized text.
             """
-            return HumanizerEngine.humanize(text)
+            return HumanizerEngine.humanize(text, tone=tone)
 
         @mcp.tool()
         def sanitize_file(file_path: str, mode: str = "paranoid", disrupt_image_pixels: bool = False) -> str:
@@ -70,6 +73,19 @@ def create_mcp_server():
             matrix = StegoRiskMatrix.evaluate(text)
             return json.dumps(matrix, indent=2)
 
+        @mcp.tool()
+        def generate_audit_certificate(text: str) -> str:
+            """
+            Generates a signed SHA-256 Zero-Trust Clean Certificate JSON.
+            
+            :param text: Input text string.
+            :return: JSON formatted Audit Certificate.
+            """
+            import json
+            cleaned = clean_text(text)
+            cert = AuditCertificateGenerator.generate_certificate(text, cleaned)
+            return json.dumps(cert, indent=2)
+
         return mcp
 
     except ImportError:
@@ -95,7 +111,7 @@ def create_mcp_server():
                                 "result": {
                                     "protocolVersion": "2024-11-05",
                                     "capabilities": {"tools": {}},
-                                    "serverInfo": {"name": "Untrace AI Firewall & Humanizer", "version": "1.3.0"}
+                                    "serverInfo": {"name": "Untrace AI Firewall & Humanizer", "version": "1.4.0"}
                                 }
                             }
                         elif method == "tools/list":
@@ -122,7 +138,8 @@ def create_mcp_server():
                                             "inputSchema": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "text": {"type": "string"}
+                                                    "text": {"type": "string"},
+                                                    "tone": {"type": "string"}
                                                 },
                                                 "required": ["text"]
                                             }
@@ -147,7 +164,7 @@ def create_mcp_server():
                             if name == "sanitize_text":
                                 res = clean_text(args.get("text", ""), mode=args.get("mode", "paranoid"))
                             elif name == "humanize_text_tool":
-                                res = HumanizerEngine.humanize(args.get("text", ""))
+                                res = HumanizerEngine.humanize(args.get("text", ""), tone=args.get("tone", "conversational"))
                             elif name == "evaluate_risk_matrix":
                                 res = json.dumps(StegoRiskMatrix.evaluate(args.get("text", "")), indent=2)
                             else:

@@ -416,7 +416,21 @@ class FileMetadataSanitizer:
                 return True, f"Sanitized HTML file: {file_path}"
 
             elif ext in ['.png', '.jpg', '.jpeg']:
+                if disrupt_image_pixels:
+                    try:
+                        from untrace.spectral import SpectralNoiseDisrupter
+                        return SpectralNoiseDisrupter.perturb_dct_spectral(file_path)
+                    except Exception:
+                        pass
                 return ImageWatermarkDisrupter.perturb_image(file_path, jitter=disrupt_image_pixels)
+
+            elif ext == '.ipynb':
+                from untrace.office import OfficeSanitizer
+                return OfficeSanitizer.sanitize_ipynb(file_path)
+
+            elif ext in ['.pptx', '.xlsx']:
+                from untrace.office import OfficeSanitizer
+                return OfficeSanitizer.sanitize_openxml_metadata(file_path)
 
             elif ext == '.pdf':
                 try:
@@ -464,7 +478,7 @@ class FileMetadataSanitizer:
             return False, f"Error processing file {file_path}: {str(e)}"
 
 
-def clean_text(text: str, perturb_stats: bool = False, clean_ai_comments: bool = True, rules_engine: Optional[Any] = None, mode: Optional[Any] = None, humanize: bool = True) -> str:
+def clean_text(text: str, perturb_stats: bool = False, clean_ai_comments: bool = True, rules_engine: Optional[Any] = None, mode: Optional[Any] = None, humanize: bool = True, tone: str = "conversational") -> str:
     """Helper function to clean raw text from zero-width watermarks, AI comments, statistical markers, and automatically humanize tone."""
     if mode:
         from untrace.stealth import StealthProfile
@@ -481,7 +495,7 @@ def clean_text(text: str, perturb_stats: bool = False, clean_ai_comments: bool =
         cleaned = rules_engine.apply_rules(cleaned)
     if humanize:
         from untrace.humanizer import HumanizerEngine
-        cleaned = HumanizerEngine.humanize(cleaned)
+        cleaned = HumanizerEngine.humanize(cleaned, tone=tone)
     return cleaned
 
 

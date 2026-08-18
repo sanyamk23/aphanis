@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "untrace-ai"
-version = "1.2.0"
-description = "Untrace AI :: Enterprise Zero-Trust AI Provenance Firewall & Stealth Engine for LLMs, Claude, and Media Assets."
+version = "1.4.0"
+description = "Untrace AI :: Enterprise Zero-Trust AI Provenance Firewall, Automatic Humanizer Engine & Stego Matrix."
 readme = "README.md"
 authors = [
     { name = "Sanya", email = "sanya@example.com" }
@@ -13,14 +13,19 @@ authors = [
 keywords = [
     "ai-provenance-firewall",
     "stealth-engine",
-    "watermark-remover",
+    "automatic-humanizer",
+    "clipboard-daemon",
+    "git-pre-commit-hook",
     "stego-risk-matrix",
+    "audit-certificate",
+    "forensics-heatmap",
+    "ipynb-sanitizer",
+    "spectral-dct-noise",
     "c2pa",
     "zero-width-spaces",
     "shannon-entropy",
     "claude-skill",
-    "mcp-server",
-    "llm-hygiene"
+    "mcp-server"
 ]
 requires-python = ">=3.9"
 dependencies = [

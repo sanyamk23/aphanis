@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🛡️ UNTRACE AI :: Humanizer & Stealth Engine
+# 🛡️ UNTRACE AI :: Enterprise Suite v1.4.0
 
 ```text
   _   _ _  _ _____ ___    _   ___ ___   _   ___ 
@@ -9,21 +9,22 @@
   \___/|_|\_| |_| |_|_\/_/ \_\___|___/_/ \_\___|
 ```
 
-### *The Enterprise Zero-Trust AI Provenance Firewall & Automatic Humanizer Engine*
+### *The Enterprise Zero-Trust AI Provenance Firewall, Automatic Humanizer & Stego Matrix*
 
 [![Python Version](https://img.shields.io/badge/python-3.9%2B-blue.svg?style=for-the-badge&logo=python)](https://python.org)
-[![MCP Server](https://img.shields.io/badge/MCP-Firewall%20%26%20Humanizer-000000.svg?style=for-the-badge&logo=anthropic)](https://modelcontextprotocol.io)
-[![Claude Skill](https://img.shields.io/badge/Claude%20Code-Humanizer--Skill-7A1FA2.svg?style=for-the-badge&logo=anthropic)](https://anthropic.com)
+[![MCP Server](https://img.shields.io/badge/MCP-Enterprise--v1.4.0-000000.svg?style=for-the-badge&logo=anthropic)](https://modelcontextprotocol.io)
+[![Claude Skill](https://img.shields.io/badge/Claude%20Code-Stealth--Skill-7A1FA2.svg?style=for-the-badge&logo=anthropic)](https://anthropic.com)
 [![License](https://img.shields.io/badge/license-MIT-green.svg?style=for-the-badge)](LICENSE)
 
 <br/>
 
-[Automatic Humanizer](#-automatic-humanizer-engine) •
-[4-Vector Risk Matrix](#-4-vector-stego-risk-matrix) •
-[Stealth Presets](#-stealth-profile-presets) •
-[Cyber-Stealth Dashboard](#-cyber-stealth-dashboard) •
-[Quick Start](#-quick-start) •
-[Claude Integrations](#-claude-desktop--claude-code-integrations)
+[Enterprise Suite Features](#-enterprise-suite-features) •
+[Clipboard Daemon](#-clipboard-hygiene-daemon) •
+[Git Hooks & CI/CD](#-git-pre-commit-hook--github-action) •
+[Audit Certificates](#-cryptographic-audit-certificates) •
+[Forensics Heatmap](#-forensics-heatmap-visualizer) •
+[Jupyter & Office](#-jupyter-ipynb--office-sanitizer) •
+[Quick Start](#-quick-start)
 
 </div>
 
@@ -31,115 +32,70 @@
 
 ## ⚡ What is Untrace AI?
 
-**Untrace AI** is an enterprise-grade **Zero-Trust AI Provenance Firewall & Automatic Humanizer Engine**. It neutralizes AI provenance signals, zero-width steganography, C2PA/EXIF metadata, em-dash signatures, and **automatically rewrites text into an authentic, natural human tone** (synthesizing contractions, removing passive filler phrases, and balancing sentence cadence).
+**Untrace AI** is an enterprise-grade **Zero-Trust AI Provenance Firewall, Automatic Humanizer & Stego Defense Platform**. It audits, sanitizes, and neutralizes multi-vendor AI provenance signals, zero-width steganography, C2PA/EXIF metadata, em-dash signatures, and **automatically converts AI text into authentic conversational human tone**.
 
 ---
 
-## ✍️ Automatic Humanizer Engine
+## 🌟 Enterprise Suite Features (v1.4.0)
 
-By default, all content processed through Untrace AI is **automatically humanized**:
+### 1. 📋 Automatic Clipboard Hygiene Daemon (`untrace clipboard`)
+Runs a real-time background listener on your system clipboard (`Cmd+C` / `Ctrl+C`). Automatically scrubs zero-width spaces and humanizes text copied from ChatGPT/Claude before you paste it anywhere.
 
-### Humanizer Transformations:
-- **Contraction Synthesizer**: Converts rigid LLM expansions (*"it is"*, *"cannot"*, *"we have"*, *"do not"*) into natural human contractions (*"it's"*, *"can't"*, *"we've"*, *"don't"*).
-- **Passive Filler Reducer**: Replaces 50+ robotic LLM filler phrases (*"in order to"*, *"it is important to note that"*, *"due to the fact that"*, *"at this point in time"*) with concise active phrasing.
-- **Organic Transition Variator**: Replaces rigid transitions (*"furthermore"*, *"moreover"*, *"consequently"*, *"nevertheless"*) with natural human connectors.
-- **Sentence Burstiness & Rhythm**: Varies sentence structure to eliminate uniform AI token cadence.
+### 2. 🪝 Git Pre-Commit Hook & GitHub Action (`untrace install-hook`)
+- `untrace install-hook`: Installs `.git/hooks/pre-commit` to prevent commits containing invisible watermarks or C2PA metadata.
+- `untrace init-github-action`: Generates `.github/workflows/untrace-hygiene.yml` for automated CI/CD pipeline audits.
 
-```bash
-# Humanize text inline or from file
-untrace humanize "In order to succeed, it is important to note that we cannot fail."
-# Output: "To succeed, note that we can't fail."
-```
+### 3. 🎨 Custom Tone Personas (`--tone`)
+Choose from targeted humanization personas: `conversational`, `casual`, `tech-lead`, `academic`, `executive`.
 
----
+### 4. 📓 Jupyter Notebook (`.ipynb`) & Office (`.pptx` / `.xlsx`) Sanitizer
+Sanitizes notebook markdown/code cells, strips prompt execution logs, and purges core OpenXML properties.
 
-## 📊 4-Vector Stego Risk Matrix
+### 5. 📜 Cryptographic Audit Certificates (`untrace cert`)
+Computes SHA-256 hashes of original vs clean inputs, generating signed audit certificates (`UNTRACE-CERT-2026-XXXX`).
 
-Untrace AI evaluates content against 4 independent provenance threat vectors:
+### 6. 🔥 Forensics Heatmap Visualizer (`untrace heatmap`)
+Generates an interactive HTML visual heatmap rendering character offsets of zero-width bytes, em-dashes, and AI clichés.
 
-```text
-🛡️ --- 4-VECTOR STEGO RISK MATRIX REPORT --- 🛡️
-PROVENANCE RISK LEVEL : ZERO_TRUST_CLEAN
-OVERALL CLEAN SCORE   : 100.0/100
-
-[VECTOR 1] Unicode Steganography  :   0.0% Risk [CLEAN] (0 hidden bytes)
-[VECTOR 2] Statistical Model Risk :   0.0% Risk [CLEAN] (0 clichés, 0 em-dashes)
-[VECTOR 3] Metadata & Containers  :   0.0% Risk [CLEAN] (0 AI comments)
-[VECTOR 4] Spatial Frequency      :   0.0% Risk [CLEAN]
-```
-
----
-
-## ⚙️ Stealth Profile Presets
-
-| Stealth Preset | Description | Features Enabled |
-| :--- | :--- | :--- |
-| 🛡️ `PARANOID` | **Maximum Defense** (Default) | Humanization, Zero-width, 120+ telltale swaps, em-dash, LSB jitter, metadata purge, rules |
-| ⚡ `AGGRESSIVE` | **High Protection** | Humanization, Zero-width, statistical rephrasing, LSB jitter, metadata purge |
-| 🔒 `STANDARD` | **Balanced Hygiene** | Humanization, Zero-width, em-dash/smart quote normalization, metadata purge |
-| 🧼 `MINIMAL` | **Light Scrubbing** | Zero-width character stripping only |
-
----
-
-## 🖥️ Cyber-Stealth Dashboard (`untrace ui`)
-
-Launch the local visual visualizer featuring live side-by-side diff inspection, 4-Vector risk gauges, and automatic Humanized output:
-
-```bash
-untrace dashboard
-# or
-untrace ui --port 8080
-```
-
----
-
-## 📦 Quick Start
-
-### Installation
-
-```bash
-git clone https://github.com/sanyamk23/untrace-ai.git
-cd untrace-ai
-pip install -e .
-```
+### 7. 🌊 Spectral Frequency DCT Noise Injector (`--dct-jitter`)
+Modulates 2D Discrete Cosine Transform (DCT) coefficients in image assets to disrupt spatial frequency watermarks (SynthID style).
 
 ---
 
 ## 💻 Command Line Interface (CLI)
 
 ```bash
-# 1. Clean & Humanize inline text (humanized by default)
-untrace clean-text "Furthermore, it is necessary to delve into this crucial matter."
+# 1. Background Clipboard Daemon
+untrace clipboard
 
-# 2. Dedicated Humanize Command
-untrace humanize "In order to build this, it is essential to proceed."
+# 2. Install Git Pre-Commit Hook & GitHub Action
+untrace install-hook
+untrace init-github-action
 
-# 3. Clean without tone humanization
-untrace clean-text "Furthermore, it is necessary to delve into this." --no-humanize
+# 3. Generate SHA-256 Zero-Trust Clean Certificate
+untrace cert document.txt -o audit_cert.json
 
-# 4. Evaluate 4-Vector Stego Risk Matrix
-untrace matrix "Delve\u200b into crucial\ufeff matters — today."
+# 4. Generate Visual Forensics Heatmap
+untrace heatmap "Delve\u200b into crucial matters." -o heatmap.html
 
-# 5. Real-time Folder Watcher
-untrace watch .
+# 5. Clean text with Tone Personas
+untrace clean-text "In order to achieve this, it is necessary to build." --tone tech-lead
+
+# 6. Evaluate 4-Vector Stego Risk Matrix
+untrace matrix document.ipynb
+
+# 7. Launch Cyber-Stealth Web Dashboard
+untrace ui
 ```
 
 ---
 
-## 🐍 Python SDK Usage
+## 🧪 Testing Suite
 
-```python
-from untrace import clean_text, humanize_text, StegoRiskMatrix
+Untrace AI includes a comprehensive test suite:
 
-# 1. Automatically clean and humanize string
-clean_humanized = clean_text("Furthermore, it is important to note that we cannot fail.")
-print(clean_humanized)
-# Output: "Also, note that we can't fail."
-
-# 2. Standalone Humanizer Engine
-human = humanize_text("In order to achieve this, it is necessary to move forward.")
-print(human)
-# Output: "To achieve this, note that we need to move next."
+```bash
+python3 -m unittest discover tests
 ```
 
 ---
