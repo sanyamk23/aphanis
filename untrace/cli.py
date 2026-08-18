@@ -86,6 +86,10 @@ def main():
     clean_dir_parser.add_argument("path", nargs="?", default=".", help="Directory path to clean (default: current directory)")
     clean_dir_parser.add_argument("--no-perturb", action="store_true", help="Disable vocabulary rephrasing")
 
+    # check / audit
+    check_parser = subparsers.add_parser("check", help="Audit text string or file for watermarks and AI telltales")
+    check_parser.add_argument("input", help="Text string or file path to audit")
+
     # watch
     watch_parser = subparsers.add_parser("watch", help="Watch directory in real time and automatically sanitize created/edited files")
     watch_parser.add_argument("path", nargs="?", default=".", help="Directory path to watch (default: current directory)")
@@ -114,6 +118,25 @@ def main():
 
     elif args.command == "clean-dir":
         clean_directory(args.path, perturb=not args.no_perturb)
+
+    elif args.command == "check":
+        from untrace.cleaner import audit_text
+        target_input = args.input
+        if os.path.exists(target_input):
+            with open(target_input, 'r', encoding='utf-8', errors='ignore') as f:
+                target_input = f.read()
+        
+        report = audit_text(target_input)
+        print("\n🔍 --- UNTRACE AI AUDIT REPORT --- 🔍\n")
+        print(f"Status: {report['status']}")
+        print(f"Clean Score: {report['score']}/100\n")
+        if report['issues']:
+            print("Detected Issues / Telltales:")
+            for issue in report['issues']:
+                print(f" ⚠️ {issue}")
+        else:
+            print("✅ 100% Clean! No zero-width watermarks, em-dashes, or AI telltales found.")
+        print()
 
     elif args.command == "watch":
         watcher = DirectoryWatcher(args.path)

@@ -14,40 +14,49 @@ class UnicodeSanitizer:
 
     # Complete zero-width & invisible characters used for steganography / LLM watermarking
     ZERO_WIDTH_CHARS = {
-        '\u200B',  # Zero-width space
-        '\u200C',  # Zero-width non-joiner
-        '\u200D',  # Zero-width joiner
-        '\uFEFF',  # Zero-width no-break space (BOM)
-        '\u2060',  # Word joiner
-        '\u2061',  # Function application
-        '\u2062',  # Invisible times
-        '\u2063',  # Invisible separator
-        '\u2064',  # Invisible plus
-        '\u00AD',  # Soft hyphen
-        '\u180E',  # Mongolian vowel separator
+        '\u200B': 'Zero-Width Space',
+        '\u200C': 'Zero-Width Non-Joiner',
+        '\u200D': 'Zero-Width Joiner',
+        '\uFEFF': 'Zero-Width No-Break Space (BOM)',
+        '\u2060': 'Word Joiner',
+        '\u2061': 'Function Application',
+        '\u2062': 'Invisible Times',
+        '\u2063': 'Invisible Separator',
+        '\u2064': 'Invisible Plus',
+        '\u00AD': 'Soft Hyphen',
+        '\u180E': 'Mongolian Vowel Separator',
     }
 
     # Bidi & direction override characters
     BIDI_CHARS = {
-        '\u200E', '\u200F', '\u202A', '\u202B', '\u202C',
-        '\u202D', '\u202E', '\u2066', '\u2067', '\u2068', '\u2069'
+        '\u200E': 'Left-to-Right Mark',
+        '\u200F': 'Right-to-Left Mark',
+        '\u202A': 'Left-to-Right Embedding',
+        '\u202B': 'Right-to-Left Embedding',
+        '\u202C': 'Pop Directional Formatting',
+        '\u202D': 'Left-to-Right Override',
+        '\u202E': 'Right-to-Left Override',
+        '\u2066': 'Left-to-Right Isolate',
+        '\u2067': 'Right-to-Left Isolate',
+        '\u2068': 'First Strong Isolate',
+        '\u2069': 'Pop Directional Isolate'
     }
 
     # Custom space normalization
     SPACE_NORMALIZATIONS = {
-        '\u00A0': ' ',  # Non-breaking space
-        '\u2002': ' ',  # En space
-        '\u2003': ' ',  # Em space
-        '\u2004': ' ',  # Three-per-em space
-        '\u2005': ' ',  # Four-per-em space
-        '\u2006': ' ',  # Six-per-em space
-        '\u2007': ' ',  # Figure space
-        '\u2008': ' ',  # Punctuation space
-        '\u2009': ' ',  # Thin space
-        '\u200A': ' ',  # Hair space
-        '\u202F': ' ',  # Narrow no-break space
-        '\u205F': ' ',  # Medium mathematical space
-        '\u3000': ' ',  # Ideographic space
+        '\u00A0': 'Non-breaking space',
+        '\u2002': 'En space',
+        '\u2003': 'Em space',
+        '\u2004': 'Three-per-em space',
+        '\u2005': 'Four-per-em space',
+        '\u2006': 'Six-per-em space',
+        '\u2007': 'Figure space',
+        '\u2008': 'Punctuation space',
+        '\u2009': 'Thin space',
+        '\u200A': 'Hair space',
+        '\u202F': 'Narrow no-break space',
+        '\u205F': 'Medium mathematical space',
+        '\u3000': 'Ideographic space',
     }
 
     # Punctuation homoglyphs & LLM formatting telltales
@@ -85,7 +94,7 @@ class UnicodeSanitizer:
             if char in cls.ZERO_WIDTH_CHARS or char in cls.BIDI_CHARS:
                 continue
             if char in cls.SPACE_NORMALIZATIONS:
-                chars.append(cls.SPACE_NORMALIZATIONS[char])
+                chars.append(' ')
             elif clean_punctuation and char in cls.PUNCTUATION_REPLACEMENTS:
                 chars.append(cls.PUNCTUATION_REPLACEMENTS[char])
             else:
@@ -140,7 +149,6 @@ class StatisticalPerturber:
     """Perturbs text to disrupt n-gram statistical AI watermarks and Claude-specific vocabulary telltales."""
 
     AI_VOCAB_SWAPS = {
-        # High-frequency LLM words
         r'\bdelve\b': 'explore',
         r'\bdelves\b': 'explores',
         r'\bdelving\b': 'exploring',
@@ -189,8 +197,6 @@ class StatisticalPerturber:
         r'\bsynergistic\b': 'combined',
         r'\bunderpin\b': 'support',
         r'\bunderpins\b': 'supports',
-
-        # Telltale transitional phrases
         r'\bin conclusion\b': 'to summarize',
         r'\bfurthermore\b': 'also',
         r'\bmoreover\b': 'additionally',
@@ -261,6 +267,69 @@ class ImageWatermarkDisrupter:
             return True, f"Stripped metadata & perturbed spatial watermarks for {file_path}"
         except Exception as e:
             return False, f"Failed to process image: {str(e)}"
+
+
+class AuditTool:
+    """Audits text and files for invisible zero-width watermarks, C2PA signatures, and AI telltales."""
+
+    @classmethod
+    def audit_text(cls, text: str) -> Dict[str, Any]:
+        """Scans text for zero-width characters, em-dashes, AI comments, and telltale phrases."""
+        if not text:
+            return {"status": "CLEAN", "score": 100, "issues": []}
+
+        issues = []
+        zero_width_count = 0
+        bidi_count = 0
+        tag_char_count = 0
+        em_dash_count = text.count('—')
+        smart_quote_count = text.count('“') + text.count('”') + text.count('‘') + text.count('’')
+
+        for c in text:
+            code = ord(c)
+            if c in UnicodeSanitizer.ZERO_WIDTH_CHARS:
+                zero_width_count += 1
+            if c in UnicodeSanitizer.BIDI_CHARS:
+                bidi_count += 1
+            if 0xE0001 <= code <= 0xE007F or 0xFE00 <= code <= 0xFE0F:
+                tag_char_count += 1
+
+        if zero_width_count > 0:
+            issues.append(f"Found {zero_width_count} hidden zero-width / invisible tracking characters")
+        if bidi_count > 0:
+            issues.append(f"Found {bidi_count} directionality / bidi override characters")
+        if tag_char_count > 0:
+            issues.append(f"Found {tag_char_count} tag / variation selector tracking markers")
+        if em_dash_count > 0:
+            issues.append(f"Found {em_dash_count} em-dash ('—') AI telltale signatures")
+        if smart_quote_count > 0:
+            issues.append(f"Found {smart_quote_count} smart/curved quote telltales")
+
+        # Search for AI vocabulary telltales
+        telltale_words_found = []
+        for pattern in StatisticalPerturber.AI_VOCAB_SWAPS.keys():
+            matches = re.findall(pattern, text, flags=re.IGNORECASE)
+            if matches:
+                telltale_words_found.extend(matches)
+
+        if telltale_words_found:
+            issues.append(f"Found {len(telltale_words_found)} AI vocabulary telltales: {', '.join(set(telltale_words_found[:5]))}")
+
+        # Check AI comment signatures
+        comment_matches = []
+        for pattern in AICommentSanitizer.SINGLE_LINE_PATTERNS + AICommentSanitizer.MULTI_LINE_PATTERNS:
+            matches = re.findall(pattern, text, flags=re.IGNORECASE)
+            if matches:
+                comment_matches.extend(matches)
+        if comment_matches:
+            issues.append(f"Found {len(comment_matches)} AI code comment signatures")
+
+        is_clean = (len(issues) == 0)
+        return {
+            "status": "CLEAN" if is_clean else "WATERMARKED_OR_TELLTALES_DETECTED",
+            "score": 100 if is_clean else max(0, 100 - (len(issues) * 20)),
+            "issues": issues
+        }
 
 
 class FileMetadataSanitizer:
@@ -381,3 +450,8 @@ def clean_text(text: str, perturb_stats: bool = False, clean_ai_comments: bool =
 def clean_file(file_path: str, disrupt_image_pixels: bool = False, perturb_stats: bool = False) -> Tuple[bool, str]:
     """Helper function to clean file metadata and watermarks."""
     return FileMetadataSanitizer.clean_file(file_path, disrupt_image_pixels=disrupt_image_pixels, perturb_stats=perturb_stats)
+
+
+def audit_text(text: str) -> Dict[str, Any]:
+    """Audits input text for zero-width characters, AI comments, em-dashes, and telltales."""
+    return AuditTool.audit_text(text)

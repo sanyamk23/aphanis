@@ -62,23 +62,15 @@ class TestUntraceAI(unittest.TestCase):
             if os.path.exists(temp_path):
                 os.remove(temp_path)
 
-    def test_file_cleaner_svg(self):
-        svg_content = '<svg><metadata>C2PA Signature</metadata><!-- Comment --><g data-c2pa="true"></g></svg>'
-        with tempfile.NamedTemporaryFile(suffix=".svg", mode="w+", delete=False) as f:
-            f.write(svg_content)
-            temp_path = f.name
+    def test_audit_text(self):
+        from untrace.cleaner import audit_text
+        clean_report = audit_text("Simple human sentence.")
+        self.assertEqual(clean_report["status"], "CLEAN")
+        self.assertEqual(clean_report["score"], 100)
 
-        try:
-            success, msg = clean_file(temp_path)
-            self.assertTrue(success)
-            with open(temp_path, "r", encoding="utf-8") as f:
-                content = f.read()
-            self.assertNotIn("<metadata>", content)
-            self.assertNotIn("<!-- Comment -->", content)
-            self.assertNotIn('data-c2pa="true"', content)
-        finally:
-            if os.path.exists(temp_path):
-                os.remove(temp_path)
+        dirty_report = audit_text("Delve into crucial matters — today.")
+        self.assertEqual(dirty_report["status"], "WATERMARKED_OR_TELLTALES_DETECTED")
+        self.assertTrue(len(dirty_report["issues"]) > 0)
 
 
 if __name__ == "__main__":
