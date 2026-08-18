@@ -1,27 +1,29 @@
 import os
 import tempfile
 import unittest
-from watermark_remover.cleaner import UnicodeSanitizer, StatisticalPerturber, FileMetadataSanitizer, clean_text, clean_file
+from untrace.cleaner import UnicodeSanitizer, StatisticalPerturber, FileMetadataSanitizer, clean_text, clean_file
 
 
-class TestWatermarkRemover(unittest.TestCase):
+class TestUntraceAI(unittest.TestCase):
 
     def test_unicode_sanitizer_zero_width(self):
-        # Text with embedded zero-width space (\u200b), soft hyphen (\u00ad), non-breaking space (\u00a0)
-        dirty_text = "This\u200bis\u00ad a\u00a0test\ufeff string."
+        # Text with embedded zero-width space (\u200b), soft hyphen (\u00ad), non-breaking space (\u00a0), variation selector (\ufe0f)
+        dirty_text = "This\u200bis\u00ad a\u00a0test\ufeff string\ufe0f."
         cleaned = UnicodeSanitizer.clean(dirty_text)
         self.assertNotIn("\u200b", cleaned)
         self.assertNotIn("\u00ad", cleaned)
         self.assertNotIn("\ufeff", cleaned)
+        self.assertNotIn("\ufe0f", cleaned)
         self.assertNotIn("\u00a0", cleaned)
         self.assertEqual(cleaned, "Thisis a test string.")
 
     def test_statistical_perturber(self):
-        ai_text = "Furthermore, we must delve into this crucial testament."
+        ai_text = "Furthermore, we must delve into this crucial testament and tapestry of ideas."
         perturbed = StatisticalPerturber.perturb(ai_text)
         self.assertNotIn("delve", perturbed.lower())
         self.assertNotIn("crucial", perturbed.lower())
         self.assertNotIn("testament", perturbed.lower())
+        self.assertNotIn("tapestry", perturbed.lower())
         self.assertIn("explore", perturbed.lower())
         self.assertIn("important", perturbed.lower())
 
@@ -70,4 +72,3 @@ class TestWatermarkRemover(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

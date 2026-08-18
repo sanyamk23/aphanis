@@ -1,12 +1,13 @@
-"""Model Context Protocol (MCP) Server for Watermark Remover."""
+"""
+Untrace AI - Model Context Protocol (MCP) Server for Claude Desktop & Agents.
+"""
 
 import sys
 import os
 
-# Add package directory to path if executed directly
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from watermark_remover.cleaner import clean_text, clean_file, StatisticalPerturber
+from untrace.cleaner import clean_text, clean_file, StatisticalPerturber
 
 
 def create_mcp_server():
@@ -14,51 +15,51 @@ def create_mcp_server():
     try:
         from mcp.server.fastmcp import FastMCP
         mcp = FastMCP(
-            name="Watermark Remover",
-            instructions="Tools to strip multi-vendor AI provenance signals, zero-width tracking marks, C2PA/EXIF metadata, and statistical watermarks."
+            name="Untrace AI",
+            instructions="Provenance & AI Watermark Sanitizer: Strips zero-width tracking marks, C2PA/EXIF metadata, and statistical LLM watermarks."
         )
 
         @mcp.tool()
         def sanitize_text(text: str, perturb_statistical_watermarks: bool = False) -> str:
             """
-            Strips zero-width spaces, invisible unicode characters, homoglyphs, and optionally statistical AI watermarks from text.
+            Strips zero-width spaces, invisible unicode characters, tag characters, homoglyphs, and optionally statistical AI watermarks from text.
             
-            :param text: The raw text string to sanitize.
-            :param perturb_statistical_watermarks: Set to true to rephrase common AI statistical marker words.
+            :param text: Raw input text to sanitize.
+            :param perturb_statistical_watermarks: Set to true to rephrase common AI statistical vocabulary markers.
             :return: Cleaned text free of invisible watermarks.
             """
             return clean_text(text, perturb_stats=perturb_statistical_watermarks)
 
         @mcp.tool()
-        def sanitize_file(file_path: str) -> str:
+        def sanitize_file(file_path: str, disrupt_image_pixels: bool = False) -> str:
             """
-            Strips EXIF, C2PA, XMP metadata, XML/HTML comments, and invisible characters from PNG, JPEG, SVG, PDF, DOCX, HTML, or Markdown files.
+            Strips EXIF, C2PA, XMP metadata, XML/HTML comments, and zero-width characters from PNG, JPEG, SVG, PDF, DOCX, HTML, or Markdown files.
             
             :param file_path: Absolute path to the file to sanitize.
-            :return: Status message detailing the outcome.
+            :param disrupt_image_pixels: Apply sub-pixel LSB noise jitter to disrupt spatial image watermarks.
+            :return: Outcome status message.
             """
-            success, msg = clean_file(file_path)
+            success, msg = clean_file(file_path, disrupt_image_pixels=disrupt_image_pixels)
             return msg
 
         @mcp.tool()
         def perturb_text(text: str) -> str:
             """
-            Rephrases statistical AI marker vocabulary (e.g. 'delve', 'testament', 'spearhead', 'crucial') to defeat statistical n-gram AI detectors.
+            Rephrases statistical AI marker vocabulary (e.g. 'delve', 'testament', 'spearhead', 'crucial', 'tapestry') to defeat statistical n-gram AI detectors.
             
             :param text: Input text string.
-            :return: Rephrased text with altered statistical markers.
+            :return: Rephrased text.
             """
             return StatisticalPerturber.perturb(text)
 
         return mcp
 
     except ImportError:
-        # Fallback stdio server implementation if fastmcp module is missing
         import json
 
         class FallbackStdioMCPServer:
             def run(self):
-                print("Running Stdio Fallback MCP Server", file=sys.stderr)
+                print("Running Stdio Fallback MCP Server for Untrace AI", file=sys.stderr)
                 while True:
                     line = sys.stdin.readline()
                     if not line:
@@ -76,7 +77,7 @@ def create_mcp_server():
                                 "result": {
                                     "protocolVersion": "2024-11-05",
                                     "capabilities": {"tools": {}},
-                                    "serverInfo": {"name": "Watermark Remover", "version": "0.1.0"}
+                                    "serverInfo": {"name": "Untrace AI", "version": "1.0.0"}
                                 }
                             }
                         elif method == "tools/list":
@@ -103,7 +104,8 @@ def create_mcp_server():
                                             "inputSchema": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "file_path": {"type": "string"}
+                                                    "file_path": {"type": "string"},
+                                                    "disrupt_image_pixels": {"type": "boolean"}
                                                 },
                                                 "required": ["file_path"]
                                             }
@@ -117,7 +119,7 @@ def create_mcp_server():
                             if name == "sanitize_text":
                                 res = clean_text(args.get("text", ""), args.get("perturb_statistical_watermarks", False))
                             elif name == "sanitize_file":
-                                _, res = clean_file(args.get("file_path", ""))
+                                _, res = clean_file(args.get("file_path", ""), args.get("disrupt_image_pixels", False))
                             else:
                                 res = "Unknown tool"
 

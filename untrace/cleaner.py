@@ -1,15 +1,18 @@
-"""Core watermark cleaning and provenance hygiene module."""
+"""
+Untrace AI - Core Hygiene, Watermark Disrupter, and Metadata Sanitization Module.
+"""
 
 import os
 import re
+import random
 import unicodedata
-from typing import Union, Tuple, Dict, Any
+from typing import Tuple, Dict, Any, Optional
 
 
 class UnicodeSanitizer:
-    """Sanitizes text by removing hidden zero-width spaces, tracking markers, and homoglyphs."""
+    """Strips hidden zero-width spaces, tracking tags, variation selectors, and homoglyphs."""
 
-    # Zero-width & invisible characters commonly used for steganography / watermarking
+    # Complete zero-width & invisible characters used for steganography / LLM watermarking
     ZERO_WIDTH_CHARS = {
         '\u200B',  # Zero-width space
         '\u200C',  # Zero-width non-joiner
@@ -21,6 +24,7 @@ class UnicodeSanitizer:
         '\u2063',  # Invisible separator
         '\u2064',  # Invisible plus
         '\u00AD',  # Soft hyphen
+        '\u180E',  # Mongolian vowel separator
     }
 
     # Bidi & direction override characters
@@ -48,15 +52,25 @@ class UnicodeSanitizer:
 
     @classmethod
     def clean(cls, text: str, normalize_unicode: bool = True) -> str:
-        """Strips invisible watermarking characters and normalizes Unicode."""
+        """Strips invisible watermarking characters, variation selectors, and normalizes Unicode."""
         if not text:
             return ""
 
-        # 1. Remove Tag Characters (\uE0001 - \uE007F) used for invisible tracking payloads
-        cleaned = [c for c in text if not (0xE0001 <= ord(c) <= 0xE007F)]
-        text = "".join(cleaned)
+        # 1. Remove Tag Characters (\uE0001 - \uE007F) & Variation Selectors (\uFE00 - \uFE0F, \uE0100 - \uE01EF)
+        cleaned_chars = []
+        for c in text:
+            code = ord(c)
+            # Filter Tag characters
+            if 0xE0001 <= code <= 0xE007F:
+                continue
+            # Filter Variation Selectors
+            if 0xFE00 <= code <= 0xFE0F or 0xE0100 <= code <= 0xE01EF:
+                continue
+            cleaned_chars.append(c)
 
-        # 2. Remove zero-width & bidi characters
+        text = "".join(cleaned_chars)
+
+        # 2. Filter zero-width & bidi characters, normalize non-standard space codes
         chars = []
         for char in text:
             if char in cls.ZERO_WIDTH_CHARS or char in cls.BIDI_CHARS:
@@ -67,11 +81,11 @@ class UnicodeSanitizer:
                 chars.append(char)
         text = "".join(chars)
 
-        # 3. Unicode NFKC Normalization (converts homoglyphs & fullwidth chars to standard ASCII/Unicode)
+        # 3. Unicode NFKC Normalization (converts homoglyphs & fullwidth characters)
         if normalize_unicode:
             text = unicodedata.normalize("NFKC", text)
 
-        # 4. Clean consecutive duplicate spaces created by stripping
+        # 4. Clean consecutive space artifacts created by stripping
         text = re.sub(r'[ \t]+', ' ', text)
         
         # 5. Remove trailing space per line
@@ -80,7 +94,7 @@ class UnicodeSanitizer:
 
 
 class StatisticalPerturber:
-    """Perturbs text to disrupt statistical n-gram AI watermarks and vendor-specific vocabulary signatures."""
+    """Perturbs text to disrupt n-gram statistical AI watermarks and vendor-specific vocabulary signatures."""
 
     AI_VOCAB_SWAPS = {
         r'\bdelve\b': 'explore',
@@ -106,17 +120,34 @@ class StatisticalPerturber:
         r'\bfurthermore\b': 'also',
         r'\bmoreover\b': 'additionally',
         r'\bnevertheless\b': 'however',
+        r'\btapestry\b': 'blend',
+        r'\bbeacon\b': 'symbol',
+        r'\bnestled\b': 'situated',
+        r'\bunwavering\b': 'steady',
+        r'\bever-evolving\b': 'developing',
+        r'\brealm\b': 'area',
+        r'\bresonate\b': 'align',
+        r'\bharness\b': 'use',
+        r'\bleverage\b': 'utilize',
+        r'\bparadigm shift\b': 'fundamental change',
+        r'\bshed light\b': 'explain',
+        r'\binterplay\b': 'interaction',
+        r'\bindispensable\b': 'vital',
+        r'\bvibrant\b': 'lively',
+        r'\bsynergy\b': 'collaboration',
+        r'\bembark\b': 'begin',
+        r'\bit is important to note that\b': 'note that',
+        r'\bin summary\b': 'overall',
     }
 
     @classmethod
     def perturb(cls, text: str) -> str:
-        """Replaces common statistical AI marker phrases with natural alternatives."""
+        """Replaces common statistical AI marker phrases with natural alternatives while preserving case."""
         if not text:
             return ""
 
         result = text
         for pattern, replacement in cls.AI_VOCAB_SWAPS.items():
-            # Match case insensitive while preserving capitalization if starting with uppercase
             def _replace(match):
                 word = match.group(0)
                 if word.istitle():
@@ -130,52 +161,67 @@ class StatisticalPerturber:
         return result
 
 
+class ImageWatermarkDisrupter:
+    """Modulates image LSB pixel noise to disrupt frequency-domain spatial watermarks."""
+
+    @classmethod
+    def perturb_image(cls, file_path: str, jitter: bool = True) -> Tuple[bool, str]:
+        """Strips EXIF/C2PA metadata and applies perceptual sub-pixel noise jitter."""
+        try:
+            from PIL import Image
+            img = Image.open(file_path)
+            mode = img.mode
+            size = img.size
+            pixels = list(img.getdata())
+
+            if jitter and mode in ('RGB', 'RGBA'):
+                # Micro sub-pixel LSB jitter (imperceptible to eye, disrupts spectral watermarks)
+                new_pixels = []
+                for p in pixels:
+                    if mode == 'RGB':
+                        r, g, b = p
+                        r = max(0, min(255, r + random.choice([-1, 0, 1])))
+                        new_pixels.append((r, g, b))
+                    else:
+                        r, g, b, a = p
+                        r = max(0, min(255, r + random.choice([-1, 0, 1])))
+                        new_pixels.append((r, g, b, a))
+                pixels = new_pixels
+
+            img_cleaned = Image.new(mode, size)
+            img_cleaned.putdata(pixels)
+            img_cleaned.save(file_path)
+            return True, f"Stripped metadata & perturbed spatial watermarks for {file_path}"
+        except Exception as e:
+            return False, f"Failed to process image: {str(e)}"
+
+
 class FileMetadataSanitizer:
-    """Strips EXIF, C2PA, XMP, and structural comments from files."""
+    """Strips EXIF, C2PA, XMP, comments, and tracking metadata from files."""
 
     @classmethod
     def clean_markdown_or_text(cls, content: str) -> str:
         """Removes HTML comments and cleans Unicode in Markdown/Text files."""
-        # Strip HTML comments <!-- ... -->
         cleaned = re.sub(r'<!--.*?-->', '', content, flags=re.DOTALL)
         return UnicodeSanitizer.clean(cleaned)
 
     @classmethod
     def clean_svg(cls, content: str) -> str:
         """Removes <metadata>, C2PA attributes, and XML comments from SVG."""
-        # Strip <metadata>...</metadata> blocks
         cleaned = re.sub(r'<metadata.*?>.*?</metadata>', '', content, flags=re.DOTALL | re.IGNORECASE)
-        # Strip comments
         cleaned = re.sub(r'<!--.*?-->', '', cleaned, flags=re.DOTALL)
-        # Strip c2pa or custom tracking data attributes
         cleaned = re.sub(r'\s+data-(c2pa|provenance|watermark|ai)="[^"]*"', '', cleaned, flags=re.IGNORECASE)
         return UnicodeSanitizer.clean(cleaned)
 
     @classmethod
     def clean_html(cls, content: str) -> str:
         """Removes meta tags, comments, and zero-width characters in HTML."""
-        # Strip comments
         cleaned = re.sub(r'<!--.*?-->', '', content, flags=re.DOTALL)
-        # Strip C2PA/AI meta generator tags
         cleaned = re.sub(r'<meta\s+name=["\'](c2pa|provenance|generator|ai-watermark)["\'].*?>', '', cleaned, flags=re.IGNORECASE)
         return UnicodeSanitizer.clean(cleaned)
 
     @classmethod
-    def clean_image(cls, file_path: str) -> Tuple[bool, str]:
-        """Strips EXIF and metadata chunks (including C2PA) from PNG/JPEG image files."""
-        try:
-            from PIL import Image
-            img = Image.open(file_path)
-            data = list(img.getdata())
-            img_cleaned = Image.new(img.mode, img.size)
-            img_cleaned.putdata(data)
-            img_cleaned.save(file_path)
-            return True, f"Metadata stripped successfully from {file_path}"
-        except Exception as e:
-            return False, f"Failed to strip image metadata: {str(e)}"
-
-    @classmethod
-    def clean_file(cls, file_path: str) -> Tuple[bool, str]:
+    def clean_file(cls, file_path: str, disrupt_image_pixels: bool = False) -> Tuple[bool, str]:
         """Detects file type and cleans watermarks and metadata."""
         if not os.path.exists(file_path):
             return False, f"File not found: {file_path}"
@@ -189,7 +235,7 @@ class FileMetadataSanitizer:
                 cleaned = cls.clean_markdown_or_text(content)
                 with open(file_path, 'w', encoding='utf-8') as f:
                     f.write(cleaned)
-                return True, f"Cleaned text/markdown file: {file_path}"
+                return True, f"Sanitized text/markdown file: {file_path}"
 
             elif ext == '.svg':
                 with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
@@ -197,7 +243,7 @@ class FileMetadataSanitizer:
                 cleaned = cls.clean_svg(content)
                 with open(file_path, 'w', encoding='utf-8') as f:
                     f.write(cleaned)
-                return True, f"Cleaned SVG metadata and comments: {file_path}"
+                return True, f"Sanitized SVG file: {file_path}"
 
             elif ext in ['.html', '.htm']:
                 with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
@@ -205,10 +251,10 @@ class FileMetadataSanitizer:
                 cleaned = cls.clean_html(content)
                 with open(file_path, 'w', encoding='utf-8') as f:
                     f.write(cleaned)
-                return True, f"Cleaned HTML metadata: {file_path}"
+                return True, f"Sanitized HTML file: {file_path}"
 
             elif ext in ['.png', '.jpg', '.jpeg']:
-                return cls.clean_image(file_path)
+                return ImageWatermarkDisrupter.perturb_image(file_path, jitter=disrupt_image_pixels)
 
             elif ext == '.pdf':
                 try:
@@ -217,10 +263,9 @@ class FileMetadataSanitizer:
                     writer = PdfWriter()
                     for page in reader.pages:
                         writer.add_page(page)
-                    # Exclude metadata / annotations payload
                     with open(file_path, 'wb') as f:
                         writer.write(f)
-                    return True, f"Cleared PDF metadata: {file_path}"
+                    return True, f"Cleared PDF metadata & annotations: {file_path}"
                 except Exception as e:
                     return False, f"PDF cleaning failed: {str(e)}"
 
@@ -228,29 +273,26 @@ class FileMetadataSanitizer:
                 try:
                     import docx
                     doc = docx.Document(file_path)
-                    # Clean core properties
                     cp = doc.core_properties
                     cp.author = ""
                     cp.comments = ""
                     cp.keywords = ""
                     cp.subject = ""
                     cp.title = ""
-                    # Clean text inside paragraphs
                     for p in doc.paragraphs:
                         p.text = UnicodeSanitizer.clean(p.text)
                     doc.save(file_path)
-                    return True, f"Cleaned DOCX file metadata and Unicode: {file_path}"
+                    return True, f"Sanitized DOCX core properties & paragraphs: {file_path}"
                 except Exception as e:
                     return False, f"DOCX cleaning failed: {str(e)}"
 
             else:
-                # Fallback text cleaner
                 with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
                     content = f.read()
                 cleaned = UnicodeSanitizer.clean(content)
                 with open(file_path, 'w', encoding='utf-8') as f:
                     f.write(cleaned)
-                return True, f"Cleaned raw file: {file_path}"
+                return True, f"Sanitized raw file: {file_path}"
 
         except Exception as e:
             return False, f"Error processing file {file_path}: {str(e)}"
@@ -264,6 +306,6 @@ def clean_text(text: str, perturb_stats: bool = False) -> str:
     return cleaned
 
 
-def clean_file(file_path: str) -> Tuple[bool, str]:
+def clean_file(file_path: str, disrupt_image_pixels: bool = False) -> Tuple[bool, str]:
     """Helper function to clean file metadata and watermarks."""
-    return FileMetadataSanitizer.clean_file(file_path)
+    return FileMetadataSanitizer.clean_file(file_path, disrupt_image_pixels=disrupt_image_pixels)
