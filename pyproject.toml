@@ -32,6 +32,9 @@ dependencies = [
 untrace = "untrace.cli:main"
 watermark-remover = "untrace.cli:main"
 
+[tool.setuptools.packages.find]
+include = ["untrace*"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
