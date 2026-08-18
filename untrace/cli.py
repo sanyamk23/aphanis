@@ -201,6 +201,7 @@ def main():
     subparsers.add_parser("server", help="Launch Model Context Protocol (MCP) server for Claude Desktop")
 
     # install commands
+    subparsers.add_parser("auto-install", help="1-click zero-command autopilot registration across Claude Code, Antigravity IDE, Cursor & Git")
     subparsers.add_parser("install-claude-code", help="Install Untrace skill to global ~/.claude/skills/")
     subparsers.add_parser("install-claude-desktop", help="Show configuration snippet for Claude Desktop")
 
@@ -321,6 +322,14 @@ def main():
 
     elif args.command == "server":
         run_server()
+
+    elif args.command == "auto-install":
+        from untrace.autoinstall import AutoInstaller
+        res = AutoInstaller.install_all()
+        print("🤖 --- UNTRACE AI ZERO-COMMAND AUTOPILOT REGISTRATION --- 🤖")
+        for k, v in res.items():
+            print(f"  ✅ Registered {k}: {v}")
+        print("\n✨ Untrace AI is now operating 100% on autopilot across your AI coding environments!")
 
     elif args.command == "install-claude-code":
         install_claude_code()

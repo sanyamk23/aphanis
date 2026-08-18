@@ -1,5 +1,5 @@
 """
-Untrace AI :: Enterprise Zero-Trust AI Provenance Firewall & Humanizer Platform.
+Untrace AI :: Enterprise Zero-Trust AI Provenance Firewall & Automatic Humanizer Platform.
 """
 
 from untrace.cleaner import (
@@ -22,6 +22,7 @@ from untrace.office import OfficeSanitizer
 from untrace.cert import AuditCertificateGenerator
 from untrace.heatmap import HeatmapRenderer
 from untrace.spectral import SpectralNoiseDisrupter
+from untrace.autoinstall import AutoInstaller, auto_install_all
 
 __version__ = "1.4.0"
 
@@ -43,6 +44,8 @@ __all__ = [
     "AuditCertificateGenerator",
     "HeatmapRenderer",
     "SpectralNoiseDisrupter",
+    "AutoInstaller",
+    "auto_install_all",
     "clean_text",
     "clean_file",
     "audit_text",
