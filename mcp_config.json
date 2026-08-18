@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "watermark-remover": {
+      "command": "python3",
+      "args": [
+        "-m",
+        "watermark_remover.cli",
+        "server"
+      ]
+    }
+  }
+}

@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "watermark-remover"
+version = "0.1.0"
+description = "Strip multi-vendor AI provenance marks: Unicode text hygiene, statistical rewrite hooks, and metadata stripping for Claude and general CLI."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "pillow>=9.0.0",
+    "pypdf>=3.0.0",
+    "python-docx>=0.8.11",
+    "mcp>=1.0.0",
+]
+
+[project.scripts]
+watermark-remover = "watermark_remover.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
