@@ -1,0 +1,24 @@
+name: Untrace AI Provenance & Hygiene Audit
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  untrace-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Untrace AI
+        run: |
+          python -m pip install --upgrade pip
+          pip install .
+      - name: Run Zero-Trust Provenance Audit
+        run: |
+          untrace clean-dir . --mode paranoid

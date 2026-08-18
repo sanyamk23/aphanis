@@ -55,6 +55,8 @@ class AutoInstaller:
             from untrace.hooks import HookInstaller
             hook_msg = HookInstaller.install_git_hook(".")
             results["git_hook"] = hook_msg
+            gh_msg = HookInstaller.generate_github_action(".")
+            results["github_action"] = gh_msg
 
         return results
 
