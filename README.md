@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🛡️ UNTRACE AI :: Enterprise Suite v1.4.0
+# 🛡️ UNTRACE AI :: Zero-Trust AI Provenance Firewall & Autopilot
 
 ```text
   _   _ _  _ _____ ___    _   ___ ___   _   ___ 
@@ -9,94 +9,120 @@
   \___/|_|\_| |_| |_|_\/_/ \_\___|___/_/ \_\___|
 ```
 
-### *The Enterprise Zero-Trust AI Provenance Firewall, Automatic Humanizer & Stego Matrix*
+### *The 100% Autonomous Zero-Trust AI Provenance Firewall, Natural Humanizer Engine & Stego Defense Platform*
 
+[![GitHub Stars](https://img.shields.io/github/stars/sanyamk23/untrace-ai?style=for-the-badge&logo=github&color=gold)](https://github.com/sanyamk23/untrace-ai/stargazers)
 [![Python Version](https://img.shields.io/badge/python-3.9%2B-blue.svg?style=for-the-badge&logo=python)](https://python.org)
-[![MCP Server](https://img.shields.io/badge/MCP-Enterprise--v1.4.0-000000.svg?style=for-the-badge&logo=anthropic)](https://modelcontextprotocol.io)
-[![Claude Skill](https://img.shields.io/badge/Claude%20Code-Stealth--Skill-7A1FA2.svg?style=for-the-badge&logo=anthropic)](https://anthropic.com)
+[![MCP Server](https://img.shields.io/badge/MCP-v1.4.0-000000.svg?style=for-the-badge&logo=anthropic)](https://modelcontextprotocol.io)
+[![Claude Skill](https://img.shields.io/badge/Claude%20Code-Autopilot--Skill-7A1FA2.svg?style=for-the-badge&logo=anthropic)](https://anthropic.com)
 [![License](https://img.shields.io/badge/license-MIT-green.svg?style=for-the-badge)](LICENSE)
 
 <br/>
 
-[Enterprise Suite Features](#-enterprise-suite-features) •
-[Clipboard Daemon](#-clipboard-hygiene-daemon) •
-[Git Hooks & CI/CD](#-git-pre-commit-hook--github-action) •
-[Audit Certificates](#-cryptographic-audit-certificates) •
-[Forensics Heatmap](#-forensics-heatmap-visualizer) •
-[Jupyter & Office](#-jupyter-ipynb--office-sanitizer) •
-[Quick Start](#-quick-start)
+⭐ **If you find Untrace AI useful, please give us a star on GitHub — it helps the project grow!** ⭐
+
+<br/>
+
+[Quick Start](#-quick-start) •
+[100% Zero-Command Autopilot](#-100-zero-command-autopilot) •
+[Feature Matrix](#-feature-comparison-matrix) •
+[10-Feature Suite](#-complete-10-feature-suite) •
+[Web Dashboard](#-cyber-stealth-dashboard) •
+[Claude & MCP Integration](#-claude-desktop--claude-code-integrations)
 
 </div>
 
 ---
 
-## ⚡ What is Untrace AI?
+## ⚡ Why Untrace AI?
 
-**Untrace AI** is an enterprise-grade **Zero-Trust AI Provenance Firewall, Automatic Humanizer & Stego Defense Platform**. It audits, sanitizes, and neutralizes multi-vendor AI provenance signals, zero-width steganography, C2PA/EXIF metadata, em-dash signatures, and **automatically converts AI text into authentic conversational human tone**.
+Modern AI models (ChatGPT, Claude, Perplexity, Midjourney) inject invisible zero-width tracking spaces (`\u200B`, `\u200C`, `\uFEFF`), telltale em-dashes (`—`), C2PA container metadata, and uniform statistical token patterns into generated outputs.
 
----
-
-## 🌟 Enterprise Suite Features (v1.4.0)
-
-### 1. 📋 Automatic Clipboard Hygiene Daemon (`untrace clipboard`)
-Runs a real-time background listener on your system clipboard (`Cmd+C` / `Ctrl+C`). Automatically scrubs zero-width spaces and humanizes text copied from ChatGPT/Claude before you paste it anywhere.
-
-### 2. 🪝 Git Pre-Commit Hook & GitHub Action (`untrace install-hook`)
-- `untrace install-hook`: Installs `.git/hooks/pre-commit` to prevent commits containing invisible watermarks or C2PA metadata.
-- `untrace init-github-action`: Generates `.github/workflows/untrace-hygiene.yml` for automated CI/CD pipeline audits.
-
-### 3. 🎨 Custom Tone Personas (`--tone`)
-Choose from targeted humanization personas: `conversational`, `casual`, `tech-lead`, `academic`, `executive`.
-
-### 4. 📓 Jupyter Notebook (`.ipynb`) & Office (`.pptx` / `.xlsx`) Sanitizer
-Sanitizes notebook markdown/code cells, strips prompt execution logs, and purges core OpenXML properties.
-
-### 5. 📜 Cryptographic Audit Certificates (`untrace cert`)
-Computes SHA-256 hashes of original vs clean inputs, generating signed audit certificates (`UNTRACE-CERT-2026-XXXX`).
-
-### 6. 🔥 Forensics Heatmap Visualizer (`untrace heatmap`)
-Generates an interactive HTML visual heatmap rendering character offsets of zero-width bytes, em-dashes, and AI clichés.
-
-### 7. 🌊 Spectral Frequency DCT Noise Injector (`--dct-jitter`)
-Modulates 2D Discrete Cosine Transform (DCT) coefficients in image assets to disrupt spatial frequency watermarks (SynthID style).
+**Untrace AI** is an enterprise-grade **Zero-Trust AI Provenance Firewall & Automatic Humanizer Platform**. It operates **100% on autopilot** across your coding environments (Claude Code, Antigravity IDE, Cursor, Claude Desktop), automatically stripping invisible watermarks, purging C2PA metadata, and **converting AI text into authentic conversational human tone**.
 
 ---
 
-## 💻 Command Line Interface (CLI)
+## ⚔️ Feature Comparison Matrix
+
+| Feature | Standard Watermark Cleaners | **Untrace AI (v1.4.0)** |
+| :--- | :---: | :---: |
+| **Zero-Width Steganography Eraser** | Basic `\u200B` only | 🛡️ Full 8-char Unicode & Bidi override purge |
+| **Automatic Natural Humanizer** | ❌ No | ✍️ Contraction synthesis & passive filler removal |
+| **100% Zero-Command Autopilot** | ❌ Requires CLI commands | 🤖 Auto-intercepts chat outputs & file writes |
+| **4-Vector Stego Risk Matrix** | ❌ No | 📊 Unicode, Statistical, Metadata & Spatial scoring |
+| **Office & Jupyter Notebook Cleaning** | ❌ Text only | 📓 `.ipynb`, `.docx`, `.pptx`, `.xlsx` XML purging |
+| **Cryptographic SHA-256 Certificates** | ❌ No | 📜 Signed JSON/PDF audit certificates |
+| **Visual Forensics Heatmap** | ❌ No | 🔥 Interactive HTML byte-offset heatmap |
+| **Spectral DCT Frequency Modulation** | ❌ No | 🌊 2D DCT sub-pixel image dither |
+| **Real-time Clipboard Daemon** | ❌ No | 📋 Background copy-paste hygiene |
+| **Git Pre-Commit Hook & CI/CD** | ❌ No | 🪝 Auto-installed `.git/hooks` & GitHub Action |
+
+---
+
+## 🤖 100% Zero-Command Autopilot
+
+Once installed into your environment, **you never need to run any terminal commands or flags**. Everything operates completely on autopilot:
 
 ```bash
-# 1. Background Clipboard Daemon
-untrace clipboard
+# 1-Click Auto-Installer setup across Claude Code, Antigravity IDE, Cursor & Git
+untrace auto-install
+```
 
-# 2. Install Git Pre-Commit Hook & GitHub Action
-untrace install-hook
-untrace init-github-action
+### What Happens Automatically Behind the Scenes:
+1. **Zero Invisible Stego**: Strips `\u200B`, `\u200C`, `\u200D`, `\uFEFF`, Bidi overrides automatically.
+2. **Automatic Contractions**: Converts rigid expansions (*"it is"* $\rightarrow$ *"it's"*, *"cannot"* $\rightarrow$ *"can't"*).
+3. **Filler Word Elimination**: Replaces wordy robotic phrases (*"in order to"* $\rightarrow$ *"to"*, *"due to the fact that"* $\rightarrow$ *"because"*).
+4. **Punctuation Hygiene**: Replaces em-dashes (`—` $\rightarrow$ `-`) and smart quotes (`“` `”` $\rightarrow$ `"` `'`).
+5. **Zero AI Comments & File Metadata**: Wipes `# Generated by Claude` annotations and C2PA metadata from all written files.
 
-# 3. Generate SHA-256 Zero-Trust Clean Certificate
-untrace cert document.txt -o audit_cert.json
+---
 
-# 4. Generate Visual Forensics Heatmap
-untrace heatmap "Delve\u200b into crucial matters." -o heatmap.html
+## 📦 Quick Start
 
-# 5. Clean text with Tone Personas
-untrace clean-text "In order to achieve this, it is necessary to build." --tone tech-lead
+### Installation
 
-# 6. Evaluate 4-Vector Stego Risk Matrix
-untrace matrix document.ipynb
+```bash
+pip install untrace-ai
+# or install directly from GitHub
+pip install git+https://github.com/sanyamk23/untrace-ai.git
+```
 
-# 7. Launch Cyber-Stealth Web Dashboard
+---
+
+## 🖥️ Cyber-Stealth Dashboard (`untrace ui`)
+
+Launch the interactive Web Visualizer featuring live side-by-side diff inspection, 4-Vector risk gauges, and automatic Humanized output:
+
+```bash
 untrace ui
 ```
 
 ---
 
-## 🧪 Testing Suite
-
-Untrace AI includes a comprehensive test suite:
+## 💻 CLI Commands (Optional)
 
 ```bash
-python3 -m unittest discover tests
+# 1. Background Clipboard Daemon
+untrace clipboard
+
+# 2. Clean text with Tone Personas (tech-lead, academic, casual, executive)
+untrace clean-text "In order to build this system..." --tone tech-lead
+
+# 3. Generate SHA-256 Zero-Trust Clean Certificate
+untrace cert document.txt -o cert.json
+
+# 4. Generate Visual Forensics Heatmap
+untrace heatmap document.txt -o heatmap.html
+
+# 5. Evaluate 4-Vector Stego Risk Matrix
+untrace matrix document.ipynb
 ```
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please check out [`CONTRIBUTING.md`](.github/CONTRIBUTING.md) for details on how to submit pull requests and audit guidelines.
 
 ---
 
