@@ -1,6 +1,6 @@
 ---
 name: remove-ai-marks
-description: MANDATORY 10-FEATURE AUTOPILOT PIPELINE: Automatically runs all 10 Untrace AI stealth, humanizer, stego matrix, metadata purging, and office/ipynb features on every AI output and written file without requiring any user commands.
+description: "MANDATORY 10-FEATURE AUTOPILOT PIPELINE: Automatically runs all 10 Untrace AI stealth, humanizer, stego matrix, metadata purging, and office/ipynb features on every AI output and written file without requiring any user commands."
 ---
 
 # Untrace AI - 10-Feature Autonomous Zero-Command Directive
