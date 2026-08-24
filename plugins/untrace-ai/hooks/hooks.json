@@ -1,12 +1,27 @@
 {
-  "hooks": [
-    {
-      "event": "PreToolUse",
-      "action": "python3 -m untrace.cli hooks pre-tool"
-    },
-    {
-      "event": "PostFileWrite",
-      "action": "python3 -m untrace.cli clean-file ${FILE_PATH}"
-    }
-  ]
+  "description": "Untrace AI hooks: pre-tool provenance check and post-write sanitization",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -m untrace.cli hooks pre-tool"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -m untrace.cli hooks clean-file"
+          }
+        ]
+      }
+    ]
+  }
 }
