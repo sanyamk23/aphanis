@@ -1,0 +1,18 @@
+{
+  "name": "untrace-ai",
+  "owner": {
+    "name": "Sanyam Kumat",
+    "email": "sanyamkumat2305@gmail.com"
+  },
+  "metadata": {
+    "description": "Untrace AI Marketplace - Zero-Trust AI Provenance Firewall, Automatic Humanizer Engine & Stego Defense Platform",
+    "version": "1.4.0"
+  },
+  "plugins": [
+    {
+      "name": "untrace-ai",
+      "description": "Zero-Trust AI Provenance Firewall, Automatic Humanizer Engine & Stego Defense Platform with 10-Feature Autopilot Pipeline",
+      "source": "./"
+    }
+  ]
+}

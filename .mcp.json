@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "untrace": {
+      "command": "python3",
+      "args": [
+        "-m",
+        "untrace.cli",
+        "server"
+      ]
+    }
+  }
+}

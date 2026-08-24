@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Untrace AI • Zero-Trust Text Cleaner</title>
+<style>
+  :root {
+    --primary: #0ff;
+    --accent: #f0ff00;
+    --danger: #ff2a6d;
+    --dark: #0a0a1a;
+    --panel: rgba(15, 20, 45, 0.55);
+    --panel-border: rgba(0, 255, 255, 0.15);
+    --text: #e0e0ff;
+    --muted: #8a8aff;
+    --scan: rgba(0, 255, 255, 0.08);
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+  }
+
+  body {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    background: var(--dark);
+    color: var(--text);
+    overflow-x: hidden;
+    min-height: 100vh;
+    position: relative;
+  }
+
+  /* ===== ANIMATED BACKGROUND ===== */
+  #bg-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .aurora {
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    background: radial-gradient(circle at 30% 30%, rgba(0,255,255,0.12) 0%, transparent 50%),
+                radial-gradient(circle at 70% 70%, rgba(255,0,255,0.08) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(0,200,255,0.06) 0%, transparent 50%);
+    animation: aurora-move 20s ease-in-out infinite;
+    filter: blur(60px);
+  }
+
+  .particle {
+    position: absolute;
+    background: var(--primary);
+    border-radius: 50%;
+    opacity: 0;
+    animation: float-up linear infinite;
+  }
+
+  /* ===== GRID OVERLAY (subtle scanlines) ===== */
+  .grid-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+      linear-gradient(rgba(0,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,255,0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.3;
+  }
+
+  @keyframes aurora-move {
+    0% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(-10px, 10px) scale(1.05); }
+    50% { transform: translate(5px, -10px) scale(0.98); }
+    75% { transform: translate(10px, 5px) scale(1.03); }
+    100% { transform: translate(0, 0) scale(1); }
+  }
+
+  @keyframes float-up {
+    to {
+      transform: translateY(-100vh);
+      opacity: 0;
+    }
+  }
+
+  /* ===== LAYOUT ===== */
+  .wrapper {
+    position: relative;
+    z-index: 2;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+
+  /* ===== GLASS PANEL ===== */
+  .glass {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 20px;
+    padding: 28px;
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    box-shadow:
+      0 0 30px rgba(0, 255, 255, 0.08),
+      inset 0 0 0 1px rgba(0, 255, 255, 0.05);
+    transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  .glass.revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .glass:hover {
+    box-shadow:
+      0 0 40px rgba(0, 255, 255, 0.2),
+      inset 0 0 0 1px rgba(0, 255, 255, 0.15);
+    transform: translateY(-3px);
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    text-align: center;
+    padding: 60px 20px 40px;
+  }
+
+  .hero h1 {
+    font-size: 3.2rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+    line-height: 1.1;
+  }
+
+  .hero .tagline {
+    font-size: 1.1rem;
+    color: var(--muted);
+    margin-bottom: 24px;
+    font-weight: 300;
+  }
+
+  .hero .badges {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 20px;
+  }
+
+  .badge {
+    background: rgba(0, 255, 255, 0.08);
+    border: 1px solid var(--panel-border);
+    color: var(--primary);
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    backdrop-filter: blur(10px);
+    animation: pulse-glow 3s infinite;
+  }
+
+  .badge:nth-child(2) { animation-delay: 0.5s; }
+  .badge:nth-child(3) { animation-delay: 1s; }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 8px rgba(0,255,255,0.2); }
+    50% { box-shadow: 0 0 20px rgba(0,255,255,0.4); }
+  }
+
+  /* ===== FEATURE GRID ===== */
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+  }
+
+  .feature-card {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 18px;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feature-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(0,255,255,0.05), transparent);
+    transform: rotate(30deg);
+    transition: 0.6s;
+  }
+
+  .feature-card:hover::before {
+    transform: translateX(100%);
+  }
+
+  .feature-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-4px);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.15);
+  }
+
+  .feature-icon {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .feature-card h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .feature-card p {
+    font-size: 0.75rem;
+    color: var(--muted);
+    opacity: 0.8;
+  }
+
+  /* ===== INPUT PANEL ===== */
+  .input-section {
+    margin: 32px 0;
+  }
+
+  .input-section h2 {
+    font-size: 1.4rem;
+    color: var(--primary);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .input-section h2::before {
+    content: '';
+    width: 4px;
+    height: 24px;
+    background: var(--primary);
+    border-radius: 2px;
+  }
+
+  .stat-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .stat-card {
+    flex: 1;
+    min-width: 140px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+
+  .stat-card:hover {
+    border-color: var(--accent);
+    background: rgba(10, 30, 40, 0.5);
+  }
+
+  .stat-card .stat-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .stat-card .stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .stat-card.warning .stat-value { color: var(--accent); }
+  .stat-card.danger .stat-value { color: var(--danger); }
+
+  .risk-gauge {
+    width: 100%;
+    height: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+    margin: 12px 0 0;
+    overflow: hidden;
+    border: 1px solid var(--panel-border);
+  }
+
+  .risk-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    border-radius: 5px;
+    transition: width 0.5s ease, background 0.3s ease;
+  }
+
+  .risk-fill.high { background: linear-gradient(90deg, var(--danger), #ff6b81); }
+  .risk-fill.med { background: linear-gradient(90deg, var(--accent), #ffd700); }
+
+  .editor-container {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--panel-border);
+    background: rgba(0, 0, 0, 0.4);
+  }
+
+  .editor-container::before {
+    content: attr(data-placeholder);
+    position: absolute;
+    top: 14px;
+    left: 16px;
+    color: rgba(138, 138, 255, 0.4);
+    font-size: 0.95rem;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    z-index: 1;
+  }
+
+  .editor-container.has-text::before {
+    display: none;
+  }
+
+  #input {
+    width: 100%;
+    min-height: 160px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    padding: 14px 16px;
+    resize: vertical;
+    tab-size: 4;
+  }
+
+  #input::placeholder {
+    color: rgba(138, 138, 255, 0.3);
+  }
+
+  /* ===== SCAN-LINE OVERLAY ===== */
+  .scan-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 2;
+    box-shadow: 0 0 8px var(--primary);
+  }
+
+  /* ===== BUTTONS ===== */
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    flex: 1;
+    min-width: 120px;
+    padding: 12px 24px;
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    background: rgba(0, 255, 255, 0.05);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+  }
+
+  .btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.5s, height 0.5s;
+  }
+
+  .btn:hover::after {
+    width: 300px;
+    height: 300px;
+  }
+
+  .btn:hover {
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .btn:active {
+    transform: translateY(0);
+  }
+
+  .btn-primary {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: var(--dark);
+  }
+
+  .btn-primary:hover {
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+  }
+
+  .btn-warning {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--dark);
+  }
+
+  .btn-danger {
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+
+  .btn-danger:hover {
+    background: rgba(255, 42, 109, 0.15);
+  }
+
+  /* ===== RESULT PANEL ===== */
+  .result-section {
+    margin: 32px 0;
+  }
+
+  .result-section h2 {
+    font-size: 1.4rem;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .result-section h2::before {
+    content: '';
+    width: 4px;
+    height: 24px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  #result {
+    width: 100%;
+    min-height: 140px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 18px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text);
+    resize: none;
+    outline: none;
+    overflow: auto;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  #result.has-output {
+    opacity: 1;
+  }
+
+  #result:empty::before {
+    content: attr(data-placeholder);
+    color: rgba(138, 138, 255, 0.3);
+  }
+
+  .copy-btn {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    background: rgba(0, 255, 255, 0.1);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    padding: 6px 14px;
+    color: var(--primary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  #result-container {
+    position: relative;
+  }
+
+  #result-container:hover .copy-btn {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .copy-btn:hover {
+    background: rgba(0, 255, 255, 0.2);
+  }
+
+  /* ===== INSTALL PANEL ===== */
+  .install-panel {
+    text-align: center;
+    padding: 24px;
+  }
+
+  .install-panel h3 {
+    color: var(--muted);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+  }
+
+  .install-links {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .install-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+  }
+
+  .install-link:hover {
+    background: rgba(0, 255, 255, 0.1);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+  }
+
+  .install-link .icon {
+    font-size: 1.1rem;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 2.2rem; }
+    .btn-row { flex-direction: column; }
+    .stat-bar { flex-direction: column; }
+    .stat-card { min-width: 100%; }
+    .wrapper { padding: 20px 12px; }
+  }
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<div class="grid-overlay"></div>
+
+<div class="wrapper">
+  <!-- Hero -->
+  <section class="hero glass" id="hero">
+    <h1>Untrace AI</h1>
+    <p class="tagline">Zero-Trust AI Provenance Firewall — strip every fingerprint that says "written by AI"</p>
+    <div class="badges">
+      <span class="badge">7-Stage Pipeline</span>
+      <span class="badge">Zero Dependencies</span>
+      <span class="badge">100% Local</span>
+    </div>
+  </section>
+
+  <!-- What It Does -->
+  <section class="glass" id="features">
+    <h2 style="font-size:1.4rem; color:var(--muted); text-align:center; margin-bottom:8px;">7-Stage Anonymization Pipeline</h2>
+    <p style="color:var(--muted); text-align:center; opacity:0.7; margin-bottom:24px; font-size:0.9rem;">Each stage targets a different class of AI telltale</p>
+    <div class="features">
+      <div class="feature-card">
+        <span class="feature-icon">⌨</span>
+        <h3>Unicode Sanitizer</h3>
+        <p>Strips zero-width chars, bidi overrides & hidden markers</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">✂</span>
+        <h3>AI Comment Purger</h3>
+        <p>Removes AI-generated boilerplate and filler</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🗣</span>
+        <h3>Natural Humanizer</h3>
+        <p>Rewrites to conversational, imperfect tone</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🎲</span>
+        <h3>Statistical Perturber</h3>
+        <p>Substitutes cliché vocab with human alternatives</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">⚙</span>
+        <h3>Rule Engine</h3>
+        <p>Custom regex rules for domain-specific cleanup</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">📊</span>
+        <h3>Risk Matrix</h3>
+        <p>4-vector analysis: em-dashes, clichés, predictability, tells</p>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🔐</span>
+        <h3>SHA-256 Certifier</h3>
+        <p>Generates tamper-proof provenance certificate</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Input -->
+  <section class="input-section">
+    <h2>Original Text</h2>
+    <div class="stat-bar">
+      <div class="stat-card" id="emDashCard">
+        <div class="stat-label">Em Dashes</div>
+        <div class="stat-value" id="emDashCount">0</div>
+      </div>
+      <div class="stat-card" id="zwCard">
+        <div class="stat-label">Zero-Width</div>
+        <div class="stat-value" id="zwCount">0</div>
+      </div>
+      <div class="stat-card" id="clicheCard">
+        <div class="stat-label">Clichés</div>
+        <div class="stat-value" id="clicheCount">0</div>
+      </div>
+    </div>
+    <div class="risk-gauge"><div class="risk-fill" id="riskFill"></div></div>
+
+    <div class="editor-container" data-placeholder="Paste your AI-generated text here...">
+      <div class="scan-line" id="scanLine"></div>
+      <textarea id="input" placeholder="Paste your AI-generated text here..."></textarea>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn" id="btnClear">Clear</button>
+      <button class="btn btn-primary" id="btnClean">Quick Clean</button>
+      <button class="btn btn-warning" id="btnFull">Full Sanitize</button>
+    </div>
+  </section>
+
+  <!-- Result -->
+  <section class="result-section">
+    <h2>Cleaned Output</h2>
+    <div id="result-container">
+      <textarea id="result" readonly data-placeholder="Sanity-checked human text will appear here..."></textarea>
+      <button class="copy-btn" id="copyBtn">COPY</button>
+    </div>
+  </section>
+
+  <!-- Install Links -->
+  <section class="install-panel glass">
+    <h3>Available on every platform — zero install required</h3>
+    <div class="install-links">
+      <a href="../install.html" class="install-link"><span class="icon">💻</span> Web App</a>
+      <a href="../browser-extension/" class="install-link"><span class="icon">🧩</span> Browser Extension</a>
+      <a href="../desktop/" class="install-link"><span class="icon">🖥</span> Desktop App</a>
+      <a href="https://github.com/sanyamk23/untrace-ai/releases/latest" class="install-link"><span class="icon">📦</span> CLI / Binaries</a>
+    </div>
+  </section>
+</div>
+
+<script>
+// ===== DATA CONSTANTS (preserved verbatim) =====
+const ZERO_WIDTH_CHARS = ['\u200B','\u200C','\u200D','\u200E','\u200F','\u202A','\u202B','\u202C','\u202D','\u202E','\u2060','\u2061','\u2062','\u2063','\u2064','\u2066','\u2067','\u2068','\u2069','\ufeff','\ufeff','\ufeff','\ufeff'];
+const PUNCT = {'“':'"','”':'"','‘':"'",'’':"'",'—':' - ','–':'-','…':'...'};
+const PUNCT_REGEX = /—|–/g;
+const SWAPS = {
+  'delve':'explore','delving':'exploring','delves':'explores','testament':'proof','testaments':'proofs',
+  'spearhead':'lead','spearheaded':'led','spearheading':'leading','fostering':'building','foster':'encourage',
+  'crucial':'important','pivotal':'key','paramount':'essential','multifaceted':'complex','underscores':'highlights',
+  'underscore':'highlight','seamlessly':'smoothly','seamless':'smooth','game-changer':'breakthrough',
+  'tapestry':'blend','beacon':'symbol','nestled':'situated','unwavering':'steady','realm':'area',
+  'resonate':'align','harness':'use','leverage':'use','leverage':'use','paradigm shift':'fundamental change','shed light':'explain',
+  'interplay':'interaction','indispensable':'vital','vibrant':'lively','synergy':'collaboration','embark':'begin',
+  'meticulous':'thorough','meticulously':'carefully','notably':'specifically','importantly':'note that',
+  'consequently':'thus','invaluable':'helpful','transformative':'major','landscape':'environment',
+  'cornerstone':'foundation','linchpin':'core','synergistic':'combined','underpin':'support','underpins':'supports',
+  'in conclusion':'to summarize','furthermore':'also','moreover':'additionally','nevertheless':'however',
+  'it is important to note that':'note that','it is worth noting that':'note that','it is crucial to':'remember to',
+  'in summary':'overall','moving forward':'next','rich tapestry':'wide range','a myriad of':'many',
+  'a wide array of':'many','boasts a':'has a','serves as a':'is a','takes center stage':'is central',
+  // Expanded AI telltales
+  'in today's digital landscape':'today,','in today's modern world':'today,','in today's fast-paced world':'today,',
+  'in today's ever-evolving digital landscape':'today,','in the modern era':'today,','in todays digital age':'today,',
+  'in the contemporary landscape':'today,','in the current landscape':'today,','in the ever-evolving landscape':'today,',
+  'in recent years':'lately,','in recent times':'recently,','prior to this':'before','prior to that':'before',
+  'due to the fact that':'because','due to the fact':'because',
+  'as a result':'so,','as a consequence':'so,','as such a result':'so,',
+  'has the ability to':'can','possesses the ability to':'can','has the capability of':'can','have the capability of':'can',
+  'has the potential to':'could','plays a crucial role in':'helps','plays a pivotal role in':'helps',
+  'serves as a cornerstone of':'is part of','serves as a linchpin of':'is part of',
+  'brings to bear':'adds','brings to the table':'adds',
+  'delving into':'exploring','delving deeper into':'exploring',
+  'in the realm of':'in the area of','in the domain of':'in the area of',
+  'harnesses the power of':'uses','leverages the power of':'uses',
+  'utilizes':'uses','utilizes the':'uses the',
+  'executes the':'does the','executes this':'does this',
+  'conducts a comprehensive analysis':'analyzes','conducts a thorough analysis':'analyzes',
+  'iterates through':'goes through each','computes the results of':'calculates',
+  'ensures that':'makes sure','facilitates the process of':'helps','optimizes for':'improves',
+  'reminiscent of':'like','heralds a new era of':'starts a new era of',
+  'marks a significant shift in':'changes how','represents a paradigm shift in':'fundamentally changes',
+  'underscores the importance of':'shows how important','highlights the significance of':'shows how important',
+  'imperative that':'important that','it is important to note that':'note that',
+  'it is worth mentioning that':'note that','in essence':'basically,','as such':'therefore,',
+  'to that end':'for that purpose,','in the final analysis':'in the end,',
+  'when all is said and done':'in the end,','at the end of the day':'ultimately,',
+  'needless to say':'','all things being equal':'','as a general rule':'',
+  'as a result of':'because','because of the fact that':'because',
+  'notably':'especially','indeed':'actually',
+  'moreover':'also','therefore':'so','thus':'so','consequently':'so',
+  'nonetheless':'but','nevertheless':'but','regardless':'but','despite this':'but',
+  'all things considered':'overall','in summary':'overall,','in conclusion':'overall,',
+  'in short':'briefly,','in light of this':'given this,','in view of this':'given this,',
+  'given the fact that':'since','considering that':'since','since this':'because',
+  'resulting in':'causing','provides a comprehensive':'gives a',
+  'provides a thorough':'gives a','provides a detailed':'gives a','provides a complete':'gives a','provides a robust':'gives a',
+  'demonstrates the':'shows the','showcases the':'shows the','illustrates the':'shows the',
+  'exemplifies the':'shows the','epitomizes the':'represents the',
+  'sheds light on the':'explains the','is a testament to':'proves',
+  'is a stark reminder of':'reminds us of','is a vivid illustration of':'illustrates',
+  'is a prime example of':'exemplifies','paves the way for':'enables',
+  'ushering in a new era of':'starting a new era of','safe guard against':'prevent',
+  'preserving the integrity of':'keeping','ensuring the integrity of':'keeping','maintaining the integrity of':'keeping',
+  'it goes without saying that':'','needless to say that':'',
+  'the bottom line is that':'in short,','when all is said and done':'in the end,',
+  'in the event that':'if','for the purpose of':'for',
+  'has a tendency to':'tends to','in a position to':'able to',
+  'make a decision':'decide','come to a conclusion':'conclude','provide assistance to':'help'
+};
+const FILLERS = {
+  'in order to':'to','due to the fact that':'because','at this point in time':'now',
+  'with regard to':'about','with respect to':'about','a large number of':'many',
+  'takes into consideration':'considers','at the end of the day':'ultimately',
+  'for the purpose of':'for',
+  // Expanded fillers
+  'in light of the fact that':'since','a majority of':'most','has the capability of':'can',
+  'have the capability of':'can','serves to improve':'improves','serves to enhance':'enhances',
+  'plays a crucial role in':'helps','plays a pivotal role in':'helps',
+  'it is worth noting that':'note that','it is essential to':'remember to',
+  'it is important to note that':'note that','not to mention':'and',
+  'it is safe to assume that':'','it is worth mentioning that':'note that',
+  'all things considered':'overall','in the final analysis':'in the end,',
+  'when all is said and done':'in the end,','at the conclusion':'finally,',
+  'as a general rule':'','as a general principle':'','as the saying goes':'',
+  'the bottom line is that':'in short,'
+};
+const TRANSITIONS = {
+  'furthermore,':'also,','moreover,':'also,','consequently,':'so,',
+  'nevertheless,':'still,','to summarize,':'in short,','to sum up,':'in short,',
+  // Expanded transitions
+  'nonetheless,':'still,','in conclusion,':'overall,','as a matter of fact,':'in fact,',
+  'as a result,':'so,','as a consequence,':'so,','to that end,':'for that purpose,',
+  'in light of this,':'given this,','in view of this,':'given this,'
+};
+const CONTRACTIONS = {
+  'cannot':"can't",'do not':"don't",'does not':"doesn't",'did not':"didn't",'will not':"won't",
+  'would not':"wouldn't",'should not':"shouldn't",'could not':"couldn't",'is not':"isn't",
+  'are not':"aren't",'was not':"wasn't",'were not':"weren't",'have not':"haven't",'has not':"hasn't",
+  'had not':"hadn't",'it is':"it's",'that is':"that's",'there is':"there's",'what is':"what's",
+  'here is':"here's",'we are':"we're",'you are':"you're",'they are':"they're",'we have':"we've",
+  'you have':"you've",'they have':"they've",'we will':"we'll",'you will':"you'll",'they will':"they'll",
+  // Expanded contractions
+  'we would':"we'd",'you would':"you'd",'they would':"they'd",
+  'who is':"who's",'when is':"when's",'where is':"where's",'how is':"how's",'why is':"why's"
+};
+
+// ===== UTILITY FUNCTIONS =====
+function escapeRegex(s) { return s.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&'); }
+
+function countEmDashes(text) { return (text.match(/—/g) || []).length; }
+
+function countZeroWidth(text) {
+  let count = 0;
+  for (const ch of ZERO_WIDTH_CHARS) {
+    const matches = text.match(new RegExp(escapeRegex(ch), 'g'));
+    if (matches) count += matches.length;
+  }
+  return count;
+}
+
+function countClichés(text) {
+  let count = 0;
+  for (const key in SWAPS) {
+    const regex = new RegExp('\\b' + escapeRegex(key) + '\\b', 'gi');
+    const matches = text.match(regex);
+    if (matches) count += matches.length;
+  }
+  return count;
+}
+
+function stripZeroWidth(text) {
+  for (const ch of ZERO_WIDTH_CHARS) text = text.split(ch).join('');
+  return text;
+}
+
+function applyPunctuation(text) {
+  for (const k in PUNCT) text = text.split(k).join(PUNCT[k]);
+  return text;
+}
+
+function sortedKeys(obj) { return Object.keys(obj).sort((a,b)=>b.length-a.length); }
+
+function applySwaps(text) {
+  for (const k of sortedKeys(SWAPS)) text = text.replace(new RegExp('\\b' + escapeRegex(k) + '\\b', 'gi'), SWAPS[k]);
+  return text;
+}
+
+function applyFillers(text) {
+  for (const k of sortedKeys(FILLERS)) text = text.replace(new RegExp('\\b' + escapeRegex(k) + '\\b', 'gi'), FILLERS[k]);
+  return text;
+}
+
+function applyTransitions(text) {
+  for (const k of sortedKeys(TRANSITIONS)) text = text.replace(new RegExp(escapeRegex(k), 'gi'), TRANSITIONS[k]);
+  return text;
+}
+
+function applyContraction(text) {
+  for (const k of sortedKeys(CONTRACTIONS)) text = text.replace(new RegExp('\\b' + escapeRegex(k) + '\\b', 'gi'), CONTRACTIONS[k]);
+  return text;
+}
+
+function collapseSpaces(text) {
+  return text.replace(/[ \\t]+/g, ' ').trim();
+}
+
+// ===== CORE CLEANING =====
+function cleanOnly() {
+  let text = document.getElementById('input').value;
+  text = stripZeroWidth(text);
+  text = applyPunctuation(text);
+  text = collapseSpaces(text);
+  renderResult(text);
+}
+
+function fullSanitize() {
+  let text = document.getElementById('input').value;
+
+  // Animate scan line
+  const scan = document.getElementById('scanLine');
+  scan.style.opacity = '1';
+  scan.style.animation = 'scan-pass 2s linear';
+
+  setTimeout(() => {
+    scan.style.opacity = '0';
+    text = stripZeroWidth(text);
+    text = applyPunctuation(text);
+    text = applySwaps(text);
+    text = applyFillers(text);
+    text = applyTransitions(text);
+    text = applyContraction(text);
+    text = collapseSpaces(text);
+
+    typewriterOutput(text);
+  }, 2000);
+}
+
+function typewriterOutput(text) {
+  const resultEl = document.getElementById('result');
+  resultEl.value = '';
+  resultEl.classList.add('has-output');
+  let i = 0;
+  const speed = Math.max(5, 30 - text.length / 200);
+
+  function typeChar() {
+    if (i < text.length) {
+      resultEl.value += text.charAt(i);
+      resultEl.scrollTop = resultEl.scrollHeight;
+      i++;
+      setTimeout(typeChar, speed);
+    }
+  }
+  typeChar();
+}
+
+function renderResult(text) {
+  const resultEl = document.getElementById('result');
+  resultEl.value = text;
+  resultEl.classList.toggle('has-output', text.length > 0);
+}
+
+// ===== STATS =====
+function updateStats(input) {
+  const em = countEmDashes(input);
+  const zw = countZeroWidth(input);
+  const cl = countClichés(input);
+
+  const emEl = document.getElementById('emDashCount');
+  const zwEl = document.getElementById('zwCount');
+  const clEl = document.getElementById('clicheCount');
+  emEl.textContent = em;
+  zwEl.textContent = zw;
+  clEl.textContent = cl;
+
+  // Stat card coloring
+  document.getElementById('emDashCard').classList.toggle('danger', em > 0);
+  document.getElementById('zwCard').classList.toggle('danger', zw > 0);
+  document.getElementById('clicheCard').classList.toggle('danger', cl > 0);
+
+  // Risk gauge
+  const total = em + zw + cl;
+  const pct = Math.min(100, total * 4);
+  const fill = document.getElementById('riskFill');
+  fill.style.width = pct + '%';
+  fill.className = 'risk-fill';
+  if (pct > 60) fill.classList.add('high');
+  else if (pct > 30) fill.classList.add('med');
+
+  // Clear/refresh button glow
+  const fullBtn = document.getElementById('btnFull');
+  fullBtn.style.boxShadow = total > 0
+    ? '0 0 25px rgba(255,255,0,0.4)'
+    : '0 0 20px rgba(0,255,255,0.2)';
+}
+
+function clearAll() {
+  document.getElementById('input').value = '';
+  const resultEl = document.getElementById('result');
+  resultEl.value = '';
+  resultEl.classList.remove('has-output');
+  updateStats('');
+  const scan = document.getElementById('scanLine');
+  scan.style.opacity = '0';
+  document.getElementById('btnFull').style.boxShadow = '';
+  const container = document.querySelector('.editor-container');
+  container.classList.remove('has-text');
+}
+
+function copyResult() {
+  const resultEl = document.getElementById('result');
+  const text = resultEl.value;
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyBtn');
+    const orig = btn.textContent;
+    btn.textContent = 'COPIED!';
+    btn.style.color = 'var(--accent)';
+    setTimeout(() => {
+      btn.textContent = orig;
+      btn.style.color = '';
+    }, 1500);
+  });
+}
+
+// ===== ANIMATED BACKGROUND (particles) =====
+function initBackground() {
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const particles = [];
+  const count = 80;
+
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.5 + 0.5,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      alpha: Math.random() * 0.4 + 0.1,
+    });
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw aurora blob
+    const grad = ctx.createRadialGradient(
+      canvas.width * 0.3, canvas.height * 0.3, 0,
+      canvas.width * 0.3, canvas.height * 0.3, canvas.width * 0.5
+    );
+    grad.addColorStop(0, 'rgba(0, 255, 255, 0.05)');
+    grad.addColorStop(1, 'transparent');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw particles + connections
+    for (const p of particles) {
+      ctx.fillStyle = `rgba(0, 255, 255, ${p.alpha})`;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Move
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > canvas.width) p.vx = -p.vx;
+      if (p.y < 0 || p.y > canvas.height) p.vy = -p.vy;
+
+      // Connect to nearby particles
+      for (const q of particles) {
+        const dx = p.x - q.x;
+        const dy = p.y - q.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 120) {
+          ctx.strokeStyle = `rgba(0, 255, 255, ${0.12 * (1 - dist / 120)})`;
+          ctx.lineWidth = 0.8;
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(q.x, q.y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+// ===== SCROLL REVEAL =====
+function initScrollReveal() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.glass').forEach(el => {
+    // Already revealed in sequence via JS
+  });
+}
+
+function sequentialReveal() {
+  const panels = document.querySelectorAll('.glass, .input-section, .result-section');
+  panels.forEach((panel, i) => {
+    setTimeout(() => {
+      panel.classList.add('revealed');
+    }, i * 150);
+  });
+}
+
+// ===== EVENT LISTENERS =====
+document.getElementById('btnClean').addEventListener('click', cleanOnly);
+document.getElementById('btnFull').addEventListener('click', fullSanitize);
+document.getElementById('btnClear').addEventListener('click', clearAll);
+document.getElementById('copyBtn').addEventListener('click', copyResult);
+
+document.getElementById('input').addEventListener('input', (e) => {
+  updateStats(e.target.value);
+  const container = document.querySelector('.editor-container');
+  container.classList.toggle('has-text', e.target.value.length > 0);
+});
+
+document.getElementById('input').addEventListener('focus', () => {
+  document.querySelector('.editor-container').style.borderColor = 'var(--primary)';
+  document.querySelector('.editor-container').style.boxShadow = '0 0 20px rgba(0,255,255,0.2)';
+});
+document.getElementById('input').addEventListener('blur', () => {
+  document.querySelector('.editor-container').style.borderColor = 'var(--panel-border)';
+  document.querySelector('.editor-container').style.boxShadow = 'none';
+});
+
+document.getElementById('result').addEventListener('click', copyResult);
+
+// ===== INIT =====
+(function init() {
+  initBackground();
+  sequentialReveal();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+{
+  "name": "untrace-ai",
+  "version": "1.4.0",
+  "description": "Zero-Trust AI Provenance Firewall, Automatic Humanizer Engine & Stego Defense Platform with 10-Feature Autopilot Pipeline",
+  "author": {
+    "name": "Sanya"
+  },
+  "homepage": "https://github.com/sanyamk23/untrace-ai",
+  "repository": "https://github.com/sanyamk23/untrace-ai",
+  "keywords": [
+    "ai-watermark-remover",
+    "ai-humanizer",
+    "steganography",
+    "zero-width",
+    "provenance-firewall",
+    "claude-plugin"
+  ],
+  "skills": "./skills",
+  "mcpServers": {
+    "untrace": {
+      "command": "python3",
+      "args": [
+        "-m",
+        "untrace.cli",
+        "server"
+      ]
+    }
+  }
+}

@@ -108,47 +108,47 @@ Untrace AI routes text and documents through a modular 7-stage security pipeline
 
 ## 🌟 Complete 10-Feature Suite Deep Dive
 
-### 1. ✍️ Automatic Natural Humanizer Engine ([`untrace/humanizer.py`](file:///Users/sanya/Documents/project/watermark-remover/untrace/humanizer.py))
+### 1. ✍️ Automatic Natural Humanizer Engine ([`untrace/humanizer.py`](untrace/humanizer.py))
 Transforms formal, uniform LLM prose into authentic human writing:
 - **Contraction Synthesizer**: Converts rigid expansions (*"it is"* $\rightarrow$ *"it's"*, *"cannot"* $\rightarrow$ *"can't"*, *"do not"* $\rightarrow$ *"don't"*, *"they are"* $\rightarrow$ *"they're"*, *"we have"* $\rightarrow$ *"we've"*).
 - **Passive Filler Reducer**: Replaces 50+ wordy robotic phrases (*"in order to"* $\rightarrow$ *"to"*, *"it is important to note that"* $\rightarrow$ *"note that"*, *"due to the fact that"* $\rightarrow$ *"because"*).
 - **Organic Transition Variator**: Replaces rigid connectors (*"furthermore"*, *"moreover"*, *"consequently"*) with natural human transitions (*"also"*, *"plus"*, *"so"*).
 - **Tone Personas (`--tone`)**: Support for `conversational` (default), `tech-lead`, `academic`, `executive`, `casual`.
 
-### 2. 🧼 Invisible Steganography Eraser ([`untrace/cleaner.py`](file:///Users/sanya/Documents/project/watermark-remover/untrace/cleaner.py))
+### 2. 🧼 Invisible Steganography Eraser ([`untrace/cleaner.py`](untrace/cleaner.py))
 Purges invisible tracking characters embedded inside strings:
 - Zero-width spaces (`\u200B`), non-joiners (`\u200C`), joiners (`\u200D`), byte-order marks (`\uFEFF`), word joiners (`\u2060`), soft hyphens (`\u00AD`).
 - Mongolian vowel separators (`\u180E`), variation selectors (`\uFE00`..`\uFE0F`), and Bidi overrides (`\u200E`, `\u200F`, `\u202A`..`\u202E`).
 
-### 3. 📊 4-Vector Stego Risk Matrix ([`untrace/stealth.py`](file:///Users/sanya/Documents/project/watermark-remover/untrace/stealth.py))
+### 3. 📊 4-Vector Stego Risk Matrix ([`untrace/stealth.py`](untrace/stealth.py))
 Evaluates content against 4 threat vectors and calculates Shannon Entropy (bits/char) and Type-Token Ratio (TTR):
 - **Vector 1**: Unicode Steganography Risk.
 - **Vector 2**: Statistical Model Risk (clichés & em-dashes).
 - **Vector 3**: Metadata & Container Risk.
 - **Vector 4**: Spatial Frequency Risk.
 
-### 4. 📋 Real-Time Clipboard Hygiene Daemon ([`untrace/clipboard.py`](file:///Users/sanya/Documents/project/watermark-remover/untrace/clipboard.py))
+### 4. 📋 Real-Time Clipboard Hygiene Daemon ([`untrace/clipboard.py`](untrace/clipboard.py))
 Runs a background daemon listening to clipboard events (`Cmd+C` / `Ctrl+C`). Automatically cleans zero-width spaces and humanizes copied text before you paste it anywhere else.
 
-### 5. 🪝 Git Pre-Commit Hook & GitHub Action ([`untrace/hooks.py`](file:///Users/sanya/Documents/project/watermark-remover/untrace/hooks.py))
+### 5. 🪝 Git Pre-Commit Hook & GitHub Action ([`untrace/hooks.py`](untrace/hooks.py))
 - `untrace install-hook`: Installs `.git/hooks/pre-commit` to prevent committing watermarked files.
 - `untrace init-github-action`: Generates `.github/workflows/untrace-hygiene.yml` for automated CI/CD PR audits.
 
-### 6. 📓 Multi-Format Document & Office Sanitizer ([`untrace/office.py`](file:///Users/sanya/Documents/project/watermark-remover/untrace/office.py))
+### 6. 📓 Multi-Format Document & Office Sanitizer ([`untrace/office.py`](untrace/office.py))
 Direct sanitization for complex document formats:
 - **Jupyter Notebooks (`.ipynb`)**: Cleans Markdown/Code cells, strips cell metadata, clears prompt execution logs.
 - **Office Documents (`.docx`, `.pptx`, `.xlsx`)**: Wipes core XML document properties (`author`, `comments`, `title`, `company`).
 
-### 7. 📜 Cryptographic SHA-256 Audit Certificates ([`untrace/cert.py`](file:///Users/sanya/Documents/project/watermark-remover/untrace/cert.py))
+### 7. 📜 Cryptographic SHA-256 Audit Certificates ([`untrace/cert.py`](untrace/cert.py))
 Computes SHA-256 hashes of original vs clean inputs, generating signed audit certificates (`UNTRACE-CERT-2026-XXXX`).
 
-### 8. 🔥 Forensics Heatmap Visualizer ([`untrace/heatmap.py`](file:///Users/sanya/Documents/project/watermark-remover/untrace/heatmap.py))
+### 8. 🔥 Forensics Heatmap Visualizer ([`untrace/heatmap.py`](untrace/heatmap.py))
 Renders an interactive HTML diagnostic heatmap displaying exact character byte locations of zero-width tracking spaces (Red), em-dashes (Amber), and AI clichés (Purple).
 
-### 9. 🌊 Spectral Frequency DCT Noise Modulation ([`untrace/spectral.py`](file:///Users/sanya/Documents/project/watermark-remover/untrace/spectral.py))
+### 9. 🌊 Spectral Frequency DCT Noise Modulation ([`untrace/spectral.py`](untrace/spectral.py))
 Modulates 2D Discrete Cosine Transform (DCT) coefficients in image assets to disrupt spatial frequency watermarks (SynthID style).
 
-### 10. 🖥️ Cyber-Stealth Web Dashboard & Directory Watcher ([`untrace/dashboard.py`](file:///Users/sanya/Documents/project/watermark-remover/untrace/dashboard.py), [`untrace/watcher.py`](file:///Users/sanya/Documents/project/watermark-remover/untrace/watcher.py))
+### 10. 🖥️ Cyber-Stealth Web Dashboard & Directory Watcher ([`untrace/dashboard.py`](untrace/dashboard.py), [`untrace/watcher.py`](untrace/watcher.py))
 - `untrace ui`: Interactive browser dashboard with visual diff inspector, 4-Vector risk gauges, and exportable certificates.
 - `untrace watch .`: Real-time background directory watcher.
 
@@ -174,22 +174,166 @@ Once registered, **the AI assistant formats 100% of chat responses, edits, and f
 
 ## 📦 Quick Start & Installation
 
-### Option 1: Standard PyPI Installation
+Untrace AI works on **every platform and every skill level**. Pick the option that matches you:
+
+### 🧭 Which Option Is Right For Me?
+
+| You are... | Use this | What you need |
+| :--- | :--- | :--- |
+| A non-tech person who only uses **Claude Desktop** | [Option 1](#option-1-claude-desktop-plugin-mcp--recommended-for-non-tech-users) | One terminal command |
+| A non-tech person who uses **claude.ai / ChatGPT / Gemini in a browser** | [Option 2](#option-2-browser-extension--zero-install) | Chrome, Edge, or Firefox |
+| Anyone who wants to **clean text right now, no install at all** | [Option 3](#option-3-web-app--no-install-at-all) | Any web browser |
+| Someone who wants a **double-click desktop app** | [Option 4](#option-4-desktop-app-electron) | macOS / Windows / Linux |
+| A developer comfortable with the **terminal** | [Options 5–8](#option-5-one-command-terminal-installer-macos--linux) | Terminal access |
+| A **Python developer** who wants the SDK | [Option 9](#option-9-pypi-python-package-developers) | Python 3.9+ |
+
+---
+
+### Option 1: Claude Desktop Plugin (MCP) — *Recommended for non-tech users*
+
+Turns Untrace AI into built-in tools inside Claude Desktop. After setup, just ask Claude:
+> *"Sanitize this text: ..."* or *"Check this document for AI watermarks"*
+
+**Step 1** — Install the engine (one command, no Python needed):
+
 ```bash
-pip install untrace-ai
+curl -fsSL https://raw.githubusercontent.com/sanyamk23/untrace-ai/main/install.sh | bash
 ```
 
-### Option 2: Direct GitHub Installation
-```bash
-pip install git+https://github.com/sanyamk23/untrace-ai.git
+The installer automatically:
+- Downloads the standalone `untrace` binary (23 MB, everything bundled)
+- Registers the MCP server into Claude Desktop's config file
+- Adds `untrace` to your PATH
+
+**Step 2** — Restart Claude Desktop completely (Cmd+Q, then reopen).
+
+**Step 3** — Look for the 🔨 tools icon in the chat box. You now have:
+- `sanitize_text` — strips watermarks & humanizes any text
+- `sanitize_file` — cleans files on disk
+- `humanize_text_tool` — makes AI text sound human
+- `evaluate_risk` — scores text across the 4-vector risk matrix
+
+<details>
+<summary>Manual MCP configuration (if the auto-setup didn't run)</summary>
+
+Add this to your Claude Desktop config file:
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "untrace": {
+      "command": "untrace",
+      "args": ["server"]
+    }
+  }
+}
 ```
 
-### Option 3: Local Development Installation
+If you installed via pip instead of the binary, use `"command": "python3"` with `"args": ["-m", "untrace.cli", "server"]`.
+</details>
+
+---
+
+### Option 2: Browser Extension — *Zero install*
+
+Works on claude.ai, ChatGPT, Gemini, Perplexity, Google Docs — any website.
+
+1. Download the extension folder from [`browser-extension/`](browser-extension/) (or the `untrace-browser-extension.zip` asset from [Releases](https://github.com/sanyamk23/untrace-ai/releases/latest))
+2. Load it:
+   - **Chrome / Edge / Brave**: go to `chrome://extensions` → enable **Developer mode** → click **Load unpacked** → select the `browser-extension` folder
+   - **Firefox**: go to `about:debugging#/runtime/this-firefox` → **Load Temporary Add-on** → select `manifest.json`
+3. A blue 🛡️ shield button appears on every web page. Click it while editing or selecting AI text to sanitize instantly.
+
+Features: paste-to-clean popup, one-click em-dash & watermark removal, full humanization, auto-copy results.
+
+> **Note:** Chrome requires Developer mode for unpacked extensions. A signed store version (Chrome Web Store / Firefox Add-ons) is planned.
+
+---
+
+### Option 3: Web App — *No install at all*
+
+Open the hosted web app in any browser, paste your AI text, click **Full Sanitize**, copy the result. Runs 100% client-side — your text never leaves your device.
+
+- Hosted: *(deploy `web/index.html` to any static host — GitHub Pages, Vercel, Netlify)*
+- Offline: download [`web/index.html`](web/index.html) and double-click it. It works without internet.
+
+---
+
+### Option 4: Desktop App (Electron)
+
+A native window app with clipboard monitoring and a global hotkey (`Cmd/Ctrl+Shift+U`) that sanitizes whatever is on your clipboard.
+
 ```bash
-git clone https://github.com/sanyamk23/untrace-ai.git
-cd untrace-ai
-pip install -e .
+cd desktop
+npm install          # downloads Electron (~200 MB, one time)
+npm start            # launch the app
+npm run dist         # build distributable .dmg / .exe / .AppImage
 ```
+
+Requires Node.js once, at build time only. The built `.dmg`/`.exe` can then be shared with anyone — they just double-click it.
+
+---
+
+### Option 5: One-Command Terminal Installer (macOS & Linux)
+
+Installs a standalone binary to `~/.local/bin` — **no Python, no pip, no sudo, no GitHub account**:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/sanyamk23/untrace-ai/main/install.sh | bash
+```
+
+Platform detection is automatic: `macos-arm64`, `macos-x86_64`, `linux-arm64`, `linux-x86_64`. If no prebuilt binary exists for your platform yet, the script falls back to `pip install untrace-ai`.
+
+### Option 6: System-Wide Installer (all users on the machine)
+
+Puts the binary in `/usr/local/bin` so every user account on the computer has it:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/sanyamk23/untrace-ai/main/install-system.sh | sudo bash
+```
+
+### Option 7: npm Global (Node.js users)
+
+```bash
+npm install -g untrace-ai
+```
+
+The npm package ships a small JS wrapper that downloads the correct platform binary on install (`darwin`/`linux`/`win32`, `x64`/`arm64`) and falls back to the Python package if no binary is available.
+
+### Option 8: Homebrew (macOS)
+
+```bash
+brew tap sanyamk23/tap
+brew install untrace-ai
+```
+
+Formula source: [`Formula/untrace-ai.rb`](Formula/untrace-ai.rb).
+
+### Option 9: PyPI Python Package (developers)
+
+```bash
+pip install untrace-ai                 # standard
+pip install git+https://github.com/sanyamk23/untrace-ai.git   # latest from source
+git clone https://github.com/sanyamk23/untrace-ai.git && cd untrace-ai && pip install -e .   # development
+```
+
+---
+
+### ⚠️ Release Status
+
+| Channel | Status |
+| :--- | :--- |
+| PyPI (`pip install untrace-ai`) | ✅ Live |
+| Claude Code / Cursor / Antigravity autopilot (`untrace auto-install`) | ✅ Live |
+| MCP server for Claude Desktop | ✅ Live |
+| Browser extension (load unpacked) | ✅ Live |
+| Web app (`web/index.html`) | ✅ Live (self-host / open locally) |
+| Prebuilt binaries on GitHub Releases | 🚧 Publish via `make publish` (macOS arm64 binary builds today; Linux/Windows cross-builds need CI) |
+| npm registry (`npm i -g untrace-ai`) | 🚧 Pending first publish |
+| Homebrew tap | 🚧 Pending tap repo creation |
+| Chrome Web Store / Firefox Add-ons listing | 📋 Planned |
 
 ---
 
@@ -286,20 +430,84 @@ Add the following snippet to your `claude_desktop_config.json`:
 - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 
+**If you installed via the standalone binary (Option 1/5):**
+```json
+{
+  "mcpServers": {
+    "untrace": {
+      "command": "untrace",
+      "args": ["server"]
+    }
+  }
+}
+```
+(If `untrace` isn't on PATH, use the full path, e.g. `/Users/yourname/.local/bin/untrace`.)
+
+**If you installed via pip:**
 ```json
 {
   "mcpServers": {
     "untrace": {
       "command": "python3",
-      "args": [
-        "-m",
-        "untrace.cli",
-        "server"
-      ]
+      "args": ["-m", "untrace.cli", "server"]
     }
   }
 }
 ```
+
+### 3. Restart Claude Desktop & Use It
+After restarting Claude Desktop, talk naturally:
+
+| You say | Claude does |
+| :--- | :--- |
+| *"Sanitize this text: ..."* | Calls `sanitize_text`, returns clean + humanized text |
+| *"Make this sound human: ..."* | Calls `humanize_text_tool` |
+| *"Check this file for AI watermarks"* | Calls `sanitize_file` or `evaluate_risk` |
+| *"How risky is this document?"* | Calls `evaluate_risk`, reports 4-vector scores |
+
+---
+
+## 👤 Usage Walkthroughs by User Type
+
+### "I only have Claude Desktop installed" (non-tech)
+1. Open Terminal (macOS: `Cmd+Space`, type "Terminal", Enter)
+2. Paste this and press Enter:
+   ```bash
+   curl -fsSL https://raw.githubusercontent.com/sanyamk23/untrace-ai/main/install.sh | bash
+   ```
+3. Quit Claude Desktop (`Cmd+Q`) and reopen it
+4. Done. Ask Claude to *"sanitize this text: ..."* whenever you need it.
+
+### "I use claude.ai in my browser" (non-tech)
+1. Load the browser extension ([Option 2](#option-2-browser-extension--zero-install))
+2. Select any AI response text on claude.ai → click the 🛡️ button → cleaned text is copied to your clipboard
+3. Paste it anywhere.
+
+### "I don't want to install anything"
+Open the web app ([Option 3](#option-3-web-app--no-install-at-all)), paste text, click **Full Sanitize**, copy the result.
+
+### "I'm a developer using Claude Code / Cursor"
+```bash
+pip install untrace-ai && untrace auto-install
+```
+Every chat response, file edit, and commit is now sanitized automatically — zero commands per task.
+
+---
+
+## 📁 Distribution Artifacts in This Repo
+
+| Path | What it is |
+| :--- | :--- |
+| `install.sh` | One-command user installer (standalone binary → `~/.local/bin`) |
+| `install-system.sh` | System-wide installer (`sudo` → `/usr/local/bin`, all users) |
+| `install.html` | Web installer landing page with platform auto-detection |
+| `package.json` + `install.js` + `cli-wrapper.js` | npm package (downloads platform binary on install) |
+| `Formula/untrace-ai.rb` | Homebrew formula |
+| `Makefile` | `make build` (PyInstaller binary), `make publish` (GitHub Release), `make test` |
+| `browser-extension/` | Chrome/Edge/Firefox extension (popup cleaner + floating shield button) |
+| `web/index.html` | Zero-install browser-based cleaner (100% client-side) |
+| `desktop/` | Electron desktop app (clipboard hotkey `Cmd/Ctrl+Shift+U`) |
+| `dist/untrace` | Prebuilt macOS arm64 standalone binary (23 MB) |
 
 ---
 

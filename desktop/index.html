@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:#0a0a0f; color:#e0e0e0; padding:24px; max-width:640px; margin:0 auto; }
+    h1 { font-size:24px; margin-bottom:4px; }
+    .subtitle { color:#888; font-size:13px; margin-bottom:16px; }
+    .tabs { display:flex; gap:4px; background:#131318; border-radius:8px; padding:2px; margin-bottom:16px; }
+    .tab { flex:1; padding:10px; background:transparent; border:none; color:#888; cursor:pointer; font-size:13px; border-radius:6px; }
+    .tab.active { background:#6366f1; color:white; }
+    .panel { background:#131318; border:1px solid #222; border-radius:12px; padding:20px; margin-bottom:16px; }
+    textarea { width:100%; height:180px; background:#0d0d12; border:1px solid #2a2a33; border-radius:8px; padding:12px; font-size:13px; font-family:monospace; color:#e0e0e0; resize:vertical; }
+    .btn-row { display:flex; gap:8px; margin-top:12px; }
+    button { flex:1; padding:10px; border:none; border-radius:6px; cursor:pointer; font-size:13px; font-weight:600; }
+    #btnClean { background:#3b82f6; color:white; }
+    #btnFull { background:#6366f1; color:white; }
+    #btnCopy { background:transparent; border:1px solid #444; color:#aaa; }
+    .result { background:#0d0d12; border:1px solid #2a2a33; border-radius:8px; padding:16px; margin-top:12px; min-height:100px; white-space:pre-wrap; font-size:13px; line-height:1.6; cursor:pointer; }
+    .hint { font-size:11px; color:#666; margin-top:4px; }
+  </style>
+</head>
+<body>
+  <h1>🛡️ Untrace AI</h1>
+  <p class="subtitle">AI Watermark Remover — Desktop Edition</p>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab(0)">Text Cleaner</div>
+    <div class="tab" onclick="switchTab(1)">Clipboard Monitor</div>
+  </div>
+
+  <div id="tab1" class="panel">
+    <textarea id="input" placeholder="Paste AI-generated text here..."></textarea>
+    <div class="btn-row">
+      <button id="btnClean" onclick="cleanOnly()">🧹 Em-dashes & Watermarks</button>
+      <button id="btnFull" onclick="fullSanitize()">🧼 Full Sanitize</button>
+    </div>
+    <div class="hint">💡 Ctrl+Shift+U: Auto-sanitize from clipboard</div>
+    <div class="result" id="result" onclick="copyResult()">📋 Result appears here (click to copy)</div>
+  </div>
+
+  <div id="tab2" class="panel" style="display:none;">
+    <p style="font-size:13px;color:#aaa;line-height:1.6;">
+      Clipboard Monitor is active.<br><br>
+      Global shortcut: <kbd>⌘</kbd>+<kbd>⇧</kbd>+<kbd>U</kbd> (macOS) or <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>U</kbd> (Windows/Linux)<br><br>
+      When triggered, Untrace AI will automatically sanitize the current clipboard content and copy the cleaned version back.
+    </p>
+  </div>
+
+  <script src="cleaner.js"></script>
+  <script>
+    function switchTab(n) {
+      document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===n));
+      document.querySelectorAll('.panel').forEach((p,i) => p.style.display = i===n ? 'block' : 'none');
+    }
+
+    function cleanOnly() {
+      const input = document.getElementById('input').value;
+      if (!input.trim()) { alert('⚠️ Paste text first'); return; }
+      let r = cleanText(input);
+      document.getElementById('result').textContent = r;
+    }
+
+    function fullSanitize() {
+      const input = document.getElementById('input').value;
+      if (!input.trim()) { alert('⚠️ Paste text first'); return; }
+      let r = fullClean(input);
+      document.getElementById('result').textContent = r;
+    }
+
+    function copyResult() {
+      const text = document.getElementById('result').textContent;
+      if (text && text !== '📋 Result appears here (click to copy)') {
+        navigator.clipboard.writeText(text).then(() => {});
+      }
+    }
+
+    // Listen for clipboard auto-sanitize
+    const { ipcRenderer } = require('electron');
+    ipcRenderer.on('clipboard-text', (event, text) => {
+      document.getElementById('input').value = text;
+      const result = fullClean(text);
+      document.getElementById('result').textContent = result;
+      navigator.clipboard.writeText(result).then(() => {
+        alert('✅ Clipboard sanitized!');
+      });
+    });
+  </script>
+</body>
+</html>

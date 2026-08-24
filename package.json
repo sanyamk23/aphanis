@@ -1,0 +1,28 @@
+{
+  "name": "untrace-ai",
+  "version": "1.4.0",
+  "description": "Untrace AI - Zero-Trust AI Provenance Firewall, Automatic Humanizer Engine & Stego Defense Platform",
+  "bin": {
+    "untrace": "./cli-wrapper.js"
+  },
+  "scripts": {
+    "postinstall": "node install.js"
+  },
+  "install": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sanyamk23/untrace-ai.git"
+  },
+  "keywords": [
+    "ai-watermark-remover",
+    "ai-humanizer",
+    "steganography",
+    "zero-width",
+    "provenance-firewall"
+  ],
+  "author": "Sanya",
+  "license": "MIT",
+  "os": ["darwin", "linux", "win32"],
+  "cpu": ["x64", "arm64"],
+  "dependencies": {}
+}
