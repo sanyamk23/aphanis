@@ -1,0 +1,12 @@
+{
+  "hooks": [
+    {
+      "event": "PreToolUse",
+      "action": "python3 -m untrace.cli hooks pre-tool"
+    },
+    {
+      "event": "PostFileWrite",
+      "action": "python3 -m untrace.cli clean-file ${FILE_PATH}"
+    }
+  ]
+}

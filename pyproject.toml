@@ -8,7 +8,7 @@ version = "1.4.0"
 description = "Untrace AI :: Enterprise Zero-Trust AI Provenance Firewall, Automatic Humanizer Engine & Stego Matrix."
 readme = "README.md"
 authors = [
-    { name = "Sanya", email = "sanya@example.com" }
+    { name = "Sanyam Kumat", email = "sanyamkumat2305@gmail.com" }
 ]
 keywords = [
     "ai-provenance-firewall",

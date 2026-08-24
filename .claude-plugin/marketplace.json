@@ -5,13 +5,28 @@
     "email": "sanyamkumat2305@gmail.com"
   },
   "metadata": {
-    "description": "Untrace AI Marketplace - Zero-Trust AI Provenance Firewall, Automatic Humanizer Engine & Stego Defense Platform",
+    "description": "Untrace AI Plugin Marketplace - Zero-Trust AI Provenance Firewall, Natural Humanizer Engine, and Stego Defense Platform.",
     "version": "1.4.0"
   },
   "plugins": [
     {
       "name": "untrace-ai",
-      "description": "Zero-Trust AI Provenance Firewall, Automatic Humanizer Engine & Stego Defense Platform with 10-Feature Autopilot Pipeline",
+      "description": "Complete Untrace AI Platform - Stego Eraser, Natural Humanizer, Code Metadata Purger, MCP Server, Hooks & Commands.",
+      "source": "./"
+    },
+    {
+      "name": "untrace-humanizer",
+      "description": "Natural Writing & AI Tone Converter - Converts robotic passive text into engaging, organic human writing.",
+      "source": "./"
+    },
+    {
+      "name": "untrace-code-purger",
+      "description": "Zero-Trust Code Comment & Metadata Eraser for 20+ programming languages.",
+      "source": "./"
+    },
+    {
+      "name": "untrace-stego-defense",
+      "description": "4-Vector Stego Risk Matrix & Shannon Entropy Analysis Engine.",
       "source": "./"
     }
   ]
