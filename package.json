@@ -20,7 +20,7 @@
     "zero-width",
     "provenance-firewall"
   ],
-  "author": "Sanyam Kumat",
+  "author": "Sanyam Kumat <sanyamkumat2305@gmail.com>",
   "license": "MIT",
   "os": ["darwin", "linux", "win32"],
   "cpu": ["x64", "arm64"],
