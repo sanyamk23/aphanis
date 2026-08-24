@@ -18,20 +18,9 @@
     "claude-plugin",
     "mcp-server"
   ],
-  "skills": "./skills",
-  "commands": "./commands",
-  "agents": [
-    "./agents/untrace-defender.md"
-  ],
+  "skills": "./skills/",
+  "commands": "./commands/",
+  "agents": "./agents/",
   "hooks": "./hooks/hooks.json",
-  "mcpServers": {
-    "untrace": {
-      "command": "python3",
-      "args": [
-        "-m",
-        "untrace.cli",
-        "server"
-      ]
-    }
-  }
+  "mcpServers": "./.mcp.json"
 }

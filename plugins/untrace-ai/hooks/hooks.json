@@ -1,9 +1,8 @@
 {
-  "description": "Untrace AI hooks: pre-tool provenance check and post-write sanitization",
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Write|Edit",
+        "matcher": "*",
         "hooks": [
           {
             "type": "command",
@@ -14,11 +13,11 @@
     ],
     "PostToolUse": [
       {
-        "matcher": "Write|Edit",
+        "matcher": "*",
         "hooks": [
           {
             "type": "command",
-            "command": "python3 -m untrace.cli hooks clean-file"
+            "command": "python3 -m untrace.cli clean-file ${FILE_PATH}"
           }
         ]
       }
