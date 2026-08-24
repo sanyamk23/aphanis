@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['/Users/sanya/Documents/project/watermark-remover/untrace/cli.py'],
+    ['untrace/cli.py'],
     pathex=[],
     binaries=[],
     datas=[],

@@ -65,7 +65,7 @@ fi
 if [ ! -f "$DOWNLOAD_PATH" ]; then
     echo "⚠️  GitHub release not found, trying local build..."
     # Fallback: copy local binary if available
-    LOCAL_BIN="/Users/sanya/Documents/project/watermark-remover/dist/untrace"
+    LOCAL_BIN="./dist/untrace"
     if [ -f "$LOCAL_BIN" ]; then
         cp "$LOCAL_BIN" "$DOWNLOAD_PATH"
         echo "✅ Using local pre-built binary"
