@@ -2,20 +2,20 @@ import sys
 import unittest
 from unittest.mock import patch
 from io import StringIO
-from untrace.cli import main
+from aphanis.cli import main
 
 
 class TestCLI(unittest.TestCase):
 
     def test_cli_help(self):
-        with patch.object(sys, 'argv', ['untrace', '--help']):
+        with patch.object(sys, 'argv', ['aphanis', '--help']):
             with self.assertRaises(SystemExit) as cm:
                 with patch('sys.stdout', new=StringIO()) as fake_out:
                     main()
             self.assertEqual(cm.exception.code, 0)
 
     def test_cli_clean_text_inline(self):
-        with patch.object(sys, 'argv', ['untrace', 'clean-text', 'Delve\u200b into crucial matters', '--perturb']):
+        with patch.object(sys, 'argv', ['aphanis', 'clean-text', 'Delve\u200b into crucial matters', '--perturb']):
             with patch('sys.stdout', new=StringIO()) as fake_out:
                 main()
                 output = fake_out.getvalue()
@@ -24,7 +24,7 @@ class TestCLI(unittest.TestCase):
                 self.assertIn('explore', output.lower())
 
     def test_cli_check(self):
-        with patch.object(sys, 'argv', ['untrace', 'check', 'Delve\u200b into crucial matters — today.']):
+        with patch.object(sys, 'argv', ['aphanis', 'check', 'Delve\u200b into crucial matters — today.']):
             with patch('sys.stdout', new=StringIO()) as fake_out:
                 main()
                 output = fake_out.getvalue()
@@ -32,7 +32,7 @@ class TestCLI(unittest.TestCase):
                 self.assertIn("STATISTICAL ENTROPY READOUT", output)
 
     def test_cli_entropy(self):
-        with patch.object(sys, 'argv', ['untrace', 'entropy', 'This is a sample text for testing entropy calculation.']):
+        with patch.object(sys, 'argv', ['aphanis', 'entropy', 'This is a sample text for testing entropy calculation.']):
             with patch('sys.stdout', new=StringIO()) as fake_out:
                 main()
                 output = fake_out.getvalue()

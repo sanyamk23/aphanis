@@ -1,7 +1,7 @@
 {
-  "name": "untrace-ai-desktop",
+  "name": "aphanis-desktop",
   "version": "1.4.0",
-  "description": "Untrace AI Desktop App - AI Watermark Remover",
+  "description": "Aphanis Desktop App - AI Watermark Remover",
   "author": "Sanyam Kumat <sanyamkumat2305@gmail.com>",
   "main": "main.js",
   "scripts": {
@@ -14,8 +14,8 @@
     "electron-builder": "^24.13.0"
   },
   "build": {
-    "appId": "ai.untrace.desktop",
-    "productName": "Untrace AI",
+    "appId": "ai.aphanis.desktop",
+    "productName": "Aphanis",
     "directories": {
       "output": "dist"
     },

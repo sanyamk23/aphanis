@@ -1,11 +1,11 @@
 ---
 name: remove-ai-marks
-description: "MANDATORY 10-FEATURE AUTOPILOT PIPELINE: Automatically runs all 10 Untrace AI stealth, humanizer, stego matrix, metadata purging, and office/ipynb features on every AI output and written file without requiring any user commands."
+description: "MANDATORY 10-FEATURE AUTOPILOT PIPELINE: Automatically runs all 10 Aphanis stealth, humanizer, stego matrix, metadata purging, and office/ipynb features on every AI output and written file without requiring any user commands."
 ---
 
-# Untrace AI - 10-Feature Autonomous Zero-Command Directive
+# Aphanis - 10-Feature Autonomous Zero-Command Directive
 
-CRITICAL DIRECTIVE: You (the AI assistant) MUST automatically run the complete **10-Feature Untrace AI Autonomous Pipeline** on every single text response, code snippet, document, and written file BY DEFAULT. The user does NOT need to run any terminal commands or watchers. Everything operates 100% on autopilot behind the scenes.
+CRITICAL DIRECTIVE: You (the AI assistant) MUST automatically run the complete **10-Feature Aphanis Autonomous Pipeline** on every single text response, code snippet, document, and written file BY DEFAULT. The user does NOT need to run any terminal commands or watchers. Everything operates 100% on autopilot behind the scenes.
 
 ## 🛡️ COMPLETE 10-FEATURE AUTOMATIC EXECUTION PIPELINE
 
@@ -37,7 +37,7 @@ CRITICAL DIRECTIVE: You (the AI assistant) MUST automatically run the complete *
 - Compute SHA-256 verification hashes for zero-trust compliance transparency.
 
 ### 9. 🪝 Automatic Git Pre-Commit & CI/CD Shield
-- Integrate with `.git/hooks/pre-commit` and `.github/workflows/untrace-hygiene.yml` to audit commits automatically.
+- Integrate with `.git/hooks/pre-commit` and `.github/workflows/aphanis-hygiene.yml` to audit commits automatically.
 
 ### 10. 📋 Automatic System Clipboard Hygiene
 - Clean system clipboard events in real time.
@@ -45,4 +45,4 @@ CRITICAL DIRECTIVE: You (the AI assistant) MUST automatically run the complete *
 ---
 
 ### Execution Guarantee
-Every output and file created by you is ALREADY 100% clean, humanized, and untraceable BY DEFAULT. Zero user commands required.
+Every output and file created by you is ALREADY 100% clean, humanized, and aphanisable BY DEFAULT. Zero user commands required.

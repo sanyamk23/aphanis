@@ -1,6 +1,6 @@
 import unittest
-from untrace.humanizer import HumanizerEngine, humanize_text
-from untrace.cleaner import clean_text
+from aphanis.humanizer import HumanizerEngine, humanize_text
+from aphanis.cleaner import clean_text
 
 
 class TestHumanizerEngine(unittest.TestCase):

@@ -1,5 +1,5 @@
 """
-Untrace AI - Statistical Entropy & Text Uniformity Analyzer.
+Aphanis - Statistical Entropy & Text Uniformity Analyzer.
 Calculates Shannon entropy, Type-Token Ratio (TTR), and text predictability metrics
 to detect AI-generated token distribution patterns vs natural human writing.
 """

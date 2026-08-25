@@ -1,11 +1,11 @@
 name: 🚀 Feature Request
-description: Suggest an idea or feature for Untrace AI
+description: Suggest an idea or feature for Aphanis
 title: "[FEAT]: "
 labels: ["enhancement"]
 body:
   - type: markdown
     attributes:
-      value: Tell us about the feature you'd like to see in Untrace AI!
+      value: Tell us about the feature you'd like to see in Aphanis!
   - type: textarea
     id: problem
     attributes:

@@ -10,6 +10,6 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability or steganographic tracking bypass in **Untrace AI**, please report it responsibly by opening a GitHub Security Advisory or contacting the maintainers directly.
+If you discover a security vulnerability or steganographic tracking bypass in **Aphanis**, please report it responsibly by opening a GitHub Security Advisory or contacting the maintainers directly.
 
 All security reports will be investigated within 24 hours.

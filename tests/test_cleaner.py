@@ -1,10 +1,10 @@
 import os
 import tempfile
 import unittest
-from untrace.cleaner import UnicodeSanitizer, StatisticalPerturber, AICommentSanitizer, FileMetadataSanitizer, clean_text, clean_file
+from aphanis.cleaner import UnicodeSanitizer, StatisticalPerturber, AICommentSanitizer, FileMetadataSanitizer, clean_text, clean_file
 
 
-class TestUntraceAI(unittest.TestCase):
+class TestAphanisAI(unittest.TestCase):
 
     def test_unicode_sanitizer_zero_width_and_emdash(self):
         dirty_text = "This\u200bis\u00ad a\u00a0test\ufeff string\ufe0f — with em-dashes and “smart quotes”."
@@ -81,7 +81,7 @@ class TestUntraceAI(unittest.TestCase):
                 os.remove(temp_path)
 
     def test_audit_text(self):
-        from untrace.cleaner import audit_text
+        from aphanis.cleaner import audit_text
         clean_report = audit_text("Simple human sentence.")
         self.assertEqual(clean_report["status"], "CLEAN")
         self.assertEqual(clean_report["score"], 100)

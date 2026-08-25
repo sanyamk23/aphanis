@@ -1,11 +1,11 @@
 ---
-name: untrace-clean
+name: aphanis-clean
 description: Instantly sanitize files by purging invisible unicode steganography, AI metadata comments, and C2PA markers.
 ---
 
-# Untrace AI Clean Command
+# Aphanis Clean Command
 
-Sanitize target files using `python3 -m untrace.cli clean-file <file>`.
+Sanitize target files using `python3 -m aphanis.cli clean-file <file>`.
 
 ## Workflow
 

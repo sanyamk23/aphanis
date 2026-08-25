@@ -1,13 +1,13 @@
 {
-  "name": "untrace-ai",
+  "name": "aphanis",
   "version": "1.4.0",
   "description": "Zero-Trust AI Provenance Firewall, Automatic Humanizer Engine & Stego Defense Platform",
   "author": {
     "name": "Sanyam Kumat",
     "email": "sanyamkumat2305@gmail.com"
   },
-  "homepage": "https://github.com/sanyamk23/untrace-ai",
-  "repository": "https://github.com/sanyamk23/untrace-ai",
+  "homepage": "https://github.com/sanyamk23/aphanis",
+  "repository": "https://github.com/sanyamk23/aphanis",
   "license": "MIT",
   "keywords": [
     "ai-watermark-remover",

@@ -1,14 +1,14 @@
-# Contributing to Untrace AI 🛡️
+# Contributing to Aphanis 🛡️
 
-Thank you for considering contributing to **Untrace AI**! Together, we are building the industry standard **Zero-Trust AI Provenance Firewall, Automatic Humanizer & Stego Defense Platform**.
+Thank you for considering contributing to **Aphanis**! Together, we are building the industry standard **Zero-Trust AI Provenance Firewall, Automatic Humanizer & Stego Defense Platform**.
 
 ## 🚀 How to Contribute
 
 1. **Fork the Repository**: Click the **Fork** button at the top right of the page.
 2. **Clone your Fork**:
    ```bash
-   git clone https://github.com/your-username/untrace-ai.git
-   cd untrace-ai
+   git clone https://github.com/your-username/aphanis.git
+   cd aphanis
    ```
 3. **Create a Feature Branch**:
    ```bash
@@ -32,4 +32,4 @@ Thank you for considering contributing to **Untrace AI**! Together, we are build
 - Ensure all 30+ unit tests pass cleanly before submitting a PR.
 - Add unit tests in `tests/` for any new features or bug fixes.
 
-Thank you for helping make Untrace AI better for everyone!
+Thank you for helping make Aphanis better for everyone!

@@ -1,11 +1,11 @@
 ---
-name: untrace-audit
+name: aphanis-audit
 description: Run a complete 4-Vector Zero-Trust Stego & Watermark Audit on the project codebase or specified file.
 ---
 
-# Untrace AI Audit Command
+# Aphanis Audit Command
 
-Run `python3 -m untrace.cli check` or perform a 4-Vector Stego Risk Matrix audit on the target path.
+Run `python3 -m aphanis.cli check` or perform a 4-Vector Stego Risk Matrix audit on the target path.
 
 ## Workflow
 

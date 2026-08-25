@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['untrace/cli.py'],
+    ['aphanis/cli.py'],
     pathex=[],
     binaries=[],
     datas=[],
@@ -22,7 +22,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='untrace',
+    name='aphanis',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

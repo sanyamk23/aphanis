@@ -1,5 +1,5 @@
 """
-Untrace AI - Forensics Heatmap Visualizer.
+Aphanis - Forensics Heatmap Visualizer.
 Renders an interactive HTML diagnostic heatmap displaying exact character byte offsets of zero-width
 watermarks, em-dashes, and AI clichés in a document.
 """
@@ -13,7 +13,7 @@ class HeatmapRenderer:
     """Renders visual forensic heatmaps for text documents."""
 
     @classmethod
-    def render_html_heatmap(cls, text: str, title: str = "Untrace AI Forensics Heatmap") -> str:
+    def render_html_heatmap(cls, text: str, title: str = "Aphanis Forensics Heatmap") -> str:
         """Generates HTML string rendering exact character offsets and risk badges."""
         if not text:
             text = ""
@@ -36,7 +36,7 @@ class HeatmapRenderer:
         )
 
         # Highlight AI telltales
-        from untrace.cleaner import StatisticalPerturber
+        from aphanis.cleaner import StatisticalPerturber
         for pattern in StatisticalPerturber.AI_VOCAB_SWAPS.keys():
             safe_text = re.sub(
                 pattern,
@@ -61,7 +61,7 @@ class HeatmapRenderer:
 </head>
 <body>
   <div class="container">
-    <h1>🛡️ Untrace AI :: Provenance Forensics Heatmap</h1>
+    <h1>🛡️ Aphanis :: Provenance Forensics Heatmap</h1>
     <div class="legend">
       <span class="tag" style="background:#f43f5e; color:#fff;">Red: Hidden Zero-Width Stego</span>
       <span class="tag" style="background:#f59e0b; color:#fff;">Amber: Em-Dash Signature</span>
@@ -75,7 +75,7 @@ class HeatmapRenderer:
         return html_doc
 
     @classmethod
-    def save_heatmap_file(cls, text: str, output_path: str = "untrace_heatmap.html") -> str:
+    def save_heatmap_file(cls, text: str, output_path: str = "aphanis_heatmap.html") -> str:
         """Saves heatmap HTML file."""
         content = cls.render_html_heatmap(text)
         with open(output_path, "w", encoding="utf-8") as f:

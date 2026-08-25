@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "untrace-ai"
+name = "aphanis"
 version = "1.4.0"
-description = "Untrace AI :: Enterprise Zero-Trust AI Provenance Firewall, Automatic Humanizer Engine & Stego Matrix."
+description = "Aphanis :: Enterprise Zero-Trust AI Provenance Firewall, Automatic Humanizer Engine & Stego Matrix."
 readme = "README.md"
 authors = [
     { name = "Sanyam Kumat", email = "sanyamkumat2305@gmail.com" }
@@ -36,11 +36,11 @@ dependencies = [
 ]
 
 [project.scripts]
-untrace = "untrace.cli:main"
-watermark-remover = "untrace.cli:main"
+aphanis = "aphanis.cli:main"
+watermark-remover = "aphanis.cli:main"
 
 [tool.setuptools.packages.find]
-include = ["untrace*"]
+include = ["aphanis*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

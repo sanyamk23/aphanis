@@ -1,14 +1,14 @@
 #!/bin/bash
 #
-# Untrace AI - System-wide installer (requires sudo/root)
+# Aphanis - System-wide installer (requires sudo/root)
 # Installs the binary into /usr/local/bin so ALL users have access.
 #
-# Usage:  curl -fsSL https://untrace.ai/install-system.sh | sudo bash
+# Usage:  curl -fsSL https://aphanis.ai/install-system.sh | sudo bash
 #
 
 set -euo pipefail
 
-REPO="sanyamk23/untrace-ai"
+REPO="sanyamk23/aphanis"
 VERSION="1.4.0"
 INSTALL_DIR="/usr/local/bin"
 
@@ -34,21 +34,21 @@ detect_platform() {
 }
 
 if [ "$(id -u)" -ne 0 ]; then
-    echo "⚠️  System-wide install requires root. Use: sudo curl -fsSL https://untrace.ai/install-system.sh | sudo bash"
-    echo "   Or for user-only install: curl -fsSL https://untrace.ai/install.sh | bash"
+    echo "⚠️  System-wide install requires root. Use: sudo curl -fsSL https://aphanis.ai/install-system.sh | sudo bash"
+    echo "   Or for user-only install: curl -fsSL https://aphanis.ai/install.sh | bash"
     exit 1
 fi
 
 detect_platform
 echo "🔍 Detected platform: $PLATFORM_KEY"
-echo "📥 Downloading Untrace AI v$VERSION..."
+echo "📥 Downloading Aphanis v$VERSION..."
 
 TMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TMP_DIR"' EXIT
 
-BINARY_FILE="untrace"
+BINARY_FILE="aphanis"
 if [[ "$PLATFORM_KEY" == "windows-"* ]]; then
-    BINARY_FILE="untrace.exe"
+    BINARY_FILE="aphanis.exe"
     URL="https://github.com/${REPO}/releases/download/v${VERSION}/${BINARY_FILE}-${PLATFORM_KEY}.zip"
     curl -fsSL "$URL" -o "${TMP_DIR}/win.zip" || {
         echo "❌ Download failed"; exit 1
@@ -68,7 +68,7 @@ mkdir -p "$INSTALL_DIR"
 cp "$SOURCE_FILE" "${INSTALL_DIR}/${BINARY_FILE}"
 chmod 755 "${INSTALL_DIR}/${BINARY_FILE}"
 
-echo "✅ Installed Untrace AI to ${INSTALL_DIR}/${BINARY_FILE}"
+echo "✅ Installed Aphanis to ${INSTALL_DIR}/${BINARY_FILE}"
 echo ""
 
 # Register system-wide MCP server
@@ -76,6 +76,6 @@ if [ -d "/etc/claude-desktop" ]; then
     echo "✅ System-wide Claude Desktop config directory detected"
 fi
 
-echo "🎉 Untrace AI v$VERSION is now available to ALL users on this system!"
+echo "🎉 Aphanis v$VERSION is now available to ALL users on this system!"
 echo ""
-echo "Run:  untrace --help"
+echo "Run:  aphanis --help"

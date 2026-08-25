@@ -1,5 +1,5 @@
 {
-  "name": "untrace-ai",
+  "name": "aphanis",
   "description": "Zero-Trust AI Provenance Firewall, Automatic Humanizer Engine & Stego Defense Platform with 10-Feature Autopilot Pipeline",
   "owner": {
     "name": "Sanyam Kumat",
@@ -7,7 +7,7 @@
   },
   "plugins": [
     {
-      "name": "untrace-ai",
+      "name": "aphanis",
       "description": "Zero-Trust AI Provenance Firewall, Automatic Humanizer Engine & Stego Defense Platform with 10-Feature Autopilot Pipeline",
       "version": "1.4.0",
       "author": {
@@ -16,7 +16,7 @@
       },
       "source": "./",
       "category": "security",
-      "homepage": "https://github.com/sanyamk23/untrace-ai"
+      "homepage": "https://github.com/sanyamk23/aphanis"
     }
   ]
 }

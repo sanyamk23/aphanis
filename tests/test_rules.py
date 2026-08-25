@@ -1,14 +1,14 @@
 import os
 import tempfile
 import unittest
-from untrace.rules import RuleEngine
+from aphanis.rules import RuleEngine
 
 
 class TestRuleEngine(unittest.TestCase):
 
     def test_starter_rules_file_creation(self):
         with tempfile.TemporaryDirectory() as tmpdir:
-            rules_path = os.path.join(tmpdir, ".untracerules.json")
+            rules_path = os.path.join(tmpdir, ".aphanisrules.json")
             msg = RuleEngine.create_starter_rules_file(rules_path)
             self.assertTrue(os.path.exists(rules_path))
             self.assertIn("Created starter rules", msg)

@@ -1,5 +1,5 @@
 """
-Untrace AI - Real-Time File System Watcher Module.
+Aphanis - Real-Time File System Watcher Module.
 """
 
 import os
@@ -8,7 +8,7 @@ import time
 from pathlib import Path
 from typing import Set
 
-from untrace.cleaner import clean_file
+from aphanis.cleaner import clean_file
 
 
 class DirectoryWatcher:
@@ -53,7 +53,7 @@ class DirectoryWatcher:
                             # Update mtime after cleaning to avoid loop
                             self._file_mtimes[path_str] = file_path.stat().st_mtime
                             cleaned_count += 1
-                            print(f"[Untrace Watcher] ✨ Sanitized: {file_path.name}")
+                            print(f"[Aphanis Watcher] ✨ Sanitized: {file_path.name}")
 
                 except Exception as e:
                     pass
@@ -61,7 +61,7 @@ class DirectoryWatcher:
         return cleaned_count
 
     def start(self):
-        print(f"[Untrace Watcher] 🛡️ Watching {self.watch_path} for real-time AI watermark sanitization...")
+        print(f"[Aphanis Watcher] 🛡️ Watching {self.watch_path} for real-time AI watermark sanitization...")
         print("Press Ctrl+C to stop.\n")
 
         # Initial scan
@@ -72,4 +72,4 @@ class DirectoryWatcher:
                 time.sleep(self.poll_interval)
                 self.scan_and_clean()
         except KeyboardInterrupt:
-            print("\n[Untrace Watcher] Stopped.")
+            print("\n[Aphanis Watcher] Stopped.")

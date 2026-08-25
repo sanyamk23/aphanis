@@ -1,4 +1,4 @@
-// Untrace AI Content Script
+// Aphanis Content Script
 // Detects AI-generated text in web page textareas and offers a floating clean button.
 
 (function() {
@@ -9,9 +9,9 @@
 
   function createButton() {
     fab = document.createElement('button');
-    fab.id = 'untrace-fab';
+    fab.id = 'aphanis-fab';
     fab.textContent = '🛡️';
-    fab.title = 'Untrace AI - Remove AI watermarks from this text';
+    fab.title = 'Aphanis - Remove AI watermarks from this text';
     fab.style.cssText = `
       position: fixed;
       bottom: 20px;

@@ -1,11 +1,11 @@
 ---
-name: untrace-humanize
+name: aphanis-humanize
 description: Convert robotic, passive, or AI-generated text into engaging, natural, high-burstiness human writing.
 ---
 
-# Untrace AI Humanize Command
+# Aphanis Humanize Command
 
-Transform text using the Untrace AI Natural Humanizer Engine.
+Transform text using the Aphanis Natural Humanizer Engine.
 
 ## Workflow
 

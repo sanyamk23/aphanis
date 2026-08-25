@@ -1,5 +1,5 @@
 """
-Untrace AI - Cryptographic Audit Certificate Generator.
+Aphanis - Cryptographic Audit Certificate Generator.
 Generates signed SHA-256 Zero-Trust Clean Certificates proving provenance hygiene for legal,
 publishing, or enterprise compliance.
 """
@@ -10,8 +10,8 @@ import time
 import uuid
 from typing import Dict, Any, Optional
 
-from untrace.stealth import StegoRiskMatrix
-from untrace.entropy import EntropyAnalyzer
+from aphanis.stealth import StegoRiskMatrix
+from aphanis.entropy import EntropyAnalyzer
 
 
 class AuditCertificateGenerator:
@@ -26,12 +26,12 @@ class AuditCertificateGenerator:
         risk_matrix = StegoRiskMatrix.evaluate(clean_output)
         entropy_metrics = EntropyAnalyzer.analyze(clean_output)
 
-        cert_id = f"UNTRACE-CERT-{uuid.uuid4().hex[:8].upper()}"
+        cert_id = f"APHANIS-CERT-{uuid.uuid4().hex[:8].upper()}"
 
         certificate = {
             "certificate_id": cert_id,
             "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-            "issuer": "Untrace AI Zero-Trust Provenance Firewall v1.4.0",
+            "issuer": "Aphanis Zero-Trust Provenance Firewall v1.4.0",
             "source_name": source_name,
             "verification_status": "ZERO_TRUST_CLEAN" if risk_matrix["overall_clean_score"] >= 90 else "VERIFIED_WITH_ISSUES",
             "hashes": {

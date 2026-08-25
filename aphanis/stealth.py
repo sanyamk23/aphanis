@@ -1,5 +1,5 @@
 """
-Untrace AI - Enterprise Stealth Engine & Stego Risk Matrix Module.
+Aphanis - Enterprise Stealth Engine & Stego Risk Matrix Module.
 Provides multi-dimensional provenance risk vector scoring and configurable stealth presets:
 PARANOID, AGGRESSIVE, STANDARD, MINIMAL.
 """
@@ -68,7 +68,7 @@ class StegoRiskMatrix:
 
         # Vector 1: Unicode Steganography
         v1_count = 0
-        from untrace.cleaner import UnicodeSanitizer
+        from aphanis.cleaner import UnicodeSanitizer
         for c in text:
             code = ord(c)
             if c in UnicodeSanitizer.ZERO_WIDTH_CHARS or c in UnicodeSanitizer.BIDI_CHARS:
@@ -79,8 +79,8 @@ class StegoRiskMatrix:
         v1_risk = min(100.0, round(v1_count * 25.0, 1))
 
         # Vector 2: Statistical N-Gram Model
-        from untrace.cleaner import StatisticalPerturber
-        from untrace.entropy import EntropyAnalyzer
+        from aphanis.cleaner import StatisticalPerturber
+        from aphanis.entropy import EntropyAnalyzer
         
         telltale_count = 0
         import re
@@ -95,7 +95,7 @@ class StegoRiskMatrix:
         v2_risk = min(100.0, round(v2_score, 1))
 
         # Vector 3: Metadata Container
-        from untrace.cleaner import AICommentSanitizer
+        from aphanis.cleaner import AICommentSanitizer
         comment_count = 0
         for pattern in AICommentSanitizer.SINGLE_LINE_PATTERNS + AICommentSanitizer.MULTI_LINE_PATTERNS:
             comment_count += len(re.findall(pattern, text, flags=re.IGNORECASE))

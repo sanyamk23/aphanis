@@ -11,13 +11,13 @@ const arch = process.arch;
 
 let binaryName;
 if (platform === 'darwin') {
-  binaryName = arch === 'arm64' ? 'untrace-darwin-arm64' : 'untrace-darwin-x64';
+  binaryName = arch === 'arm64' ? 'aphanis-darwin-arm64' : 'aphanis-darwin-x64';
 } else if (platform === 'linux') {
-  binaryName = arch === 'arm64' ? 'untrace-linux-arm64' : 'untrace-linux-x64';
+  binaryName = arch === 'arm64' ? 'aphanis-linux-arm64' : 'aphanis-linux-x64';
 } else if (platform === 'win32') {
-  binaryName = 'untrace-windows-x64.exe';
+  binaryName = 'aphanis-windows-x64.exe';
 } else {
-  binaryName = 'untrace';
+  binaryName = 'aphanis';
 }
 
 const binaryPath = path.join(binDir, binaryName);
@@ -28,11 +28,11 @@ if (fs.existsSync(binaryPath)) {
   process.exit(result.status || 0);
 }
 
-// Fallback: use system python with untrace package
-const pyResult = spawnSync('python3', ['-m', 'untrace.cli', ...process.argv.slice(2)], { stdio: 'inherit' });
+// Fallback: use system python with aphanis package
+const pyResult = spawnSync('python3', ['-m', 'aphanis.cli', ...process.argv.slice(2)], { stdio: 'inherit' });
 if (pyResult.status !== 0) {
-  console.error('❌ Untrace AI: No standalone binary found and Python untrace package not installed.');
-  console.error('   Install with: curl -fsSL https://untrace.ai/install.sh | bash');
+  console.error('❌ Aphanis: No standalone binary found and Python aphanis package not installed.');
+  console.error('   Install with: curl -fsSL https://aphanis.ai/install.sh | bash');
   process.exit(1);
 }
 process.exit(pyResult.status || 0);

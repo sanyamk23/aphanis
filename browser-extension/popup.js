@@ -1,4 +1,4 @@
-// Untrace AI Browser Extension - Popup Logic
+// Aphanis Browser Extension - Popup Logic
 // Runs entirely in the browser, no external dependencies.
 
 const ZERO_WIDTH_CHARS = [

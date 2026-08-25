@@ -1,5 +1,5 @@
 """
-Untrace AI - Spectral Frequency DCT Noise Injector.
+Aphanis - Spectral Frequency DCT Noise Injector.
 Modulates 2D Discrete Cosine Transform (DCT) high-frequency coefficients in images
 to disrupt spatial frequency domain watermarks (e.g., SynthID style marks).
 """

@@ -1,5 +1,5 @@
 name: 🐛 Bug Report
-description: Create a report to help us improve Untrace AI
+description: Create a report to help us improve Aphanis
 title: "[BUG]: "
 labels: ["bug"]
 body:
@@ -10,7 +10,7 @@ body:
     id: environment
     attributes:
       label: Environment Info
-      description: OS version, Python version, Untrace AI version (`untrace --version`).
+      description: OS version, Python version, Aphanis version (`aphanis --version`).
     validations:
       required: true
   - type: textarea

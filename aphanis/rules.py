@@ -1,6 +1,6 @@
 """
-Untrace AI - Custom Rule Engine.
-Enables user-defined rule configurations (.untracerules.json) for custom zero-width characters,
+Aphanis - Custom Rule Engine.
+Enables user-defined rule configurations (.aphanisrules.json) for custom zero-width characters,
 vocabulary blacklists/whitelists, regex replacements, and comment patterns.
 """
 
@@ -12,8 +12,8 @@ from typing import Dict, Any, List, Optional
 
 DEFAULT_STARTER_RULES: Dict[str, Any] = {
     "version": "1.0",
-    "name": "Default Custom Untrace Rules",
-    "description": "User-defined custom rules for Untrace AI sanitization.",
+    "name": "Default Custom Aphanis Rules",
+    "description": "User-defined custom rules for Aphanis sanitization.",
     "custom_zero_width_chars": [
         "\\u200B",
         "\\uFEFF",
@@ -43,7 +43,7 @@ DEFAULT_STARTER_RULES: Dict[str, Any] = {
 
 
 class RuleEngine:
-    """Loads and applies custom user rules (.untracerules.json)."""
+    """Loads and applies custom user rules (.aphanisrules.json)."""
 
     def __init__(self, rules_data: Optional[Dict[str, Any]] = None):
         self.rules_data = rules_data or {}
@@ -60,8 +60,8 @@ class RuleEngine:
         return cls(data)
 
     @staticmethod
-    def create_starter_rules_file(filepath: str = ".untracerules.json", overwrite: bool = False) -> str:
-        """Generates a template .untracerules.json starter configuration file."""
+    def create_starter_rules_file(filepath: str = ".aphanisrules.json", overwrite: bool = False) -> str:
+        """Generates a template .aphanisrules.json starter configuration file."""
         if os.path.exists(filepath) and not overwrite:
             return f"Rules file already exists at {filepath}"
 

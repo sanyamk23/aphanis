@@ -1,5 +1,5 @@
 """
-Untrace AI :: Zero-Trust AI Provenance Firewall & Enterprise Stealth Engine - CLI.
+Aphanis :: Zero-Trust AI Provenance Firewall & Enterprise Stealth Engine - CLI.
 """
 
 import argparse
@@ -8,18 +8,18 @@ import os
 import shutil
 from pathlib import Path
 
-from untrace.cleaner import clean_text, clean_file, StatisticalPerturber, FileMetadataSanitizer, audit_text
-from untrace.watcher import DirectoryWatcher
-from untrace.mcp_server import main as run_server
-from untrace.entropy import EntropyAnalyzer
-from untrace.rules import RuleEngine
-from untrace.stealth import StegoRiskMatrix, StealthMode
-from untrace.dashboard import launch_dashboard
-from untrace.humanizer import HumanizerEngine, humanize_text
-from untrace.clipboard import ClipboardDaemon
-from untrace.hooks import HookInstaller
-from untrace.cert import AuditCertificateGenerator
-from untrace.heatmap import HeatmapRenderer
+from aphanis.cleaner import clean_text, clean_file, StatisticalPerturber, FileMetadataSanitizer, audit_text
+from aphanis.watcher import DirectoryWatcher
+from aphanis.mcp_server import main as run_server
+from aphanis.entropy import EntropyAnalyzer
+from aphanis.rules import RuleEngine
+from aphanis.stealth import StegoRiskMatrix, StealthMode
+from aphanis.dashboard import launch_dashboard
+from aphanis.humanizer import HumanizerEngine, humanize_text
+from aphanis.clipboard import ClipboardDaemon
+from aphanis.hooks import HookInstaller
+from aphanis.cert import AuditCertificateGenerator
+from aphanis.heatmap import HeatmapRenderer
 
 
 ASCII_BANNER = r"""
@@ -28,12 +28,12 @@ ASCII_BANNER = r"""
  | |_| | .` | | | |   / / _ \ (__| _| / _ \ | | 
   \___/|_|\_| |_| |_|_\/_/ \_\___|___/_/ \_\___|
 
-🛡️ UNTRACE AI :: Enterprise Zero-Trust Provenance Firewall v1.4.0
+🛡️ APHANIS :: Enterprise Zero-Trust Provenance Firewall v1.4.0
 """
 
 
 def install_claude_code():
-    """Installs the untrace skill into user's global ~/.claude/skills/ directory."""
+    """Installs the aphanis skill into user's global ~/.claude/skills/ directory."""
     home = Path.home()
     target_dir = home / ".claude" / "skills" / "remove-ai-marks"
     target_dir.mkdir(parents=True, exist_ok=True)
@@ -46,7 +46,7 @@ def install_claude_code():
 
     if skill_src.exists():
         shutil.copy(skill_src, target_dir / "SKILL.md")
-        print(f"✅ Successfully installed Untrace Skill to {target_dir / 'SKILL.md'}")
+        print(f"✅ Successfully installed Aphanis Skill to {target_dir / 'SKILL.md'}")
     else:
         print("❌ Could not locate SKILL.md template.")
 
@@ -55,11 +55,11 @@ def install_claude_desktop():
     """Prints or writes the Claude Desktop JSON configuration."""
     config_snippet = """{
   "mcpServers": {
-    "untrace": {
+    "aphanis": {
       "command": "python3",
       "args": [
         "-m",
-        "untrace.cli",
+        "aphanis.cli",
         "server"
       ]
     }
@@ -113,8 +113,8 @@ def clean_directory(dir_path: str, mode: str = "paranoid", rules_engine: RuleEng
 
 def main():
     parser = argparse.ArgumentParser(
-        prog="untrace",
-        description="Untrace AI :: Enterprise Zero-Trust AI Provenance Firewall & Automatic Humanizer Engine"
+        prog="aphanis",
+        description="Aphanis :: Enterprise Zero-Trust AI Provenance Firewall & Automatic Humanizer Engine"
     )
     subparsers = parser.add_subparsers(dest="command", help="Sub-command help")
 
@@ -124,7 +124,7 @@ def main():
     clean_text_parser.add_argument("--mode", choices=["paranoid", "aggressive", "standard", "minimal"], default="paranoid", help="Stealth profile preset")
     clean_text_parser.add_argument("--tone", choices=["conversational", "casual", "tech-lead", "academic", "executive"], default="conversational", help="Humanizer tone persona")
     clean_text_parser.add_argument("--perturb", action="store_true", help="Rephrase statistical AI vocabulary markers")
-    clean_text_parser.add_argument("--rules", help="Path to custom rules JSON file (.untracerules.json)")
+    clean_text_parser.add_argument("--rules", help="Path to custom rules JSON file (.aphanisrules.json)")
     clean_text_parser.add_argument("--no-humanize", action="store_true", help="Disable automatic natural tone humanization")
 
     # clean-file
@@ -134,7 +134,7 @@ def main():
     clean_file_parser.add_argument("--jitter", action="store_true", help="Apply sub-pixel LSB noise jitter to images")
     clean_file_parser.add_argument("--dct-jitter", action="store_true", help="Apply 2D DCT spectral noise modulation to images")
     clean_file_parser.add_argument("--perturb", action="store_true", help="Rephrase statistical AI vocabulary")
-    clean_file_parser.add_argument("--rules", help="Path to custom rules JSON file (.untracerules.json)")
+    clean_file_parser.add_argument("--rules", help="Path to custom rules JSON file (.aphanisrules.json)")
     clean_file_parser.add_argument("--no-humanize", action="store_true", help="Disable automatic natural tone humanization")
 
     # clean-dir
@@ -142,7 +142,7 @@ def main():
     clean_dir_parser.add_argument("path", nargs="?", default=".", help="Directory path to clean (default: current directory)")
     clean_dir_parser.add_argument("--mode", choices=["paranoid", "aggressive", "standard", "minimal"], default="paranoid", help="Stealth profile preset")
     clean_dir_parser.add_argument("--no-perturb", action="store_true", help="Disable vocabulary rephrasing")
-    clean_dir_parser.add_argument("--rules", help="Path to custom rules JSON file (.untracerules.json)")
+    clean_dir_parser.add_argument("--rules", help="Path to custom rules JSON file (.aphanisrules.json)")
     clean_dir_parser.add_argument("--no-humanize", action="store_true", help="Disable automatic natural tone humanization")
 
     # humanize
@@ -156,7 +156,7 @@ def main():
 
     # install-hook / init-github-action
     subparsers.add_parser("install-hook", help="Install .git/hooks/pre-commit provenance hygiene hook")
-    subparsers.add_parser("init-github-action", help="Generate .github/workflows/untrace-hygiene.yml workflow")
+    subparsers.add_parser("init-github-action", help="Generate .github/workflows/aphanis-hygiene.yml workflow")
 
     # cert
     cert_parser = subparsers.add_parser("cert", help="Generate SHA-256 Zero-Trust Clean Certificate")
@@ -166,7 +166,7 @@ def main():
     # heatmap
     heatmap_parser = subparsers.add_parser("heatmap", help="Generate visual HTML forensics heatmap")
     heatmap_parser.add_argument("input", help="Text string or file path to analyze")
-    heatmap_parser.add_argument("-o", "--output", default="untrace_heatmap.html", help="Output HTML heatmap file path")
+    heatmap_parser.add_argument("-o", "--output", default="aphanis_heatmap.html", help="Output HTML heatmap file path")
 
     # matrix / audit / check
     matrix_parser = subparsers.add_parser("matrix", help="Evaluate 4-Vector Stego Risk Matrix for text string or file")
@@ -189,8 +189,8 @@ def main():
     ui_parser.add_argument("--no-open", action="store_true", help="Do not auto-open browser")
 
     # init-rules
-    rules_parser = subparsers.add_parser("init-rules", help="Generate starter .untracerules.json rules file")
-    rules_parser.add_argument("path", nargs="?", default=".untracerules.json", help="Output path for rules file")
+    rules_parser = subparsers.add_parser("init-rules", help="Generate starter .aphanisrules.json rules file")
+    rules_parser.add_argument("path", nargs="?", default=".aphanisrules.json", help="Output path for rules file")
     rules_parser.add_argument("--force", action="store_true", help="Overwrite existing rules file")
 
     # watch
@@ -202,7 +202,7 @@ def main():
 
     # install commands
     subparsers.add_parser("auto-install", help="1-click zero-command autopilot registration across Claude Code, Antigravity IDE, Cursor & Git")
-    subparsers.add_parser("install-claude-code", help="Install Untrace skill to global ~/.claude/skills/")
+    subparsers.add_parser("install-claude-code", help="Install Aphanis skill to global ~/.claude/skills/")
     subparsers.add_parser("install-claude-desktop", help="Show configuration snippet for Claude Desktop")
 
     args = parser.parse_args()
@@ -324,12 +324,12 @@ def main():
         run_server()
 
     elif args.command == "auto-install":
-        from untrace.autoinstall import AutoInstaller
+        from aphanis.autoinstall import AutoInstaller
         res = AutoInstaller.install_all()
-        print("🤖 --- UNTRACE AI ZERO-COMMAND AUTOPILOT REGISTRATION --- 🤖")
+        print("🤖 --- APHANIS ZERO-COMMAND AUTOPILOT REGISTRATION --- 🤖")
         for k, v in res.items():
             print(f"  ✅ Registered {k}: {v}")
-        print("\n✨ Untrace AI is now operating 100% on autopilot across your AI coding environments!")
+        print("\n✨ Aphanis is now operating 100% on autopilot across your AI coding environments!")
 
     elif args.command == "install-claude-code":
         install_claude_code()

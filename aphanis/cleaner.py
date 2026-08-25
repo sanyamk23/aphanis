@@ -1,5 +1,5 @@
 """
-Untrace AI - Ultimate AI Provenance, Watermark, Comment & Metadata Sanitization Module.
+Aphanis - Ultimate AI Provenance, Watermark, Comment & Metadata Sanitization Module.
 """
 
 import os
@@ -533,8 +533,8 @@ class AuditTool:
 
         # Include Statistical Entropy & 4-Vector Stego Risk Matrix
         try:
-            from untrace.entropy import EntropyAnalyzer
-            from untrace.stealth import StegoRiskMatrix
+            from aphanis.entropy import EntropyAnalyzer
+            from aphanis.stealth import StegoRiskMatrix
             report["entropy"] = EntropyAnalyzer.analyze(text)
             report["risk_matrix"] = StegoRiskMatrix.evaluate(text)
         except Exception:
@@ -575,7 +575,7 @@ class FileMetadataSanitizer:
             return False, f"File not found: {file_path}"
 
         if mode:
-            from untrace.stealth import StealthProfile
+            from aphanis.stealth import StealthProfile
             prof = StealthProfile(mode)
             perturb_stats = prof.perturb_stats
             disrupt_image_pixels = prof.disrupt_image_jitter
@@ -618,18 +618,18 @@ class FileMetadataSanitizer:
             elif ext in ['.png', '.jpg', '.jpeg']:
                 if disrupt_image_pixels:
                     try:
-                        from untrace.spectral import SpectralNoiseDisrupter
+                        from aphanis.spectral import SpectralNoiseDisrupter
                         return SpectralNoiseDisrupter.perturb_dct_spectral(file_path)
                     except Exception:
                         pass
                 return ImageWatermarkDisrupter.perturb_image(file_path, jitter=disrupt_image_pixels)
 
             elif ext == '.ipynb':
-                from untrace.office import OfficeSanitizer
+                from aphanis.office import OfficeSanitizer
                 return OfficeSanitizer.sanitize_ipynb(file_path)
 
             elif ext in ['.pptx', '.xlsx']:
-                from untrace.office import OfficeSanitizer
+                from aphanis.office import OfficeSanitizer
                 return OfficeSanitizer.sanitize_openxml_metadata(file_path)
 
             elif ext == '.pdf':
@@ -681,7 +681,7 @@ class FileMetadataSanitizer:
 def clean_text(text: str, perturb_stats: bool = False, clean_ai_comments: bool = True, rules_engine: Optional[Any] = None, mode: Optional[Any] = None, humanize: bool = True, tone: str = "conversational") -> str:
     """Helper function to clean raw text from zero-width watermarks, AI comments, statistical markers, and automatically humanize tone."""
     if mode:
-        from untrace.stealth import StealthProfile
+        from aphanis.stealth import StealthProfile
         prof = StealthProfile(mode)
         perturb_stats = prof.perturb_stats
         clean_ai_comments = prof.clean_ai_comments
@@ -694,7 +694,7 @@ def clean_text(text: str, perturb_stats: bool = False, clean_ai_comments: bool =
     if rules_engine:
         cleaned = rules_engine.apply_rules(cleaned)
     if humanize:
-        from untrace.humanizer import HumanizerEngine
+        from aphanis.humanizer import HumanizerEngine
         cleaned = HumanizerEngine.humanize(cleaned, tone=tone)
     return cleaned
 
@@ -706,7 +706,7 @@ def clean_file(file_path: str, disrupt_image_pixels: bool = False, perturb_stats
         ext = os.path.splitext(file_path)[1].lower()
         if ext in ['.md', '.txt', '.py', '.js', '.ts', '.jsx', '.tsx', '.json', '.html', '.htm', '.docx']:
             try:
-                from untrace.humanizer import HumanizerEngine
+                from aphanis.humanizer import HumanizerEngine
                 if ext == '.docx':
                     import docx
                     doc = docx.Document(file_path)

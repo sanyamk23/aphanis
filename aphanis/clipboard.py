@@ -1,5 +1,5 @@
 """
-Untrace AI - Clipboard Hygiene Daemon.
+Aphanis - Clipboard Hygiene Daemon.
 Monitors system clipboard in real time, automatically stripping zero-width spaces,
 C2PA traces, and applying natural humanization to copied text.
 """
@@ -9,7 +9,7 @@ import time
 import subprocess
 from typing import Optional
 
-from untrace.cleaner import clean_text
+from aphanis.cleaner import clean_text
 
 
 class ClipboardDaemon:
@@ -47,7 +47,7 @@ class ClipboardDaemon:
 
     def start(self, poll_interval: float = 0.8, mode: str = "paranoid"):
         """Starts real-time background clipboard monitoring loop."""
-        print(f"📋 Untrace AI Clipboard Hygiene Daemon Active... [Mode: {mode.upper()}]")
+        print(f"📋 Aphanis Clipboard Hygiene Daemon Active... [Mode: {mode.upper()}]")
         print("Press Ctrl+C to stop.\n")
 
         last_text = ""

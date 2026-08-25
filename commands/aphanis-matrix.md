@@ -1,9 +1,9 @@
 ---
-name: untrace-matrix
+name: aphanis-matrix
 description: Display detailed 4-Vector Stego Risk Matrix breakdown, Shannon entropy scores, and type-token metrics.
 ---
 
-# Untrace AI Matrix Command
+# Aphanis Matrix Command
 
 Calculates 4-Vector Stego Risk Matrix breakdown and entropy stats.
 

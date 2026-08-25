@@ -1,6 +1,6 @@
 """
-Untrace AI - Zero-Touch Autoinstaller.
-Automatically registers Untrace AI skills, rules, and hooks into Claude Code,
+Aphanis - Zero-Touch Autoinstaller.
+Automatically registers Aphanis skills, rules, and hooks into Claude Code,
 Antigravity IDE, Cursor IDE, and Git repositories so everything runs 100% on autopilot.
 """
 
@@ -11,11 +11,11 @@ from typing import Dict, List
 
 
 class AutoInstaller:
-    """Installs Untrace AI skills and rules globally across all AI coding environments."""
+    """Installs Aphanis skills and rules globally across all AI coding environments."""
 
     @classmethod
     def install_all(cls) -> Dict[str, str]:
-        """Installs Untrace AI into Claude Code, Antigravity IDE, and Cursor IDE."""
+        """Installs Aphanis into Claude Code, Antigravity IDE, and Cursor IDE."""
         results = {}
         home = Path.home()
 
@@ -52,7 +52,7 @@ class AutoInstaller:
 
         # 4. Local Git Pre-commit hook if inside a git repo
         if (Path(".") / ".git").exists():
-            from untrace.hooks import HookInstaller
+            from aphanis.hooks import HookInstaller
             hook_msg = HookInstaller.install_git_hook(".")
             results["git_hook"] = hook_msg
             gh_msg = HookInstaller.generate_github_action(".")

@@ -1,5 +1,5 @@
 import unittest
-from untrace.entropy import EntropyAnalyzer
+from aphanis.entropy import EntropyAnalyzer
 
 
 class TestEntropyAnalyzer(unittest.TestCase):

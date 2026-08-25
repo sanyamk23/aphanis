@@ -1,4 +1,4 @@
-// Untrace AI Background Service Worker
+// Aphanis Background Service Worker
 // Handles clipboard reading and message routing.
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -21,5 +21,5 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 // Auto-register MCP server for Claude Desktop if installed
 chrome.runtime.onInstalled.addListener(() => {
-  console.log('🛡️ Untrace AI extension installed - all platforms protected');
+  console.log('🛡️ Aphanis extension installed - all platforms protected');
 });

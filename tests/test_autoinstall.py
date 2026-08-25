@@ -2,7 +2,7 @@ import os
 import unittest
 from pathlib import Path
 
-from untrace.autoinstall import AutoInstaller, auto_install_all
+from aphanis.autoinstall import AutoInstaller, auto_install_all
 
 
 class TestAutoInstall(unittest.TestCase):

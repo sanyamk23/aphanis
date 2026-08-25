@@ -1,5 +1,5 @@
 """
-Untrace AI - Cyber-Stealth Interactive Web Dashboard & Visualizer.
+Aphanis - Cyber-Stealth Interactive Web Dashboard & Visualizer.
 Launches a zero-dependency local web server for multi-vector provenance auditing,
 stealth profile configuration, and visual diff inspection.
 """
@@ -11,16 +11,16 @@ import webbrowser
 import urllib.parse
 from typing import Dict, Any
 
-from untrace.cleaner import clean_text, audit_text
-from untrace.entropy import EntropyAnalyzer
-from untrace.stealth import StegoRiskMatrix, StealthProfile, StealthMode
+from aphanis.cleaner import clean_text, audit_text
+from aphanis.entropy import EntropyAnalyzer
+from aphanis.stealth import StegoRiskMatrix, StealthProfile, StealthMode
 
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🛡️ Untrace AI :: Zero-Trust AI Provenance Firewall</title>
+  <title>🛡️ Aphanis :: Zero-Trust AI Provenance Firewall</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -277,7 +277,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <body>
   <header>
     <div class="logo">
-      <span>🛡️ UNTRACE AI</span>
+      <span>🛡️ APHANIS</span>
       <span class="badge-firewall">Zero-Trust Firewall v1.2</span>
     </div>
     <div class="controls">
@@ -416,7 +416,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
       const blob = new Blob([cert], { type: 'application/json' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = `untrace_ai_audit_certificate.json`;
+      a.download = `aphanis_ai_audit_certificate.json`;
       a.click();
     }
   </script>
@@ -476,12 +476,12 @@ class DashboardRequestHandler(http.server.BaseHTTPRequestHandler):
 
 
 def launch_dashboard(port: int = 8080, open_browser: bool = True):
-    """Launches local Untrace AI Web Dashboard server."""
+    """Launches local Aphanis Web Dashboard server."""
     handler = DashboardRequestHandler
     try:
         with socketserver.TCPServer(("", port), handler) as httpd:
             url = f"http://localhost:{port}"
-            print(f"🚀 Untrace AI Cyber-Stealth Dashboard running at {url}")
+            print(f"🚀 Aphanis Cyber-Stealth Dashboard running at {url}")
             if open_browser:
                 webbrowser.open(url)
             try:

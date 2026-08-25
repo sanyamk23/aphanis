@@ -1,5 +1,5 @@
 """
-Untrace AI :: Zero-Trust AI Provenance Firewall & Automatic Humanizer - MCP Server.
+Aphanis :: Zero-Trust AI Provenance Firewall & Automatic Humanizer - MCP Server.
 """
 
 import sys
@@ -7,11 +7,11 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from untrace.cleaner import clean_text, clean_file, StatisticalPerturber
-from untrace.entropy import EntropyAnalyzer
-from untrace.stealth import StegoRiskMatrix
-from untrace.humanizer import HumanizerEngine
-from untrace.cert import AuditCertificateGenerator
+from aphanis.cleaner import clean_text, clean_file, StatisticalPerturber
+from aphanis.entropy import EntropyAnalyzer
+from aphanis.stealth import StegoRiskMatrix
+from aphanis.humanizer import HumanizerEngine
+from aphanis.cert import AuditCertificateGenerator
 
 
 def create_mcp_server():
@@ -19,7 +19,7 @@ def create_mcp_server():
     try:
         from mcp.server.fastmcp import FastMCP
         mcp = FastMCP(
-            name="Untrace AI Firewall & Humanizer",
+            name="Aphanis Firewall & Humanizer",
             instructions="Zero-Trust AI Provenance Firewall & Humanizer Engine: Strips zero-width watermarks, C2PA metadata, and automatically converts AI text into a natural human tone."
         )
 
@@ -93,7 +93,7 @@ def create_mcp_server():
 
         class FallbackStdioMCPServer:
             def run(self):
-                print("Running Stdio Fallback MCP Server for Untrace AI Firewall", file=sys.stderr)
+                print("Running Stdio Fallback MCP Server for Aphanis Firewall", file=sys.stderr)
                 while True:
                     line = sys.stdin.readline()
                     if not line:
@@ -111,7 +111,7 @@ def create_mcp_server():
                                 "result": {
                                     "protocolVersion": "2024-11-05",
                                     "capabilities": {"tools": {}},
-                                    "serverInfo": {"name": "Untrace AI Firewall & Humanizer", "version": "1.4.0"}
+                                    "serverInfo": {"name": "Aphanis Firewall & Humanizer", "version": "1.4.0"}
                                 }
                             }
                         elif method == "tools/list":

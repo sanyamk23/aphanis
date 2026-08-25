@@ -1,8 +1,8 @@
 """
-Untrace AI :: Enterprise Zero-Trust AI Provenance Firewall & Automatic Humanizer Platform.
+Aphanis :: Enterprise Zero-Trust AI Provenance Firewall & Automatic Humanizer Platform.
 """
 
-from untrace.cleaner import (
+from aphanis.cleaner import (
     UnicodeSanitizer,
     FileMetadataSanitizer,
     StatisticalPerturber,
@@ -12,17 +12,17 @@ from untrace.cleaner import (
     clean_file,
     audit_text,
 )
-from untrace.entropy import EntropyAnalyzer
-from untrace.rules import RuleEngine
-from untrace.stealth import StealthProfile, StealthMode, StegoRiskMatrix
-from untrace.humanizer import HumanizerEngine, humanize_text
-from untrace.clipboard import ClipboardDaemon
-from untrace.hooks import HookInstaller
-from untrace.office import OfficeSanitizer
-from untrace.cert import AuditCertificateGenerator
-from untrace.heatmap import HeatmapRenderer
-from untrace.spectral import SpectralNoiseDisrupter
-from untrace.autoinstall import AutoInstaller, auto_install_all
+from aphanis.entropy import EntropyAnalyzer
+from aphanis.rules import RuleEngine
+from aphanis.stealth import StealthProfile, StealthMode, StegoRiskMatrix
+from aphanis.humanizer import HumanizerEngine, humanize_text
+from aphanis.clipboard import ClipboardDaemon
+from aphanis.hooks import HookInstaller
+from aphanis.office import OfficeSanitizer
+from aphanis.cert import AuditCertificateGenerator
+from aphanis.heatmap import HeatmapRenderer
+from aphanis.spectral import SpectralNoiseDisrupter
+from aphanis.autoinstall import AutoInstaller, auto_install_all
 
 __version__ = "1.4.0"
 

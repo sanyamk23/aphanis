@@ -1,15 +1,15 @@
 #!/bin/bash
 #
-# Untrace AI - One-Click Standalone Installer
+# Aphanis - One-Click Standalone Installer
 # Zero dependencies. No Python, no Git, no GitHub account required.
 #
-# Usage:  curl -fsSL https://untrace.ai/install.sh | bash
+# Usage:  curl -fsSL https://aphanis.ai/install.sh | bash
 #
 
 set -euo pipefail
 
-REPO="sanyamk23/untrace-ai"
-BINARY_NAME="untrace"
+REPO="sanyamk23/aphanis"
+BINARY_NAME="aphanis"
 INSTALL_DIR="${INSTALL_DIR:-$HOME/.local/bin}"
 
 # ---- Platform detection ----
@@ -37,7 +37,7 @@ detect_platform
 echo "🔍 Detected platform: $PLATFORM_KEY"
 
 # ---- Download binary ----
-echo "⬇️  Downloading Untrace AI standalone binary..."
+echo "⬇️  Downloading Aphanis standalone binary..."
 BINARY_FILE="${BINARY_NAME}"
 if [[ "$PLATFORM_KEY" == "windows-"* ]]; then
     BINARY_FILE="${BINARY_NAME}.exe"
@@ -65,17 +65,17 @@ fi
 if [ ! -f "$DOWNLOAD_PATH" ]; then
     echo "⚠️  GitHub release not found, trying local build..."
     # Fallback: copy local binary if available
-    LOCAL_BIN="./dist/untrace"
+    LOCAL_BIN="./dist/aphanis"
     if [ -f "$LOCAL_BIN" ]; then
         cp "$LOCAL_BIN" "$DOWNLOAD_PATH"
         echo "✅ Using local pre-built binary"
     else
         echo "⚠️  No binary available. Installing via pip (requires Python)..."
         if command -v python3 &>/dev/null; then
-            python3 -m pip install untrace-ai --user 2>/dev/null || true
+            python3 -m pip install aphanis --user 2>/dev/null || true
             echo "✅ Installed via pip (Python required)"
             echo ""
-            echo "🎉 Untrace AI is ready! Run:  untrace --help"
+            echo "🎉 Aphanis is ready! Run:  aphanis --help"
             exit 0
         else
             echo "❌ Cannot download binary and Python is not available."
@@ -120,7 +120,7 @@ export PATH="$INSTALL_DIR:$PATH"
 claude_skill_dir="$HOME/.claude/skills/remove-ai-marks"
 if [ -d "$HOME/.claude" ]; then
     mkdir -p "$claude_skill_dir"
-    cp "$(python3 -c "import untrace; print(untrace.__path__[0])" 2>/dev/null)/../.claude/skills/remove-ai-marks/SKILL.md" "$claude_skill_dir/SKILL.md" 2>/dev/null || true
+    cp "$(python3 -c "import aphanis; print(aphanis.__path__[0])" 2>/dev/null)/../.claude/skills/remove-ai-marks/SKILL.md" "$claude_skill_dir/SKILL.md" 2>/dev/null || true
 fi
 
 # Claude Desktop MCP config
@@ -134,8 +134,8 @@ config = {}
 if os.path.exists(config_path):
     with open(config_path) as f:
         config = json.load(f)
-config.setdefault('mcpServers', {})['untrace'] = {
-    'command': 'untrace',
+config.setdefault('mcpServers', {})['aphanis'] = {
+    'command': 'aphanis',
     'args': ['server']
 }
 with open(config_path, 'w') as f:
@@ -145,18 +145,18 @@ fi
 
 # Git hook (optional)
 if [ -d ".git" ]; then
-    untrace install-hook 2>/dev/null && echo "✅ Git pre-commit hook installed" || true
+    aphanis install-hook 2>/dev/null && echo "✅ Git pre-commit hook installed" || true
 fi
 
 echo ""
-echo "🎉 Untrace AI is fully installed and running on autopilot!"
+echo "🎉 Aphanis is fully installed and running on autopilot!"
 echo ""
 echo "Usage:"
-echo "  untrace clean-text 'AI text here'     # Sanitize inline text"
-echo "  untrace clean-file document.md        # Clean a file"
-echo "  untrace clipboard                     # Start live clipboard daemon"
-echo "  untrace matrix 'AI text here'         # Check provenance risk score"
-echo "  untrace --help                        # Full command reference"
+echo "  aphanis clean-text 'AI text here'     # Sanitize inline text"
+echo "  aphanis clean-file document.md        # Clean a file"
+echo "  aphanis clipboard                     # Start live clipboard daemon"
+echo "  aphanis matrix 'AI text here'         # Check provenance risk score"
+echo "  aphanis --help                        # Full command reference"
 echo ""
 echo "🛡️  Em-dashes, zero-width chars, AI clichés, and metadata are"
 echo "    automatically stripped in every AI output across all platforms."

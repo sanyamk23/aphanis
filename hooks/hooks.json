@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 -m untrace.cli hooks pre-tool"
+            "command": "python3 -m aphanis.cli hooks pre-tool"
           }
         ]
       }
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 -m untrace.cli clean-file ${FILE_PATH}"
+            "command": "python3 -m aphanis.cli clean-file ${FILE_PATH}"
           }
         ]
       }

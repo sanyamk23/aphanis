@@ -1,5 +1,5 @@
 import unittest
-from untrace.stealth import StealthProfile, StealthMode, StegoRiskMatrix
+from aphanis.stealth import StealthProfile, StealthMode, StegoRiskMatrix
 
 
 class TestStealthEngine(unittest.TestCase):
@@ -37,7 +37,7 @@ class TestStealthEngine(unittest.TestCase):
         self.assertGreater(vectors["vector_2_statistical_model"]["risk_score"], 0.0)
 
     def test_clean_text_with_mode(self):
-        from untrace.cleaner import clean_text
+        from aphanis.cleaner import clean_text
         dirty_text = "Delve\u200b into crucial matters — today."
         clean_paranoid = clean_text(dirty_text, mode=StealthMode.PARANOID)
         self.assertNotIn("\u200b", clean_paranoid)

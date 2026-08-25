@@ -1,5 +1,5 @@
 """
-Untrace AI - Automatic Natural Humanizer Engine with Tone Personas.
+Aphanis - Automatic Natural Humanizer Engine with Tone Personas.
 Transforms formal, passive, and uniform LLM outputs into natural human tone.
 """
 
@@ -155,7 +155,7 @@ class HumanizerEngine:
         r'\bas referenced (?:above|earlier)\b': 'as said before',
         r'\bit is safe to say that\b': 'note that',
         r'\bit is fair to say that\b': 'note that',
-        r'\bit is clear that\b': '',
+        r"\bit is clear that\b": "it's clear",
         r'\bit should be noted that\b': '',
         r'\bit bears mentioning that\b': '',
         r'\bto be fair\b': '',

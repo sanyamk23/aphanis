@@ -1,5 +1,5 @@
 """
-Untrace AI - Jupyter Notebook (.ipynb) & Office (.pptx/.xlsx) Sanitizer.
+Aphanis - Jupyter Notebook (.ipynb) & Office (.pptx/.xlsx) Sanitizer.
 Cleans zero-width watermarks, AI comments, and document metadata properties from notebooks and office files.
 """
 
@@ -11,8 +11,8 @@ import tempfile
 import shutil
 from typing import Tuple
 
-from untrace.cleaner import UnicodeSanitizer, AICommentSanitizer
-from untrace.humanizer import HumanizerEngine
+from aphanis.cleaner import UnicodeSanitizer, AICommentSanitizer
+from aphanis.humanizer import HumanizerEngine
 
 
 class OfficeSanitizer:

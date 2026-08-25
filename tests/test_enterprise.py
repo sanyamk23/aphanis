@@ -2,11 +2,11 @@ import os
 import tempfile
 import unittest
 
-from untrace.cert import AuditCertificateGenerator
-from untrace.heatmap import HeatmapRenderer
-from untrace.hooks import HookInstaller
-from untrace.office import OfficeSanitizer
-from untrace.humanizer import HumanizerEngine
+from aphanis.cert import AuditCertificateGenerator
+from aphanis.heatmap import HeatmapRenderer
+from aphanis.hooks import HookInstaller
+from aphanis.office import OfficeSanitizer
+from aphanis.humanizer import HumanizerEngine
 
 
 class TestEnterpriseFeatures(unittest.TestCase):
@@ -17,7 +17,7 @@ class TestEnterpriseFeatures(unittest.TestCase):
         cert = AuditCertificateGenerator.generate_certificate(raw_text, clean_text)
 
         self.assertIn("certificate_id", cert)
-        self.assertTrue(cert["certificate_id"].startswith("UNTRACE-CERT-"))
+        self.assertTrue(cert["certificate_id"].startswith("APHANIS-CERT-"))
         self.assertIn("sha256_raw_input", cert["hashes"])
         self.assertIn("sha256_clean_output", cert["hashes"])
 
@@ -39,7 +39,7 @@ class TestEnterpriseFeatures(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             msg = HookInstaller.generate_github_action(tmpdir)
             self.assertIn("Successfully generated", msg)
-            self.assertTrue(os.path.exists(os.path.join(tmpdir, ".github", "workflows", "untrace-hygiene.yml")))
+            self.assertTrue(os.path.exists(os.path.join(tmpdir, ".github", "workflows", "aphanis-hygiene.yml")))
 
     def test_tone_personas(self):
         text = "Utilize this tool in order to build."
