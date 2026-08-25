@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-"""Wrapper that invokes the bundled Python module or standalone binary."""
+/** Wrapper that invokes the bundled Python module or standalone binary. */
 
 const { spawnSync } = require('child_process');
 const path = require('path');
