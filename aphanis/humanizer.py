@@ -368,11 +368,54 @@ class HumanizerEngine:
 
             # Randomly add conversational fillers to ~20% of sentences
             fillers = ["", "", "", "actually, ", "you know, ", "I mean, ", "well, ", "oh, "]
-            result = " ".join(s if _random.random() > 0.15 else _random.choice(fillers) + s[0].lower() + s[1:] for s in sentences)
+            def _add_filler(s):
+                if not s or len(s) < 2:
+                    return s
+                if _random.random() > 0.15:
+                    return s
+                prefix = _random.choice(fillers)
+                return prefix + s[0].lower() + s[1:]
+            result = " ".join(_add_filler(s) for s in sentences)
             result = re.sub(r'\s+([.!?])', r'\1', result)
             result = re.sub(r'([.!?])\s+([a-z])', lambda m: m.group(1) + " " + m.group(2).upper(), result)
         else:
             result = " ".join(sentences) if sentences else result
+
+        # 6. Break AI list/structured patterns: convert "- X - Y" lines into prose
+        # Detectors flag perfect parallel bullet structure. Merge into flowing text.
+        bullet_lines = re.findall(r'(?:^|\n)\s*[-*•]\s+([^\n]+)', result)
+        if len(bullet_lines) >= 3:
+            # Replace the bullet block with a single prose paragraph
+            block_pattern = re.compile(r'(?:^|\n)\s*[-*•]\s+[^\n]+(?:\n\s*[-*•]\s+[^\n]+){2,}', re.MULTILINE)
+            block = block_pattern.search(result)
+            if block:
+                items = re.findall(r'[-*•]\s+([^\n]+)', block.group())
+                # Group into 2-3 sentence flowing prose with varied connectives
+                if len(items) >= 4:
+                    mid = len(items) // 2
+                    first_chunk = items[:mid]
+                    second_chunk = items[mid:]
+                    connectors = [
+                        "You've got things like {items}, and then there's {rest}.",
+                        "It usually breaks down into {items}, plus {rest}.",
+                        "Some of the main pieces here are {items}, with {rest} on top of that.",
+                    ]
+                    items_str_first = ", ".join(first_chunk[:-1]) + " and " + first_chunk[-1] if len(first_chunk) > 1 else first_chunk[0]
+                    items_str_rest = ", ".join(second_chunk[:-1]) + " and " + second_chunk[-1] if len(second_chunk) > 1 else second_chunk[0]
+                    template = _random.choice(connectors)
+                    prose = template.format(items=items_str_first, rest=items_str_rest)
+                else:
+                    items_str = ", ".join(items[:-1]) + " and " + items[-1] if len(items) > 1 else items[0]
+                    prose = "This includes " + items_str + "."
+                result = block_pattern.sub(prose, result, count=1)
+
+        # 7. Break formulaic opener "It covers:" / "These include:" / "The goal is..."
+        result = re.sub(r'\bIt covers:\s*\n', "It includes things like ", result, flags=re.IGNORECASE)
+        result = re.sub(r'\bThe goal is usually one of:\s*', "Most of the time you're going for ", result, flags=re.IGNORECASE)
+        result = re.sub(r'\bThe goal is\s*', "What you'\''re really after is ", result, flags=re.IGNORECASE)
+
+        # 8. Break "Most teams mix X with Y" formulaic closers
+        result = re.sub(r'\bMost teams mix\s+', "A lot of teams will pair ", result, flags=re.IGNORECASE)
 
         result = re.sub(r'[ \t]+', ' ', result)
 
