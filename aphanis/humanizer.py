@@ -164,7 +164,6 @@ class HumanizerEngine:
         r'\bin the grand scheme of things\b': '',
         r"\bin today's (?:fast-)?paced (?:digital|business|tech|market) (?:landscape|environment|arena|world)\b": 'currently,',
         r'\bin an increasingly (?:digital|interconnected|complex|global) (?:world|landscape|era|environment|age)\b': 'currently,',
-        r'\bagainst the backdrop of\b': 'amid',
         r'\bin the backdrop of\b': 'amid',
         r'\bin the wake of (?:the|this|recent|ongoing)\b': 'after',
         r'\bin the light of (?:the|recent|ongoing)\b': 'after',
@@ -256,41 +255,30 @@ class HumanizerEngine:
             for pattern, replacement in cls.ACADEMIC_SWAPS.items():
                 result = re.sub(pattern, replacement, result, flags=re.IGNORECASE)
 
+        def _preserve_case(m, replacement: str) -> str:
+            word = m.group(0)
+            if word.isupper():
+                return replacement.upper()
+            if word.istitle():
+                return replacement.capitalize()
+            if word[0].isupper():
+                return replacement.capitalize()
+            return replacement
+
         # 1. Reduce wordy filler phrases
         if reduce_fillers:
             for pattern, replacement in cls.FILLER_PHRASES_MAP.items():
-                def _repl(m):
-                    word = m.group(0)
-                    if word and word[0].isupper():
-                        return replacement.capitalize()
-                    elif word.isupper():
-                        return replacement.upper()
-                    return replacement
-                result = re.sub(pattern, _repl, result, flags=re.IGNORECASE)
+                result = re.sub(pattern, lambda m, r=replacement: _preserve_case(m, r), result, flags=re.IGNORECASE)
 
         # 2. Adapt rigid transitions
         if adapt_transitions:
             for pattern, replacement in cls.TRANSITIONS_MAP.items():
-                def _repl_trans(m):
-                    word = m.group(0)
-                    if word and word[0].isupper():
-                        return replacement.capitalize()
-                    elif word.isupper():
-                        return replacement.upper()
-                    return replacement
-                result = re.sub(pattern, _repl_trans, result, flags=re.IGNORECASE)
+                result = re.sub(pattern, lambda m, r=replacement: _preserve_case(m, r), result, flags=re.IGNORECASE)
 
         # 3. Synthesize natural contractions
         if apply_contractions:
             for pattern, replacement in cls.CONTRACTIONS_MAP.items():
-                def _repl_contract(m):
-                    word = m.group(0)
-                    if word and word[0].isupper():
-                        return replacement.capitalize()
-                    elif word.isupper():
-                        return replacement.upper()
-                    return replacement
-                result = re.sub(pattern, _repl_contract, result, flags=re.IGNORECASE)
+                result = re.sub(pattern, lambda m, r=replacement: _preserve_case(m, r), result, flags=re.IGNORECASE)
 
         # 4. Break AI list/structured patterns BEFORE sentence splitting
         #    Convert "- X - Y" bullet lines into flowing prose
@@ -332,7 +320,7 @@ class HumanizerEngine:
         result = re.sub(r',\s*([.!?])', r'\1', result)
 
         # 7. Sentence-level structural humanization
-        sentences = re.split(r'(?<=[.!?])\s+', result)
+        sentences = [s for s in re.split(r'(?<=[.!?])\s+', result) if s.strip()]
         if len(sentences) > 2:
             # Merge short consecutive sentences (AI over-splits)
             merged = []
@@ -341,14 +329,16 @@ class HumanizerEngine:
                 curr = sentences[i]
                 while len(curr.split()) < 10 and i + 1 < len(sentences):
                     nxt = sentences[i + 1]
-                    if len(nxt.split()) < 30 and len(nxt) > 2:
-                        curr = curr.rstrip('.!?') + ", " + nxt[0].lower() + nxt[1:]
-                        i += 1
-                    else:
+                    if not nxt or len(nxt.strip()) < 3:
                         break
+                    if len(nxt.split()) >= 30:
+                        break
+                    curr = curr.rstrip('.!?') + ", " + nxt[0].lower() + nxt[1:]
+                    i += 1
                 merged.append(curr)
                 i += 1
-            sentences = merged
+            sentences = [s for s in sentences if s.strip()]
+            merged = [s for s in merged if s.strip()]
 
             # Split long sentences (>30 words) on relative clauses
             split_result = []
