@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aphanis"
-version = "1.4.0"
+version = "1.4.1"
 description = "Aphanis :: Enterprise Zero-Trust AI Provenance Firewall, Automatic Humanizer Engine & Stego Matrix."
 readme = "README.md"
 authors = [
