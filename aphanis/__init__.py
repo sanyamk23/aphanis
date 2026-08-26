@@ -24,7 +24,7 @@ from aphanis.heatmap import HeatmapRenderer
 from aphanis.spectral import SpectralNoiseDisrupter
 from aphanis.autoinstall import AutoInstaller, auto_install_all
 
-__version__ = "1.4.1"
+__version__ = "1.4.2"
 
 __all__ = [
     "UnicodeSanitizer",
