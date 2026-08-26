@@ -243,6 +243,8 @@ class HumanizerEngine:
 
     @classmethod
     def humanize(cls, text: str, apply_contractions: bool = True, reduce_fillers: bool = True, adapt_transitions: bool = True, tone: str = "conversational") -> str:
+        import random as _random
+        _random.seed(42)
         """
         Transforms text into natural human tone by synthesizing contractions,
         reducing passive filler phrases, and applying tone personas (conversational, casual, tech-lead, academic, executive).
@@ -299,6 +301,79 @@ class HumanizerEngine:
                 result = re.sub(pattern, _repl_contract, result, flags=re.IGNORECASE)
 
         # 4. Clean up double spaces created by edits
+        result = re.sub(r'[ \t]+', ' ', result)
+
+        # 5. Structural humanization: vary sentence length & rhythm
+        import random as _random
+
+        # More AI-specific sentence starters and phrasing to replace/restructure
+        AI_STRUCTURE_PATTERNS = [
+            (r"\bIn (?:today's|the|this) (?:increasingly\s+)?(?:digital|modern|fast-paced|interconnected|evolving)\s+(?:landscape|world|era|environment|age|context)\b", "These days,"),
+            (r"\bIn (?:today's|the|this)\s+(?:landscape|world|era|environment|age|context)\b", "These days,"),
+            (r"\bin today's day and age\b", "these days,"),
+            (r'\bstands as a cornerstone of\b', "is foundational to"),
+            (r'\bstands as an? (?:cornerstone|linchpin|pillar) of\b', "is key to"),
+            (r'\bsynergistically\b', "together"),
+            (r'\bwork synergistically\b', "work hand in hand"),
+            (r'\breduces (?:complexity|inefficiency)\b', "simplifies"),
+            (r'\bprior to (?:this|that)\b', "before this"),
+            (r'\bIn conclusion,?\b', "Overall,"),
+            (r'\bTo summarize,?\b', "In short,"),
+            (r'\bTo sum up,?\b', "In short,"),
+        ]
+
+        for pattern, replacement in AI_STRUCTURE_PATTERNS:
+            result = re.sub(pattern, replacement, result, flags=re.IGNORECASE)
+
+        # Clean up double commas (,,  -> ,) caused by replacements that end with comma
+        result = re.sub(r',\s*,', ',', result)
+        result = re.sub(r',\s*([.!?])', r'\1', result)
+
+        sentences = re.split(r'(?<=[.!?])\s+', result)
+        if len(sentences) > 2:
+            # Merge short consecutive sentences (AI over-splits)
+            merged = []
+            i = 0
+            while i < len(sentences):
+                curr = sentences[i]
+                # Merge if this sentence is very short (< 10 words) and next exists
+                while len(curr.split()) < 10 and i + 1 < len(sentences):
+                    nxt = sentences[i + 1]
+                    if len(nxt.split()) < 30 and len(nxt) > 1:
+                        curr = curr.rstrip('.!?') + ", " + nxt[0].lower() + nxt[1:]
+                        i += 1
+                    else:
+                        break
+                merged.append(curr)
+                i += 1
+            sentences = merged
+
+            # Split long sentences (>30 words) on relative clauses to simulate human overtalk
+            split_result = []
+            for s in sentences:
+                words = s.split()
+                if len(words) > 30:
+                    # Split before "which", "that", "including", "such as"
+                    parts = re.split(r'\s+(which|that|including|such as)\s+', s)
+                    if len(parts) > 1:
+                        first = parts[0]
+                        rest = " ".join(parts[1:])
+                        split_result.append(first.rstrip('.!?') + ".")
+                        split_result.append(rest)
+                    else:
+                        split_result.append(s)
+                else:
+                    split_result.append(s)
+            sentences = split_result
+
+            # Randomly add conversational fillers to ~20% of sentences
+            fillers = ["", "", "", "actually, ", "you know, ", "I mean, ", "well, ", "oh, "]
+            result = " ".join(s if _random.random() > 0.15 else _random.choice(fillers) + s[0].lower() + s[1:] for s in sentences)
+            result = re.sub(r'\s+([.!?])', r'\1', result)
+            result = re.sub(r'([.!?])\s+([a-z])', lambda m: m.group(1) + " " + m.group(2).upper(), result)
+        else:
+            result = " ".join(sentences) if sentences else result
+
         result = re.sub(r'[ \t]+', ' ', result)
 
         return result

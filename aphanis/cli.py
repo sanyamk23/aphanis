@@ -111,6 +111,58 @@ def clean_directory(dir_path: str, mode: str = "paranoid", rules_engine: RuleEng
     print(f"\n🎉 Finished recursively sanitizing {count} files in {target_path} [Stealth Profile: {mode.upper()}, Humanized: {humanize}]")
 
 
+def handle_hook_event(event: str, tone: str = "conversational"):
+    """
+    Claude Code hook handler.
+
+    Reads a JSON payload from stdin (the Claude Code hook protocol) and:
+    - pre-tool: exits silently so the tool call proceeds (no blocking)
+    - post-tool: reads the tool's output text and emits a JSON `hookSpecificOutput.additionalContext`
+      that wraps the humanized version of the text. Claude Code merges `additionalContext` into
+      the model's next-turn context, so the humanized text effectively replaces the original
+      for downstream steps.
+    """
+    import json
+
+    try:
+        raw = sys.stdin.read()
+        payload = json.loads(raw) if raw.strip() else {}
+    except Exception:
+        payload = {}
+
+    if event == "pre-tool":
+        # No-op: we never block tool calls. Exit 0 silently.
+        return
+
+    if event == "post-tool":
+        tool_name = payload.get("tool_name", "")
+        tool_response = payload.get("tool_response", "")
+
+        # Only humanize text-shaped responses (Bash output, Read content, Grep matches, etc.)
+        if not isinstance(tool_response, str) or len(tool_response.strip()) < 40:
+            return
+
+        # Skip binary / obviously-non-prose payloads.
+        if tool_name in ("Read", "Glob", "LS"):
+            return
+
+        humanized = HumanizerEngine.humanize(tool_response, tone=tone)
+
+        # Emit Claude Code "additionalContext" hook output. When present, Claude Code
+        # prepends the additionalContext to the next model turn, which is what we want
+        # so that subsequent code/text produced by Claude incorporates the humanized
+        # version instead of the raw AI text.
+        out = {
+            "hookSpecificOutput": {
+                "hookEventName": "PostToolUse",
+                "additionalContext": humanized,
+            }
+        }
+        sys.stdout.write(json.dumps(out))
+
+    return
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog="aphanis",
@@ -204,6 +256,11 @@ def main():
     subparsers.add_parser("auto-install", help="1-click zero-command autopilot registration across Claude Code, Antigravity IDE, Cursor & Git")
     subparsers.add_parser("install-claude-code", help="Install Aphanis skill to global ~/.claude/skills/")
     subparsers.add_parser("install-claude-desktop", help="Show configuration snippet for Claude Desktop")
+
+    # hooks (PreToolUse / PostToolUse from Claude Code plugin manifest)
+    hooks_parser = subparsers.add_parser("hooks", help="Claude Code hook handlers (called from plugin hooks.json)")
+    hooks_parser.add_argument("event", choices=["pre-tool", "post-tool"], help="Hook event type")
+    hooks_parser.add_argument("--tone", choices=["conversational", "casual", "tech-lead", "academic", "executive"], default="conversational", help="Humanizer tone persona")
 
     args = parser.parse_args()
 
@@ -336,6 +393,9 @@ def main():
 
     elif args.command == "install-claude-desktop":
         install_claude_desktop()
+
+    elif args.command == "hooks":
+        handle_hook_event(args.event, tone=args.tone)
 
     else:
         print(ASCII_BANNER)
