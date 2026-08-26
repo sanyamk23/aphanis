@@ -4,6 +4,7 @@ Transforms formal, passive, and uniform LLM outputs into natural human tone.
 """
 
 import re
+import random
 from typing import Dict, Any, List, Optional
 
 
@@ -76,13 +77,13 @@ class HumanizerEngine:
         r'\bmake a decision\b': 'decide',
         r'\bcome to a conclusion\b': 'conclude',
         r'\bprovide assistance to\b': 'help',
-        # ── Expanded AI telltales ──────────────────────────────────────────────
-        r'\bin today\'s (?:digital|modern|fast-paced|ever-evolving|interconnected) (?:landscape|world|era|environment)\b': 'today,',
+        # Expanded AI telltales
+        r"\bin today's (?:digital|modern|fast-paced|ever-evolving|interconnected) (?:landscape|world|era|environment)\b": 'today,',
         r'\bin an increasingly (?:digital|complex|interconnected) (?:world|landscape|era|environment)\b': 'today,',
-        r'\bin today\'s (?:fast-)?paced world\b': 'today,',
-        r'\bin today\'s (?:ever-)?evolving digital landscape\b': 'today,',
+        r"\bin today's (?:fast-)?paced world\b": 'today,',
+        r"\bin today's (?:ever-)?evolving digital landscape\b": 'today,',
         r'\bin the modern (?:era|world|age)\b': 'today,',
-        r'\bin today\'s (?:digital|modern) age\b': 'today,',
+        r"\bin today's (?:digital|modern) age\b": 'today,',
         r'\bin the (?:contemporary|current|ever-changing|ever-evolving) landscape\b': 'today,',
         r'\bthe landscape of\b': 'how',
         r'\bin recent years\b': 'lately,',
@@ -90,8 +91,6 @@ class HumanizerEngine:
         r'\bprior to (this|that)\b': 'before',
         r'\bhas the ability to\b': 'can',
         r'\bpossesses the ability to\b': 'can',
-        r'\bhas the capability of\b': 'can',
-        r'\bhave the capability of\b': 'can',
         r'\bhas the potential to\b': 'could',
         r'\bplays a (?:crucial|pivotal|key|central|vital|fundamental) role in\b': 'helps',
         r'\bserves as a (?:cornerstone|linchpin|vital component|key element) of\b': 'is part of',
@@ -145,7 +144,6 @@ class HumanizerEngine:
         r'\bneedless to say\b': '',
         r'\ball things being equal\b': '',
         r'\bas a general rule\b': '',
-        # ── Overconfident hedging & redundant qualifiers ──────────────────────────
         r'\bit is (?:safe to assume|worth noting|important to note|essential to|imperative to) (?:that)?\b': '',
         r'\bit goes without saying\b': '',
         r'\bit stands to reason that\b': '',
@@ -155,7 +153,6 @@ class HumanizerEngine:
         r'\bas referenced (?:above|earlier)\b': 'as said before',
         r'\bit is safe to say that\b': 'note that',
         r'\bit is fair to say that\b': 'note that',
-        r"\bit is clear that\b": "it's clear",
         r'\bit should be noted that\b': '',
         r'\bit bears mentioning that\b': '',
         r'\bto be fair\b': '',
@@ -165,15 +162,13 @@ class HumanizerEngine:
         r'\bit is essential to recognize that\b': 'remember that',
         r'\bin a (?:broader|wider|larger) context\b': '',
         r'\bin the grand scheme of things\b': '',
-        # ── Formulaic opening phrases ─────────────────────────────────────────────
-        r'\bin today\'s (?:fast-)?paced (?:digital|business|tech|market) (?:landscape|environment|arena|world)\b': 'currently,',
+        r"\bin today's (?:fast-)?paced (?:digital|business|tech|market) (?:landscape|environment|arena|world)\b": 'currently,',
         r'\bin an increasingly (?:digital|interconnected|complex|global) (?:world|landscape|era|environment|age)\b': 'currently,',
         r'\bagainst the backdrop of\b': 'amid',
         r'\bin the backdrop of\b': 'amid',
         r'\bin the wake of (?:the|this|recent|ongoing)\b': 'after',
         r'\bin the light of (?:the|recent|ongoing)\b': 'after',
-        r'\bin today\'s day and age\b': 'today,',
-        # ── Redundant/overly formal phrasing ───────────────────────────────────
+        r"\bin today's day and age\b": 'today,',
         r'\bwith a view to\b': 'to',
         r'\bfor the purpose of doing\b': 'to',
         r'\bserves as an? (?:indication|indicator) of\b': 'shows',
@@ -201,7 +196,6 @@ class HumanizerEngine:
         r'\bto summarize,\b': 'in short,',
         r'\bto sum up,\b': 'in short,',
         r'\bas a matter of fact,\b': 'in fact,',
-        # ── Additional organic transitions ───────────────────────────────────────
         r'\bas a consequence,\b': 'so,',
         r'\bas a result of this,\b': 'because of this,',
         r'\bin light of this,\b': 'given this,',
@@ -213,7 +207,7 @@ class HumanizerEngine:
         r'\bthus, it can be concluded that\b': 'so',
     }
 
-    # ── AI uncertainty / hedge word removal ──────────────────────────────────
+    # AI uncertainty / hedge word removal
     HEDGE_WORDS: Dict[str, str] = {
         r'\bvery\b\s+': '',
         r'\bsomewhat\b': '',
@@ -243,8 +237,6 @@ class HumanizerEngine:
 
     @classmethod
     def humanize(cls, text: str, apply_contractions: bool = True, reduce_fillers: bool = True, adapt_transitions: bool = True, tone: str = "conversational") -> str:
-        import random as _random
-        _random.seed(42)
         """
         Transforms text into natural human tone by synthesizing contractions,
         reducing passive filler phrases, and applying tone personas (conversational, casual, tech-lead, academic, executive).
@@ -260,7 +252,7 @@ class HumanizerEngine:
             for pattern, replacement in cls.TECH_LEAD_SWAPS.items():
                 result = re.sub(pattern, replacement, result, flags=re.IGNORECASE)
         elif tone == "academic":
-            apply_contractions = False # Academic style avoids contractions but strips LLM clichés
+            apply_contractions = False
             for pattern, replacement in cls.ACADEMIC_SWAPS.items():
                 result = re.sub(pattern, replacement, result, flags=re.IGNORECASE)
 
@@ -300,35 +292,46 @@ class HumanizerEngine:
                     return replacement
                 result = re.sub(pattern, _repl_contract, result, flags=re.IGNORECASE)
 
-        # 4. Clean up double spaces created by edits
-        result = re.sub(r'[ \t]+', ' ', result)
+        # 4. Break AI list/structured patterns BEFORE sentence splitting
+        #    Convert "- X - Y" bullet lines into flowing prose
+        bullet_lines = re.findall(r'(?:^|\n)\s*[-*]\s+([^\n]+)', result)
+        if len(bullet_lines) >= 3:
+            block_pattern = re.compile(r'(?:^|\n)\s*[-*]\s+[^\n]+(?:\n\s*[-*]\s+[^\n]+){2,}', re.MULTILINE)
+            block = block_pattern.search(result)
+            if block:
+                items = re.findall(r'[-*]\s+([^\n]+)', block.group())
+                items = [i.strip() for i in items if i.strip()]
+                if len(items) >= 4:
+                    mid = len(items) // 2
+                    first_chunk = items[:mid]
+                    second_chunk = items[mid:]
+                    connectors = [
+                        "You've got things like {items}, and then there's {rest}.",
+                        "It usually breaks down into {items}, plus {rest}.",
+                        "Some of the main pieces here are {items}, with {rest} on top of that.",
+                    ]
+                    items_str_first = ", ".join(first_chunk[:-1]) + " and " + first_chunk[-1] if len(first_chunk) > 1 else first_chunk[0]
+                    items_str_rest = ", ".join(second_chunk[:-1]) + " and " + second_chunk[-1] if len(second_chunk) > 1 else second_chunk[0]
+                    template = random.choice(connectors)
+                    prose = template.format(items=items_str_first, rest=items_str_rest)
+                else:
+                    items_str = ", ".join(items[:-1]) + " and " + items[-1] if len(items) > 1 else items[0]
+                    prose = "This includes " + items_str + "."
+                result = block_pattern.sub(prose, result, count=1)
 
-        # 5. Structural humanization: vary sentence length & rhythm
-        import random as _random
+        # 5. Break formulaic openers
+        result = re.sub(r'\bIt covers:\s*\n', "It includes things like ", result, flags=re.IGNORECASE)
+        result = re.sub(r'\bThe goal is usually one of:\s*', "Most of the time you're going for ", result, flags=re.IGNORECASE)
+        result = re.sub(r'\bThe goal is\s*', "What you're really after is ", result, flags=re.IGNORECASE)
+        result = re.sub(r'\bMost teams mix\s+', "A lot of teams will pair ", result, flags=re.IGNORECASE)
+        result = re.sub(r'\bMost teams use\s+', "A lot of teams use ", result, flags=re.IGNORECASE)
+        result = re.sub(r'\bThese are\b', "These include", result, flags=re.IGNORECASE)
 
-        # More AI-specific sentence starters and phrasing to replace/restructure
-        AI_STRUCTURE_PATTERNS = [
-            (r"\bIn (?:today's|the|this) (?:increasingly\s+)?(?:digital|modern|fast-paced|interconnected|evolving)\s+(?:landscape|world|era|environment|age|context)\b", "These days,"),
-            (r"\bIn (?:today's|the|this)\s+(?:landscape|world|era|environment|age|context)\b", "These days,"),
-            (r"\bin today's day and age\b", "these days,"),
-            (r'\bstands as a cornerstone of\b', "is foundational to"),
-            (r'\bstands as an? (?:cornerstone|linchpin|pillar) of\b', "is key to"),
-            (r'\bsynergistically\b', "together"),
-            (r'\bwork synergistically\b', "work hand in hand"),
-            (r'\breduces (?:complexity|inefficiency)\b', "simplifies"),
-            (r'\bprior to (?:this|that)\b', "before this"),
-            (r'\bIn conclusion,?\b', "Overall,"),
-            (r'\bTo summarize,?\b', "In short,"),
-            (r'\bTo sum up,?\b', "In short,"),
-        ]
-
-        for pattern, replacement in AI_STRUCTURE_PATTERNS:
-            result = re.sub(pattern, replacement, result, flags=re.IGNORECASE)
-
-        # Clean up double commas (,,  -> ,) caused by replacements that end with comma
+        # 6. Clean up double commas and trailing commas before periods
         result = re.sub(r',\s*,', ',', result)
         result = re.sub(r',\s*([.!?])', r'\1', result)
 
+        # 7. Sentence-level structural humanization
         sentences = re.split(r'(?<=[.!?])\s+', result)
         if len(sentences) > 2:
             # Merge short consecutive sentences (AI over-splits)
@@ -336,10 +339,9 @@ class HumanizerEngine:
             i = 0
             while i < len(sentences):
                 curr = sentences[i]
-                # Merge if this sentence is very short (< 10 words) and next exists
                 while len(curr.split()) < 10 and i + 1 < len(sentences):
                     nxt = sentences[i + 1]
-                    if len(nxt.split()) < 30 and len(nxt) > 1:
+                    if len(nxt.split()) < 30 and len(nxt) > 2:
                         curr = curr.rstrip('.!?') + ", " + nxt[0].lower() + nxt[1:]
                         i += 1
                     else:
@@ -348,12 +350,11 @@ class HumanizerEngine:
                 i += 1
             sentences = merged
 
-            # Split long sentences (>30 words) on relative clauses to simulate human overtalk
+            # Split long sentences (>30 words) on relative clauses
             split_result = []
             for s in sentences:
                 words = s.split()
                 if len(words) > 30:
-                    # Split before "which", "that", "including", "such as"
                     parts = re.split(r'\s+(which|that|including|such as)\s+', s)
                     if len(parts) > 1:
                         first = parts[0]
@@ -366,14 +367,15 @@ class HumanizerEngine:
                     split_result.append(s)
             sentences = split_result
 
-            # Randomly add conversational fillers to ~20% of sentences
-            fillers = ["", "", "", "actually, ", "you know, ", "I mean, ", "well, ", "oh, "]
+            # Add conversational fillers to ~15% of sentences
+            fillers = ["Actually, ", "You know, ", "I mean, ", "Well, ", "Oh, "]
             def _add_filler(s):
-                if not s or len(s) < 2:
+                if not s or len(s) < 3:
                     return s
-                if _random.random() > 0.15:
+                if random.random() > 0.15:
                     return s
-                prefix = _random.choice(fillers)
+                prefix = random.choice(fillers)
+                # Only lowercase first char if there's actually a filler to prepend
                 return prefix + s[0].lower() + s[1:]
             result = " ".join(_add_filler(s) for s in sentences)
             result = re.sub(r'\s+([.!?])', r'\1', result)
@@ -381,42 +383,7 @@ class HumanizerEngine:
         else:
             result = " ".join(sentences) if sentences else result
 
-        # 6. Break AI list/structured patterns: convert "- X - Y" lines into prose
-        # Detectors flag perfect parallel bullet structure. Merge into flowing text.
-        bullet_lines = re.findall(r'(?:^|\n)\s*[-*•]\s+([^\n]+)', result)
-        if len(bullet_lines) >= 3:
-            # Replace the bullet block with a single prose paragraph
-            block_pattern = re.compile(r'(?:^|\n)\s*[-*•]\s+[^\n]+(?:\n\s*[-*•]\s+[^\n]+){2,}', re.MULTILINE)
-            block = block_pattern.search(result)
-            if block:
-                items = re.findall(r'[-*•]\s+([^\n]+)', block.group())
-                # Group into 2-3 sentence flowing prose with varied connectives
-                if len(items) >= 4:
-                    mid = len(items) // 2
-                    first_chunk = items[:mid]
-                    second_chunk = items[mid:]
-                    connectors = [
-                        "You've got things like {items}, and then there's {rest}.",
-                        "It usually breaks down into {items}, plus {rest}.",
-                        "Some of the main pieces here are {items}, with {rest} on top of that.",
-                    ]
-                    items_str_first = ", ".join(first_chunk[:-1]) + " and " + first_chunk[-1] if len(first_chunk) > 1 else first_chunk[0]
-                    items_str_rest = ", ".join(second_chunk[:-1]) + " and " + second_chunk[-1] if len(second_chunk) > 1 else second_chunk[0]
-                    template = _random.choice(connectors)
-                    prose = template.format(items=items_str_first, rest=items_str_rest)
-                else:
-                    items_str = ", ".join(items[:-1]) + " and " + items[-1] if len(items) > 1 else items[0]
-                    prose = "This includes " + items_str + "."
-                result = block_pattern.sub(prose, result, count=1)
-
-        # 7. Break formulaic opener "It covers:" / "These include:" / "The goal is..."
-        result = re.sub(r'\bIt covers:\s*\n', "It includes things like ", result, flags=re.IGNORECASE)
-        result = re.sub(r'\bThe goal is usually one of:\s*', "Most of the time you're going for ", result, flags=re.IGNORECASE)
-        result = re.sub(r'\bThe goal is\s*', "What you'\''re really after is ", result, flags=re.IGNORECASE)
-
-        # 8. Break "Most teams mix X with Y" formulaic closers
-        result = re.sub(r'\bMost teams mix\s+', "A lot of teams will pair ", result, flags=re.IGNORECASE)
-
+        # 8. Final cleanup
         result = re.sub(r'[ \t]+', ' ', result)
 
         return result
