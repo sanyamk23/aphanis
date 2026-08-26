@@ -281,7 +281,85 @@ class HumanizerEngine:
                 result = re.sub(pattern, lambda m, r=replacement: _preserve_case(m, r), result, flags=re.IGNORECASE)
 
         # 4. Break AI list/structured patterns BEFORE sentence splitting
-        #    Convert "- X - Y" bullet lines into flowing prose
+        # 4a. Numbered pillars: "4 Core Pillars..." heading + "1. Strategy\n..." blocks
+        #     -> fold heading + items into one flowing paragraph so the template
+        #        "Numbered Pillars + Common Goals" detectors key on is gone.
+        #     If a heading line immediately precedes a numbered block, absorb the heading
+        #     into the prose intro rather than leaving it to be filler-mangled.
+        numbered_block = re.search(
+            r'\n\s*\d+\s*Core Pillars[^\n]*\n((?:\s*\d+[\.\)]\s+[^\n]+\n(?:[^\n]*\n){0,2}){2,})',
+            result, flags=re.IGNORECASE
+        )
+        if numbered_block:
+            items_raw = re.findall(r'\d+[\.\)]\s+([^\n]+)', numbered_block.group(1))
+            items_raw = [i.strip() for i in items_raw if i.strip()]
+            if len(items_raw) >= 3:
+                # Strip trailing detail lines that were captured as part of item title; keep short titles
+                titles = [re.split(r'\s*[-:]\s*', t)[0].strip() if len(t) < 60 else t for t in items_raw]
+                heading_intro = random.choice([
+                    "There are a few core pieces to it — ",
+                    "It usually comes down to a handful of things — ",
+                    "A few things actually matter here — ",
+                ])
+                prose_items = ", ".join(titles[:-1]) + " and " + titles[-1] if len(titles) > 1 else titles[0]
+                result = result[:numbered_block.start()] + "\n" + heading_intro + prose_items + ".\n" + result[numbered_block.end():]
+        else:
+            # Generic heading + numbered block absorption: if a short heading line
+            # immediately precedes a numbered list, fold it into the same intro.
+            generic_heading_numbered = re.search(
+                r'\n([^\n]{2,80})\n((?:\s*\d+[\.\)]\s+[^\n]+\n?){3,})',
+                result
+            )
+            if generic_heading_numbered:
+                heading = generic_heading_numbered.group(1).strip()
+                # heuristic: heading is not itself a list item and is short, Title-ish
+                is_heading = (
+                    not re.match(r'\s*\d+[\.\)]\s+', heading)
+                    and not re.match(r'\s*[-*]\s+', heading)
+                    and len(heading) < 80
+                    and len(heading.split()) <= 8
+                )
+                if is_heading:
+                    items_raw = re.findall(r'\d+[\.\)]\s+([^\n]+)', generic_heading_numbered.group(2))
+                    items_raw = [i.strip() for i in items_raw if i.strip()]
+                    if len(items_raw) >= 3:
+                        titles = [re.split(r'\s*[-:]\s*', t)[0].strip() if len(t) < 60 else t for t in items_raw]
+                        heading_intro = random.choice([
+                            "There are a few core pieces to it — ",
+                            "It usually comes down to a handful of things — ",
+                            "A few things actually matter here — ",
+                        ])
+                        prose_items = ", ".join(titles[:-1]) + " and " + titles[-1] if len(titles) > 1 else titles[0]
+                        result = result[:generic_heading_numbered.start()] + "\n" + heading_intro + prose_items + ".\n" + result[generic_heading_numbered.end():]
+
+        # 4b. "Common Goals of SMM:" bullet block — fold into prose (must run BEFORE generic bullet/numbered handling)
+        #     Ensure a space/newline after colon so "SMM:Some..." is not produced.
+        common_goals = re.search(r'Common Goals[^\n]*:\s*\n((?:\s*[-*]\s+[^\n]+\n?){2,})', result, flags=re.IGNORECASE)
+        if common_goals:
+            goal_items = re.findall(r'[-*]\s+([^\n]+)', common_goals.group(1))
+            goal_items = [g.strip() for g in goal_items if g.strip()]
+            if goal_items:
+                goal_str = ", ".join(goal_items[:-1]) + " and " + goal_items[-1] if len(goal_items) > 1 else goal_items[0]
+                prose = "You're usually chasing " + goal_str.lower() + "."
+                # Insert with surrounding newlines/spaces so colon+prose spacing is correct
+                # Need to ensure a space/newline between preceding text and prose
+                prefix = result[:common_goals.start()]
+                suffix = result[common_goals.end():]
+                # Ensure prose is separated by a space/newline from surrounding text
+                if prefix and not prefix.endswith(("\n", " ", "\t")):
+                    prose = " " + prose
+                else:
+                    # ensure at least a newline+ space separation for readability
+                    if prefix.endswith(":") or prefix.rstrip().endswith(":"):
+                        prose = " " + prose.lstrip()
+                # also ensure suffix starts with space/newline if needed
+                if suffix and not suffix.startswith(("\n", " ", ".", ",", "!", "?")):
+                    prose = prose + " "
+                result = prefix + prose + suffix
+                # Also normalize any lingering ":\n" + prose without space already handled, but fix stray ":\S"
+                result = re.sub(r':([A-Za-z])', r': \1', result)
+
+        # 4c. Bullets: "- X" / "* X" lines into flowing prose (only if not already consumed)
         bullet_lines = re.findall(r'(?:^|\n)\s*[-*]\s+([^\n]+)', result)
         if len(bullet_lines) >= 3:
             block_pattern = re.compile(r'(?:^|\n)\s*[-*]\s+[^\n]+(?:\n\s*[-*]\s+[^\n]+){2,}', re.MULTILINE)
@@ -305,7 +383,83 @@ class HumanizerEngine:
                 else:
                     items_str = ", ".join(items[:-1]) + " and " + items[-1] if len(items) > 1 else items[0]
                     prose = "This includes " + items_str + "."
-                result = block_pattern.sub(prose, result, count=1)
+                # Ensure prose is inserted with proper spacing after a heading colon
+                replacement = prose
+                # If block was preceded by a colon (heading), ensure space
+                pre = result[:block.start()]
+                if pre.rstrip().endswith(":"):
+                    # block includes leading newline, so prose will follow colon+newline; ensure space
+                    replacement = " " + prose if not prose.startswith(" ") else prose
+                result = result[:block.start()] + replacement + result[block.end():]
+                result = re.sub(r':([A-Za-z])', r': \1', result)
+
+        # 4d. Numbered lists: "1. Strategy" / "2) Content" contiguous block -> flowing prose (same templates as bullets)
+        #     Must run BEFORE sentence split so markers are not lost; absorb preceding heading if present.
+        #     Detection: lines starting with optional spaces + digit(s) + '.' or ')'
+        numbered_lines = re.findall(r'(?:^|\n)\s*\d+[\.\)]\s+[^\n]+', result)
+        if len(numbered_lines) >= 3:
+            block_pattern_num = re.compile(r'(?:^|\n)\s*\d+[\.\)]\s+[^\n]+(?:\n\s*\d+[\.\)]\s+[^\n]+){2,}', re.MULTILINE)
+            block = block_pattern_num.search(result)
+            if block:
+                pre_text = result[:block.start()]
+                lines_before = pre_text.split("\n")
+                heading_candidate = ""
+                heading_start_idx = None
+                for idx in range(len(lines_before) - 1, -1, -1):
+                    cand = lines_before[idx].strip()
+                    if not cand:
+                        continue
+                    if re.match(r'\s*\d+[\.\)]\s+', cand) or re.match(r'\s*[-*]\s+', cand):
+                        break
+                    if len(cand) < 80 and len(cand.split()) <= 8 and not cand.endswith("."):
+                        heading_candidate = cand
+                        heading_start_idx = idx
+                        break
+                    else:
+                        break
+                absorb_heading = False
+                if heading_candidate and heading_start_idx is not None:
+                    # require heading is substantive (>8 chars or >1 word) and ends without period, and directly precedes block
+                    if len(heading_candidate) > 8 or len(heading_candidate.split()) > 1:
+                        if pre_text.rstrip().endswith(heading_candidate):
+                            absorb_heading = True
+
+                items = re.findall(r'\d+[\.\)]\s+([^\n]+)', block.group())
+                items = [re.split(r'\s*[-:]\s*', i.strip())[0].strip() if len(i.strip()) < 60 else i.strip() for i in items if i.strip()]
+                if len(items) >= 3:
+                    if absorb_heading:
+                        # Absorb heading into intro + direct item join (no double template)
+                        heading_intro = random.choice([
+                            "There are a few core pieces to it — ",
+                            "It usually comes down to a handful of things — ",
+                            "A few things actually matter here — ",
+                        ])
+                        prose_items = ", ".join(items[:-1]) + " and " + items[-1] if len(items) > 1 else items[0]
+                        prose = heading_intro + prose_items + "."
+                        heading_pos = pre_text.rstrip().rfind(heading_candidate)
+                        if heading_pos != -1:
+                            result = result[:heading_pos] + "\n" + prose + result[block.end():]
+                        else:
+                            result = result[:block.start()] + "\n" + prose + result[block.end():]
+                    else:
+                        if len(items) >= 4:
+                            mid = len(items) // 2
+                            first_chunk = items[:mid]
+                            second_chunk = items[mid:]
+                            connectors = [
+                                "You've got things like {items}, and then there's {rest}.",
+                                "It usually breaks down into {items}, plus {rest}.",
+                                "Some of the main pieces here are {items}, with {rest} on top of that.",
+                            ]
+                            items_str_first = ", ".join(first_chunk[:-1]) + " and " + first_chunk[-1] if len(first_chunk) > 1 else first_chunk[0]
+                            items_str_rest = ", ".join(second_chunk[:-1]) + " and " + second_chunk[-1] if len(second_chunk) > 1 else second_chunk[0]
+                            template = random.choice(connectors)
+                            prose = template.format(items=items_str_first, rest=items_str_rest)
+                        else:
+                            items_str = ", ".join(items[:-1]) + " and " + items[-1] if len(items) > 1 else items[0]
+                            prose = "This includes " + items_str + "."
+                        result = result[:block.start()] + "\n" + prose + result[block.end():]
+                    result = re.sub(r':([A-Za-z])', r': \1', result)
 
         # 5. Break formulaic openers
         result = re.sub(r'\bIt covers:\s*\n', "It includes things like ", result, flags=re.IGNORECASE)
@@ -315,9 +469,10 @@ class HumanizerEngine:
         result = re.sub(r'\bMost teams use\s+', "A lot of teams use ", result, flags=re.IGNORECASE)
         result = re.sub(r'\bThese are\b', "These include", result, flags=re.IGNORECASE)
 
-        # 6. Clean up double commas and trailing commas before periods
+        # 6. Clean up double commas, trailing commas before periods, and double newlines
         result = re.sub(r',\s*,', ',', result)
         result = re.sub(r',\s*([.!?])', r'\1', result)
+        result = re.sub(r'\n{3,}', '\n\n', result)
 
         # 7. Sentence-level structural humanization
         sentences = [s for s in re.split(r'(?<=[.!?])\s+', result) if s.strip()]
@@ -365,7 +520,24 @@ class HumanizerEngine:
                 if random.random() > 0.15:
                     return s
                 prefix = random.choice(fillers)
-                # Only lowercase first char if there's actually a filler to prepend
+                # Guard: don't lowercase a heading-like Titlecase word (e.g. Analytics -> analytics)
+                # Preserve case if original word looks like a heading: length<30, first char upper.
+                stripped = s.lstrip()
+                if stripped and stripped[0].isupper():
+                    m = re.match(r"[A-Za-z']+", stripped)
+                    word = m.group(0) if m else ""
+                    clean = re.sub(r"[^A-Za-z]", "", word)
+                    if clean and len(clean) < 30 and clean[0].isupper():
+                        common_sentence_starters = {
+                            "It","Its","It's","This","That","There","They","You","We","I","In","On","At","For","With","And","But","So","Because","If","When","Most","These","Those","What","A","An","The","Do","Does","Is","Are","Was","Were","Will","Would","Should","Could","To","As","Of","By"
+                        }
+                        # Titlecase heading heuristic: Titlecase/UPPER and not a common sentence starter, and shortish context
+                        if clean not in common_sentence_starters and (clean.istitle() or clean.isupper()):
+                            # heading-like -> preserve original case
+                            return prefix + s
+                        # also preserve any all-caps heading like SMM
+                        if clean.isupper() and len(clean) > 1:
+                            return prefix + s
                 return prefix + s[0].lower() + s[1:]
             result = " ".join(_add_filler(s) for s in sentences)
             result = re.sub(r'\s+([.!?])', r'\1', result)

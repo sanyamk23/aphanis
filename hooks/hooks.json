@@ -21,6 +21,17 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -m aphanis.cli hooks post-tool"
+          }
+        ]
+      }
     ]
   }
 }
