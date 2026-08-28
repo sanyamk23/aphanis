@@ -215,8 +215,7 @@ class HumanizerEngine:
         r'\bpretty\b\s+': '',
         r'\breally\b\s+': '',
         r'\bextremely\b': 'very',
-        r'\b(t?extremely) (?:important|critical|vital|essential)\b': r'\1',
-        r'\b(very) (?:important|critical|vital|essential)\b': r'\1',
+        r'\b(very|extremely)\s+(?:important|critical|vital|essential)\b': r'\1',
     }
 
     # Persona specific overrides
@@ -286,20 +285,33 @@ class HumanizerEngine:
         #        "Numbered Pillars + Common Goals" detectors key on is gone.
         #     If a heading line immediately precedes a numbered block, absorb the heading
         #     into the prose intro rather than leaving it to be filler-mangled.
+        # The anchor accepts either start-of-string or a preceding newline so
+        # this fires when "4 Core Pillars" is the first line of the text.
         numbered_block = re.search(
-            r'\n\s*\d+\s*Core Pillars[^\n]*\n((?:\s*\d+[\.\)]\s+[^\n]+\n(?:[^\n]*\n){0,2}){2,})',
+            r'(?:^|\n)\s*\d+\s*Core Pillars[^\n]*\n((?:\s*\d+[\.\)]\s+[^\n]+\n?){2,})',
             result, flags=re.IGNORECASE
         )
         if numbered_block:
             items_raw = re.findall(r'\d+[\.\)]\s+([^\n]+)', numbered_block.group(1))
             items_raw = [i.strip() for i in items_raw if i.strip()]
             if len(items_raw) >= 3:
-                # Strip trailing detail lines that were captured as part of item title; keep short titles
-                titles = [re.split(r'\s*[-:]\s*', t)[0].strip() if len(t) < 60 else t for t in items_raw]
+                # Strip the trailing em-dash / colon detail from each item so the
+                # folded list reads as titles only — keeps the line short and
+                # stops "Strategy — picking goals" from leaking into the join.
+                # NB: only split on em-dash, en-dash, or colon — NOT on a plain
+                # hyphen, which is a valid compound-word connector
+                # ("high-quality", "real-time", "data-driven"). Also handle
+                # the " - " form that UnicodeSanitizer produces when it
+                # normalizes an em-dash to "space-hyphen-space".
+                titles = []
+                for t in items_raw:
+                    split = re.split(r'\s+(?:[—–-]|:)\s+', t, maxsplit=1)
+                    head = split[0].strip()
+                    titles.append(head if head else t)
                 heading_intro = random.choice([
-                    "There are a few core pieces to it — ",
-                    "It usually comes down to a handful of things — ",
-                    "A few things actually matter here — ",
+                    "It usually comes down to a handful of things: ",
+                    "The main pieces are usually ",
+                    "A few things actually matter here: ",
                 ])
                 prose_items = ", ".join(titles[:-1]) + " and " + titles[-1] if len(titles) > 1 else titles[0]
                 result = result[:numbered_block.start()] + "\n" + heading_intro + prose_items + ".\n" + result[numbered_block.end():]
@@ -323,11 +335,11 @@ class HumanizerEngine:
                     items_raw = re.findall(r'\d+[\.\)]\s+([^\n]+)', generic_heading_numbered.group(2))
                     items_raw = [i.strip() for i in items_raw if i.strip()]
                     if len(items_raw) >= 3:
-                        titles = [re.split(r'\s*[-:]\s*', t)[0].strip() if len(t) < 60 else t for t in items_raw]
+                        titles = [re.split(r'\s+(?:[—–-]|:)\s+', t, maxsplit=1)[0].strip() if len(t) < 60 else t for t in items_raw]
                         heading_intro = random.choice([
-                            "There are a few core pieces to it — ",
-                            "It usually comes down to a handful of things — ",
-                            "A few things actually matter here — ",
+                            "It usually comes down to a handful of things: ",
+                            "The main pieces are usually ",
+                            "A few things actually matter here: ",
                         ])
                         prose_items = ", ".join(titles[:-1]) + " and " + titles[-1] if len(titles) > 1 else titles[0]
                         result = result[:generic_heading_numbered.start()] + "\n" + heading_intro + prose_items + ".\n" + result[generic_heading_numbered.end():]
@@ -339,8 +351,19 @@ class HumanizerEngine:
             goal_items = re.findall(r'[-*]\s+([^\n]+)', common_goals.group(1))
             goal_items = [g.strip() for g in goal_items if g.strip()]
             if goal_items:
-                goal_str = ", ".join(goal_items[:-1]) + " and " + goal_items[-1] if len(goal_items) > 1 else goal_items[0]
-                prose = "You're usually chasing " + goal_str.lower() + "."
+                # Lowercase all items so the join reads as "build brand awareness, drive
+                # website traffic, generate leads and sales, and encourage community and loyalty"
+                lowered = []
+                for g in goal_items:
+                    if not g:
+                        continue
+                    # Handle multi-word items: lowercase first char, leave rest alone
+                    lowered.append(g[0].lower() + g[1:])
+                if len(lowered) == 1:
+                    goal_str = lowered[0]
+                else:
+                    goal_str = ", ".join(lowered[:-1]) + " and " + lowered[-1]
+                prose = "You're usually going for " + goal_str + "."
                 # Insert with surrounding newlines/spaces so colon+prose spacing is correct
                 # Need to ensure a space/newline between preceding text and prose
                 prefix = result[:common_goals.start()]
@@ -425,14 +448,14 @@ class HumanizerEngine:
                             absorb_heading = True
 
                 items = re.findall(r'\d+[\.\)]\s+([^\n]+)', block.group())
-                items = [re.split(r'\s*[-:]\s*', i.strip())[0].strip() if len(i.strip()) < 60 else i.strip() for i in items if i.strip()]
+                items = [re.split(r'\s+(?:[—–-]|:)\s+', i.strip(), maxsplit=1)[0].strip() if len(i.strip()) < 60 else i.strip() for i in items if i.strip()]
                 if len(items) >= 3:
                     if absorb_heading:
                         # Absorb heading into intro + direct item join (no double template)
                         heading_intro = random.choice([
-                            "There are a few core pieces to it — ",
-                            "It usually comes down to a handful of things — ",
-                            "A few things actually matter here — ",
+                            "It usually comes down to a handful of things: ",
+                            "The main pieces are usually ",
+                            "A few things actually matter here: ",
                         ])
                         prose_items = ", ".join(items[:-1]) + " and " + items[-1] if len(items) > 1 else items[0]
                         prose = heading_intro + prose_items + "."

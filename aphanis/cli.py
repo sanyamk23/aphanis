@@ -3,6 +3,7 @@ Aphanis :: Zero-Trust AI Provenance Firewall & Enterprise Stealth Engine - CLI.
 """
 
 import argparse
+import json
 import sys
 import os
 import shutil
@@ -20,6 +21,11 @@ from aphanis.clipboard import ClipboardDaemon
 from aphanis.hooks import HookInstaller
 from aphanis.cert import AuditCertificateGenerator
 from aphanis.heatmap import HeatmapRenderer
+from aphanis.provenance import (
+    ProvenanceRecord,
+    verify_provenance_record,
+    record_to_text,
+)
 
 
 ASCII_BANNER = r"""
@@ -221,6 +227,34 @@ def main():
     humanize_parser.add_argument("input", nargs="?", help="Text string or file path to humanize. If empty, reads from stdin.")
     humanize_parser.add_argument("--tone", choices=["conversational", "casual", "tech-lead", "academic", "executive"], default="conversational", help="Humanizer tone persona")
 
+    # scrub-text / scrub-file — hygiene-only path for content the user owns.
+    # Strips invisible Unicode and AI-attribution comments from text, or
+    # container metadata from files. Does NOT humanize or perturb statistical
+    # AI vocabulary. Requires explicit --i-own-this-content confirmation.
+    scrub_text_parser = subparsers.add_parser(
+        "scrub-text",
+        help="Hygiene-only Unicode & comment strip on text or stdin. No humanization, no AI-vocab perturbation.",
+    )
+    scrub_text_parser.add_argument("text", nargs="?", help="Text string to scrub. If empty, reads from stdin.")
+    scrub_text_parser.add_argument(
+        "--i-own-this-content",
+        action="store_true",
+        help="Required confirmation that you own or have rights to modify this content.",
+    )
+    scrub_text_parser.add_argument("--rules", help="Path to custom rules JSON file (.aphanisrules.json)")
+
+    scrub_file_parser = subparsers.add_parser(
+        "scrub-file",
+        help="Hygiene-only metadata & Unicode strip on a file. No humanization, no image pixel disruption.",
+    )
+    scrub_file_parser.add_argument("path", help="Path to file to scrub (.txt, .md, .py, .json, .html, .svg, .docx, .pptx, .xlsx, .ipynb, .pdf, etc.)")
+    scrub_file_parser.add_argument(
+        "--i-own-this-content",
+        action="store_true",
+        help="Required confirmation that you own or have rights to modify this file.",
+    )
+    scrub_file_parser.add_argument("--rules", help="Path to custom rules JSON file (.aphanisrules.json)")
+
     # clipboard
     clip_parser = subparsers.add_parser("clipboard", help="Run real-time background clipboard hygiene daemon")
     clip_parser.add_argument("--mode", choices=["paranoid", "aggressive", "standard", "minimal"], default="paranoid", help="Stealth profile preset")
@@ -233,6 +267,27 @@ def main():
     cert_parser = subparsers.add_parser("cert", help="Generate SHA-256 Zero-Trust Clean Certificate")
     cert_parser.add_argument("input", help="Text string or file path to certify")
     cert_parser.add_argument("-o", "--output", help="Output JSON certificate file path")
+
+    # provenance-text / provenance-file / verify-provenance
+    prov_text_parser = subparsers.add_parser(
+        "provenance-text",
+        help="Generate a signed Honest Provenance Record describing signals detected in text (no cleaning)",
+    )
+    prov_text_parser.add_argument("text", nargs="?", help="Text string to audit. If empty, reads from stdin.")
+    prov_text_parser.add_argument("-o", "--output", help="Output JSON record file path (default: stdout)")
+
+    prov_file_parser = subparsers.add_parser(
+        "provenance-file",
+        help="Generate a signed Honest Provenance Record describing signals detected in a file (no cleaning)",
+    )
+    prov_file_parser.add_argument("path", help="Path to file to audit (text, code, markdown)")
+    prov_file_parser.add_argument("-o", "--output", help="Output JSON record file path (default: stdout)")
+
+    verify_prov_parser = subparsers.add_parser(
+        "verify-provenance",
+        help="Verify the signature on a Honest Provenance Record JSON file",
+    )
+    verify_prov_parser.add_argument("path", help="Path to a provenance record JSON file")
 
     # heatmap
     heatmap_parser = subparsers.add_parser("heatmap", help="Generate visual HTML forensics heatmap")
@@ -320,9 +375,59 @@ def main():
                     target_input = f.read()
         else:
             target_input = sys.stdin.read()
-        
+
         humanized = HumanizerEngine.humanize(target_input, tone=args.tone)
         sys.stdout.write(humanized)
+
+    elif args.command == "scrub-text":
+        if not args.i_own_this_content:
+            sys.stderr.write("❌ scrub-text requires --i-own-this-content confirmation.\n")
+            sys.stderr.write("   This tool scrubs invisible Unicode and AI-attribution comments from text.\n")
+            sys.stderr.write("   It does NOT humanize or perturb statistical AI vocabulary.\n")
+            sys.stderr.write("   Confirm you own or have rights to modify the content:\n")
+            sys.stderr.write("     aphanis scrub-text --i-own-this-content \"...\"\n")
+            sys.exit(2)
+        if args.text:
+            target_input = args.text
+        else:
+            target_input = sys.stdin.read()
+
+        # Hygiene-only path: Unicode stripping + AI-comment removal.
+        # No humanize, no statistical perturbation, no risk scoring.
+        cleaned = clean_text(
+            target_input,
+            perturb_stats=False,
+            clean_ai_comments=True,
+            rules_engine=rules_engine,
+            mode=None,
+            humanize=False,
+        )
+        sys.stdout.write(cleaned)
+
+    elif args.command == "scrub-file":
+        if not args.i_own_this_content:
+            sys.stderr.write("❌ scrub-file requires --i-own-this-content confirmation.\n")
+            sys.stderr.write("   This tool strips file container metadata and invisible Unicode from your own files.\n")
+            sys.stderr.write("   It does NOT humanize, perturb AI vocabulary, or disrupt image pixels.\n")
+            sys.stderr.write("   Confirm you own or have rights to modify the file:\n")
+            sys.stderr.write(f"     aphanis scrub-file --i-own-this-content {args.path}\n")
+            sys.exit(2)
+        if not os.path.exists(args.path):
+            sys.stderr.write(f"❌ File not found: {args.path}\n")
+            sys.exit(1)
+
+        # Hygiene-only path: container metadata + Unicode stripping only.
+        # No image pixel disruption, no statistical perturbation, no humanization.
+        success, msg = clean_file(
+            args.path,
+            disrupt_image_pixels=False,
+            perturb_stats=False,
+            rules_engine=rules_engine,
+            mode=None,
+            humanize=False,
+        )
+        print(msg)
+        sys.exit(0 if success else 1)
 
     elif args.command == "clipboard":
         daemon = ClipboardDaemon()
@@ -342,12 +447,74 @@ def main():
         if os.path.exists(target_input):
             with open(target_input, 'r', encoding='utf-8', errors='ignore') as f:
                 target_input = f.read()
-        
+
         cleaned = clean_text(target_input)
         cert_data = AuditCertificateGenerator.generate_certificate(target_input, cleaned, source_name=source_name)
         out_file = AuditCertificateGenerator.save_certificate_file(cert_data, output_path=args.output)
         print(f"✅ Generated SHA-256 Zero-Trust Clean Certificate: {out_file}")
         print(f"Certificate ID: {cert_data['certificate_id']}")
+
+    elif args.command == "provenance-text":
+        if args.text:
+            target_input = args.text
+        else:
+            target_input = sys.stdin.read()
+
+        record = ProvenanceRecord(target_input, source_name="inline text").generate()
+        if args.output:
+            with open(args.output, "w", encoding="utf-8") as f:
+                json.dump(record, f, indent=2, ensure_ascii=False)
+            print(f"✅ Provenance record written to {args.output}")
+        else:
+            print(json.dumps(record, indent=2, ensure_ascii=False))
+
+    elif args.command == "provenance-file":
+        path = args.path
+        if not os.path.exists(path):
+            print(f"❌ File not found: {path}")
+            sys.exit(1)
+        with open(path, "r", encoding="utf-8", errors="ignore") as f:
+            target_input = f.read()
+
+        record = ProvenanceRecord(target_input, source_name=path).generate()
+        if args.output:
+            with open(args.output, "w", encoding="utf-8") as f:
+                json.dump(record, f, indent=2, ensure_ascii=False)
+            print(f"✅ Provenance record written to {args.output}")
+        else:
+            print(json.dumps(record, indent=2, ensure_ascii=False))
+        print()
+        print(record_to_text(record))
+
+    elif args.command == "verify-provenance":
+        path = args.path
+        if not os.path.exists(path):
+            print(f"❌ File not found: {path}")
+            sys.exit(1)
+        with open(path, "r", encoding="utf-8") as f:
+            try:
+                record = json.load(f)
+            except json.JSONDecodeError as e:
+                print(f"❌ Not a valid JSON file: {e}")
+                sys.exit(1)
+
+        result = verify_provenance_record(record)
+        if result["status"] == "VALID":
+            print("✅ Provenance record signature VALID")
+            print(f"   Record ID  : {result.get('record_id')}")
+            print(f"   Timestamp  : {result.get('timestamp')}")
+            print(f"   Issuer     : {result.get('issuer')}")
+            print(f"   Verdict    : {result.get('verdict')}")
+        elif result["status"] == "TAMPERED":
+            print("❌ Provenance record TAMPERED — signature does not match record body")
+            print(f"   Record ID  : {result.get('record_id')}")
+            sys.exit(2)
+        elif result["status"] == "MISSING_FIELDS":
+            print(f"❌ Provenance record malformed — missing fields: {result.get('missing')}")
+            sys.exit(3)
+        else:
+            print(f"❌ Unknown verify status: {result['status']}")
+            sys.exit(4)
 
     elif args.command == "heatmap":
         target_input = args.input
