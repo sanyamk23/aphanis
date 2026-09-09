@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { api } from "../api";
 import type { AuditResponse, Mode, Tone } from "../types";
 
@@ -21,8 +21,10 @@ function riskClass(l: string) {
   return "risk-clean";
 }
 
+const SAMPLE = "The results demonstrate a tapestry of findings that delve into robust evaluation. Moreover, it should be noted that the approach is crucial and comprehensive — a testament to the synergy — and it is not limited to baseline performance across benchmarks.";
+
 export default function Lab() {
-  const [text, setText] = useState("");
+  const [text, setText] = useState(SAMPLE);
   const [mode, setMode] = useState<Mode>("paranoid");
   const [tone, setTone] = useState<Tone>("conversational");
   const [audit, setAudit] = useState<AuditResponse | null>(null);
@@ -39,6 +41,7 @@ export default function Lab() {
   const [fileBusy, setFileBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
+  useEffect(()=>{ if(text.trim()) runAudit(); },[]);
   async function runAudit() {
     if (!text.trim()) return;
     setLoading(true); setError(null);
