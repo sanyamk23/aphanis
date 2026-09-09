@@ -1,0 +1,49 @@
+{
+  "certificate_id": "APHANIS-CERT-6297F2B0",
+  "timestamp": "2026-09-08T22:45:07Z",
+  "issuer": "Aphanis Zero-Trust Provenance Firewall v1.4.0",
+  "source_name": "document.txt",
+  "verification_status": "ZERO_TRUST_CLEAN",
+  "hashes": {
+    "sha256_raw_input": "d57451225d6824924f593c9a0f49e7d580d603a11f1f14f27c59da5c1b90c86b",
+    "sha256_clean_output": "d57451225d6824924f593c9a0f49e7d580d603a11f1f14f27c59da5c1b90c86b"
+  },
+  "risk_assessment": {
+    "overall_clean_score": 100.0,
+    "provenance_risk_level": "ZERO_TRUST_CLEAN",
+    "vectors": {
+      "vector_1_unicode_steganography": {
+        "risk_score": 0.0,
+        "status": "CLEAN",
+        "issues_found": 0
+      },
+      "vector_2_statistical_model": {
+        "risk_score": 0.0,
+        "status": "CLEAN",
+        "telltale_phrases": 0,
+        "em_dashes": 0,
+        "predictability_score": 0.0
+      },
+      "vector_3_metadata_container": {
+        "risk_score": 0.0,
+        "status": "CLEAN",
+        "ai_comments_found": 0
+      },
+      "vector_4_spatial_frequency": {
+        "risk_score": 0.0,
+        "status": "CLEAN"
+      }
+    }
+  },
+  "entropy_metrics": {
+    "shannon_entropy": 3.1887,
+    "ttr": 1.0,
+    "predictability_score": 0.0,
+    "ai_likelihood": "LOW",
+    "word_count": 2,
+    "unique_word_count": 2,
+    "avg_sentence_length": 1.0,
+    "sentence_length_std": 0.0,
+    "details": "Analyzed 2 words across 2 sentences. Shannon entropy: 3.1887 bits/char."
+  }
+}

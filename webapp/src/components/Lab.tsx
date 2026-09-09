@@ -61,6 +61,7 @@ export default function Lab() {
   const [forensics, setForensics] = useState<unknown>(null);
   const [forensicsBusy, setForensicsBusy] = useState(false);
   const [fileInfo, setFileInfo] = useState<string | null>(null);
+  const [cleanedFile, setCleanedFile] = useState<string | null>(null);
   const [fileBusy, setFileBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -102,6 +103,7 @@ export default function Lab() {
       try {
         const res = await api.cleanFile(f, mode, perturb, false);
         setFileInfo(res.message);
+        setCleanedFile(res.message);
         if (res.success && res.data_base64) {
           const blob = new Blob([Uint8Array.from(atob(res.data_base64), (c) => c.charCodeAt(0))], { type: mimeType });
           const url = URL.createObjectURL(blob);
@@ -167,6 +169,7 @@ export default function Lab() {
                 {fileInfo && <div className="file-name">{fileInfo}</div>}
                 {fileBusy && <div className="file-status">Cleaning…</div>}
               </div>
+              {cleanedFile && <div className="result-box"><pre>{cleanedFile}</pre></div>}
               {error && <div className="error-box">{error}</div>}
             </div>
 
