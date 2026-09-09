@@ -31,3 +31,6 @@ wheels/
 
 # Agent memory DB
 agentdb.rvf*
+
+# build deps
+node_modules/

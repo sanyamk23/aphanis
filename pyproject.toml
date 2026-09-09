@@ -42,6 +42,9 @@ watermark-remover = "aphanis.cli:main"
 [tool.setuptools.packages.find]
 include = ["aphanis*"]
 
+[tool.setuptools]
+package-data = {"aphanis" = ["dashboard_static/index.html", "dashboard_static/assets/*"]}
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]

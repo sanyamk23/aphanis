@@ -15,7 +15,7 @@ from aphanis.mcp_server import main as run_server
 from aphanis.entropy import EntropyAnalyzer
 from aphanis.rules import RuleEngine
 from aphanis.stealth import StegoRiskMatrix, StealthMode
-from aphanis.dashboard import launch_dashboard
+from aphanis.api_server import launch_dashboard
 from aphanis.humanizer import HumanizerEngine, humanize_text
 from aphanis.clipboard import ClipboardDaemon
 from aphanis.hooks import HookInstaller

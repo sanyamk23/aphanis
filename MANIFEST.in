@@ -1,0 +1,2 @@
+include aphanis/dashboard_static/index.html
+recursive-include aphanis/dashboard_static/assets *
