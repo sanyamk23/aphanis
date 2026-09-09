@@ -394,13 +394,25 @@ class _ThreadingHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
 
 
 def launch_dashboard(port: int = 8080, open_browser: bool = True) -> None:
-    """Launch the Aphanis full-stack dashboard server."""
-    server = _ThreadingHTTPServer(("", port), APIRequestHandler)
+    """Launch the Aphanis full-stack dashboard server.
+
+    Render (and other PaaS) set the ``PORT`` env var and require binding
+    ``0.0.0.0``.  When ``PORT`` is present we honour it and bind all
+    interfaces; the browser is never opened in a headless environment.
+    """
+    env_port = os.environ.get("PORT")
+    if env_port:
+        try:
+            port = int(env_port)
+        except ValueError:
+            pass
+    bind_host = "0.0.0.0" if env_port else ""
+    server = _ThreadingHTTPServer((bind_host, port), APIRequestHandler)
     url = f"http://localhost:{port}"
     print(f"🚀 Aphanis full-stack dashboard running at {url}")
     print(f"   REST API:  {url}/api/*")
     print(f"   Frontend:  {url}/")
-    if open_browser:
+    if open_browser and not env_port:
         webbrowser.open(url)
     try:
         server.serve_forever()
