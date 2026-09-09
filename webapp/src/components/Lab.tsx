@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { api } from "../api";
 import type { AuditResponse, Mode, Tone } from "../types";
 import Chapter from "./Chapter";
+import HoldButton from "./HoldButton";
+import Achievement from "./Achievement";
 
 type Tab = "provenance" | "cert" | "heatmap";
 
@@ -12,6 +14,26 @@ function scoreColor(s: number) {
   if (s >= 80) return "var(--emerald)";
   if (s >= 50) return "var(--amber)";
   return "var(--rose)";
+}
+// risk_score is inverted from clean-score polarity: higher = more risk = worse.
+function riskColor(s: number) {
+  if (s >= 60) return "var(--rose)";
+  if (s >= 25) return "var(--amber)";
+  return "var(--emerald)";
+}
+const VECTOR_LABELS: Record<string, string> = {
+  vector_1_unicode_steganography: "Unicode Steganography",
+  vector_2_statistical_model: "Statistical Fingerprint",
+  vector_3_metadata_container: "Metadata & Container",
+  vector_4_spatial_frequency: "Spatial Frequency",
+};
+function vectorSignals(v: { issues_found?: number; telltale_phrases?: number; em_dashes?: number; ai_comments_found?: number; status: string }): string[] {
+  const out: string[] = [];
+  if (v.issues_found) out.push(`${v.issues_found} hidden byte${v.issues_found === 1 ? "" : "s"}`);
+  if (v.telltale_phrases) out.push(`${v.telltale_phrases} cliché${v.telltale_phrases === 1 ? "" : "s"}`);
+  if (v.em_dashes) out.push(`${v.em_dashes} em-dash${v.em_dashes === 1 ? "" : "es"}`);
+  if (v.ai_comments_found) out.push(`${v.ai_comments_found} AI comment${v.ai_comments_found === 1 ? "" : "s"}`);
+  return out.length ? out : [v.status];
 }
 function riskClass(l: string) {
   if (!l) return "risk-clean";
@@ -82,10 +104,12 @@ export default function Lab() {
     }
   }
 
-  const rm = audit?.risk_matrix; const ent = audit?.entropy; const vectors = rm?.vectors ? Object.values(rm.vectors) : [];
+  const rm = audit?.risk_matrix; const ent = audit?.entropy;
+  const vectors = rm?.vectors ? Object.entries(rm.vectors) : [];
 
   return (
     <section id="lab" className="lab" data-chapter="lab">
+      {audit && <Achievement id="first_scan" title="Achievement unlocked · First Scan" sub="You've run your first provenance audit." />}
       <div className="lab-head">
         <div>
           <Chapter n={6} label="The Lab" />
@@ -157,7 +181,13 @@ export default function Lab() {
                 ))}
               </div>
               <div className="row">
-                <button className="btn primary" onClick={runForensics} disabled={forensicsBusy || !text.trim()}>{forensicsBusy ? "Generating…" : `Generate ${tab}`}</button>
+                {tab === "cert" ? (
+                  <HoldButton className="btn primary" onComplete={runForensics} disabled={forensicsBusy || !text.trim()}>
+                    {forensicsBusy ? "Sealing…" : "Hold to certify"}
+                  </HoldButton>
+                ) : (
+                  <button className="btn primary" onClick={runForensics} disabled={forensicsBusy || !text.trim()}>{forensicsBusy ? "Generating…" : `Generate ${tab}`}</button>
+                )}
               </div>
               {forensics != null && tab === "cert" && <div className="stamp" style={{ textAlign: "center", margin: "10px 0" }}><span className="badge" style={{ background: "rgba(201,58,31,.1)", borderColor: "rgba(201,58,31,.3)", color: "var(--vermilion)" }}>◈ sealed — provenance certified</span></div>}
               {forensics != null && tab !== "heatmap" && <pre className="json-out">{JSON.stringify(forensics, null, 2)}</pre>}
@@ -200,18 +230,16 @@ export default function Lab() {
                   </div>
 
                   <div className="vector-grid">
-                    {vectors.map((v, i) => (
-                      <div key={i} className="vector">
+                    {vectors.map(([key, v]) => (
+                      <div key={key} className="vector">
                         <div className="vector-top">
-                          <span className="vector-label">{(v as { label: string }).label}</span>
-                          <span style={{ fontWeight: 800, color: scoreColor((v as { score: number }).score) }}>{Math.round((v as { score: number }).score)}</span>
+                          <span className="vector-label">{VECTOR_LABELS[key] ?? key}</span>
+                          <span style={{ fontWeight: 800, color: riskColor(v.risk_score) }}>{Math.round(v.risk_score)}</span>
                         </div>
-                        <div className="bar2" style={{ marginTop: 8 }}><i style={{ width: `${(v as { score: number }).score}%`, background: scoreColor((v as { score: number }).score) }} /></div>
-                        {(v as { signals: string[] }).signals?.length > 0 && (
-                          <ul style={{ listStyle: "none", marginTop: 8 }}>
-                            {(v as { signals: string[] }).signals.slice(0, 3).map((s, j) => <li key={j} style={{ fontSize: 11, color: "var(--muted)", padding: "2px 0" }}>{s}</li>)}
-                          </ul>
-                        )}
+                        <div className="bar2" style={{ marginTop: 8 }}><i style={{ width: `${v.risk_score}%`, background: riskColor(v.risk_score) }} /></div>
+                        <ul style={{ listStyle: "none", marginTop: 8 }}>
+                          {vectorSignals(v).slice(0, 3).map((s, j) => <li key={j} style={{ fontSize: 11, color: "var(--muted)", padding: "2px 0" }}>{s}</li>)}
+                        </ul>
                       </div>
                     ))}
                   </div>

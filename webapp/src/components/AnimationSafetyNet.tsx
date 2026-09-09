@@ -8,12 +8,19 @@ const SELECTOR = [
   ".layers-head > *", ".step",
   ".exhibits-kicker > *", ".exhibit-card",
   ".trust-head > *", ".trust-diagram", ".trust-card",
+  ".credits-top > *", ".credits-grid > *",
 ].join(",");
+
+// .credits-word carries a positioning transform (translateX for centering), not
+// an animation one -- only its opacity is ever GSAP-animated, so it must never
+// have "transform" cleared or it loses its centering.
+const OPACITY_ONLY_SELECTOR = ".credits-word";
 
 export default function AnimationSafetyNet() {
   useEffect(() => {
     const t = setTimeout(() => {
       gsap.set(SELECTOR, { clearProps: "opacity,transform" });
+      gsap.set(OPACITY_ONLY_SELECTOR, { opacity: 1 });
     }, 3200);
     return () => clearTimeout(t);
   }, []);
