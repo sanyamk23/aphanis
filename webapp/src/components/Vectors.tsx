@@ -25,7 +25,7 @@ export default function Vectors() {
     return () => ctx.revert();
   }, []);
   return (
-    <section ref={ref} id="vectors" className="vectors">
+    <section ref={ref} id="vectors" className="vectors" data-chapter="vectors">
       <Chapter n={4} label="The Vectors" />
       <div className="kicker">Four vectors, one firewall</div>
       <h2>The four fingerprints detectors read first.</h2>

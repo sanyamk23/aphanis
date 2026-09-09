@@ -59,7 +59,7 @@ export default function Exhibits() {
   }
 
   return (
-    <section ref={ref} id="exhibits" className="exhibits">
+    <section ref={ref} id="exhibits" className="exhibits" data-chapter="exhibits">
       <div className="exhibits-kicker">
         <Chapter n={3} label="Ten Exhibits" />
         <div className="kicker">The method — 10 exhibits</div>
@@ -81,11 +81,12 @@ export default function Exhibits() {
 
         <div className="exhibits-list">
           {EXHIBITS.map((e) => (
-            <article key={e.n} id={`exhibit-${e.n}`} className="exhibit-card">
+            <article key={e.n} id={`exhibit-${e.n}`} className="exhibit-card" data-exhibit={e.n}>
               <div className="exhibit-head">
                 <span className="exhibit-num">{e.n}</span>
                 <span className="exhibit-signal">{e.signal}</span>
               </div>
+              <div className="quest-stamp">as detected</div>
               <h3>{e.title}</h3>
               <div className="exhibit-compare">
                 <div className="exhibit-before">

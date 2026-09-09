@@ -85,7 +85,7 @@ export default function Lab() {
   const rm = audit?.risk_matrix; const ent = audit?.entropy; const vectors = rm?.vectors ? Object.values(rm.vectors) : [];
 
   return (
-    <section id="lab" className="lab">
+    <section id="lab" className="lab" data-chapter="lab">
       <div className="lab-head">
         <div>
           <Chapter n={6} label="The Lab" />
