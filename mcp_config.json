@@ -1,12 +1,12 @@
 {
-  "mcpServers": {
-    "aphanis": {
-      "command": "python3",
-      "args": [
-        "-m",
-        "aphanis.cli",
-        "server"
-      ]
-    }
-  }
+ "mcpServers": {
+ "aphanis": {
+ "command": "python3",
+ "args": [
+ "-m",
+ "aphanis.cli",
+ "server"
+ ]
+ }
+ }
 }
