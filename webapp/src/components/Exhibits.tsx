@@ -64,7 +64,7 @@ export default function Exhibits() {
         <Chapter n={3} label="Ten Exhibits" />
         <div className="kicker">The method — 10 exhibits</div>
         <h2>Every signal, shown before & after.</h2>
-        <p>Ten forensic checks that detectors actually use. Click the rail to jump — each exhibit shows the raw tell and the exact fix Aphanis applies.</p>
+        <p>Ten forensic checks that detectors actually use. Click the rail to jump. Each exhibit shows the raw tell and the exact fix Aphanis applies.</p>
       </div>
 
       <div className="exhibits-body">

@@ -59,7 +59,7 @@ export default function HeroInk({ onPrimary, onSecondary }: { onPrimary: () => v
             <span className="line grad">you can&apos;t see.</span>
           </h1>
           <p className="ink-sub">
-            Every model leaves forensic traces — zero-width steganography, statistical fingerprints, container metadata.
+            Every model leaves forensic traces: zero-width steganography, statistical fingerprints, container metadata.
             Aphanis finds them and erases them before anyone else looks.
           </p>
           <div className="ink-actions">
@@ -81,8 +81,8 @@ export default function HeroInk({ onPrimary, onSecondary }: { onPrimary: () => v
         <div className="ink-hero-visual">
           <div className="ink-card">
             <div className="ink-card-head">
-              <span className="mono">forensic sample — move cursor to reveal</span>
-              <span className="badge-live">● live</span>
+              <span className="mono">forensic sample. move cursor to reveal.</span>
+              <span className="badge-live">try it</span>
             </div>
 
             <div

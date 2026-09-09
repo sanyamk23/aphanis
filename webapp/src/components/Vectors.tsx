@@ -3,13 +3,14 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Chapter from "./Chapter";
 import CountUp from "./CountUp";
+import { IconGhost, IconPulse, IconSeal, IconGrid } from "./VectorIcons";
 gsap.registerPlugin(ScrollTrigger);
 
 const V = [
-  { k: "Vector 1", title: "Unicode Steganography", desc: "Zero-width joiners, non-breaking spaces, homoglyphs — ghosts between characters.", chips: ["\\u200B", "\\u00A0", "homoglyphs"], pct: 82, icon: "◬" },
-  { k: "Vector 2", title: "Statistical Fingerprint", desc: "Vocabulary tells, n-gram predictability, burstiness that betrays a model.", chips: ["T-T-R", "perplexity proxy", "AI vocab"], pct: 74, icon: "◎" },
-  { k: "Vector 3", title: "Metadata & Container", desc: "DOCX/PDF/IPYNB/PPTX — author fields, revision history, execution traces.", chips: ["DOCX core.xml", "PDF Info", "notebook cells"], pct: 68, icon: "⬢" },
-  { k: "Vector 4", title: "Spatial Frequency", desc: "Pixel-level watermarks in PNG/JPG — invisible noise only a spectrum reveals.", chips: ["DCT", "spectral trace"], pct: 58, icon: "⬣" },
+  { k: "Vector 1", title: "Unicode Steganography", desc: "Zero-width joiners, non-breaking spaces, homoglyphs: ghosts hiding between characters.", chips: ["\\u200B", "\\u00A0", "homoglyphs"], pct: 82, Icon: IconGhost },
+  { k: "Vector 2", title: "Statistical Fingerprint", desc: "Vocabulary tells, n-gram predictability, burstiness that betrays a model.", chips: ["T-T-R", "perplexity proxy", "AI vocab"], pct: 74, Icon: IconPulse },
+  { k: "Vector 3", title: "Metadata & Container", desc: "DOCX, PDF, IPYNB, PPTX: author fields, revision history, execution traces.", chips: ["DOCX core.xml", "PDF Info", "notebook cells"], pct: 68, Icon: IconSeal },
+  { k: "Vector 4", title: "Spatial Frequency", desc: "Pixel-level watermarks in PNG and JPG files that only a frequency spectrum reveals.", chips: ["DCT", "spectral trace"], pct: 58, Icon: IconGrid },
 ];
 
 export default function Vectors() {
@@ -30,19 +31,19 @@ export default function Vectors() {
       <Chapter n={4} label="The Vectors" />
       <div className="kicker">Four vectors, one firewall</div>
       <h2>The four fingerprints detectors read first.</h2>
-      <p className="sub">Aphanis audits each vector independently — so you see exactly where the signal lives before you sanitize it.</p>
+      <p className="sub">Aphanis audits each vector independently, so you see exactly where the signal lives before you sanitize it.</p>
       <div className="bento">
         {V.map((v) => (
           <div key={v.k} className="bento-card">
             <div className="bento-top">
               <span className="mono" style={{ fontSize: 11, letterSpacing: ".08em", textTransform: "uppercase", color: "var(--muted)", fontWeight: 700 }}>{v.k}</span>
-              <span className="bento-icon">{v.icon}</span>
+              <span className="bento-icon"><v.Icon /></span>
             </div>
             <h3>{v.title}</h3>
             <p>{v.desc}</p>
             <div className="bento-meta">{v.chips.map((c) => <span key={c} className="chip">{c}</span>)}</div>
             <div className="bar2"><i data-w={String(v.pct)} /></div>
-            <div className="mono" style={{ fontSize: 11, color: "var(--muted)", marginTop: 6, letterSpacing: ".04em" }}>Typical signal strength — <CountUp to={v.pct} suffix="%" /></div>
+            <div className="mono" style={{ fontSize: 11, color: "var(--muted)", marginTop: 6, letterSpacing: ".04em" }}>Typical signal strength: <CountUp to={v.pct} suffix="%" /></div>
           </div>
         ))}
       </div>

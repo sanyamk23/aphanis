@@ -30,7 +30,7 @@ export default function Pipeline() {
           <Chapter n={5} label="The Pipeline" />
           <div className="kicker">How Aphanis works</div>
           <h2>A 7-layer sanitization pipeline.</h2>
-          <p style={{ color: "#5E5749", marginTop: 8, maxWidth: 640, lineHeight: 1.6 }}>Audit → understand → sanitize with control. Each layer is measurable, reversible, and explained — no black-box paraphrasing.</p>
+          <p style={{ color: "#5E5749", marginTop: 8, maxWidth: 640, lineHeight: 1.6 }}>Audit → understand → sanitize with control. Each layer is measurable, reversible, and explained. No black-box paraphrasing.</p>
         </div>
         <div style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--muted)", letterSpacing: ".06em", textTransform: "uppercase" }}>Paranoid → Minimal • choose your trade-off</div>
       </div>

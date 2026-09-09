@@ -20,12 +20,12 @@ export default function Story() {
         <Chapter n={2} label="The Tell" />
         <div className="kicker">The invisible problem</div>
         <h2>AI doesn&apos;t just write.<br /><em>It leaves a trace.</em></h2>
-        <p>Detectors don&apos;t read meaning — they read <em>micro-signals</em>. Zero-width characters tucked between letters. Words LLMs overuse. Predictable cadence. Hidden metadata in files. Even a human essay can trigger a false positive.</p>
-        <p>If you publish, submit, or archive anything that ever touched AI — you need a firewall, not a filter.</p>
+        <p>Detectors don&apos;t read meaning. They read <em>micro-signals</em>. Zero-width characters tucked between letters. Words LLMs overuse. Predictable cadence. Hidden metadata in files. Even a human essay can trigger a false positive.</p>
+        <p>If you publish, submit, or archive anything that ever touched AI, you need a firewall, not a filter.</p>
         <div className="story-points">
           <div className="point"><b>1</b><div><strong>False positives ruin reputations</strong><div style={{ color: "#5E5749", fontSize: 13, marginTop: 4, lineHeight: 1.5 }}>Students, researchers, and teams get flagged for writing that is genuinely theirs.</div></div></div>
-          <div className="point"><b>2</b><div><strong>Detectors keep getting sharper</strong><div style={{ color: "#5E5749", fontSize: 13, marginTop: 4, lineHeight: 1.5 }}>Unicode, statistical, metadata, and spatial models — each watching a different fingerprint.</div></div></div>
-          <div className="point"><b>3</b><div><strong>Aphanis makes the invisible visible</strong><div style={{ color: "#5E5749", fontSize: 13, marginTop: 4, lineHeight: 1.5 }}>Audit first, understand the signals, then sanitize with control — not blind paraphrasing.</div></div></div>
+          <div className="point"><b>2</b><div><strong>Detectors keep getting sharper</strong><div style={{ color: "#5E5749", fontSize: 13, marginTop: 4, lineHeight: 1.5 }}>Unicode, statistical, metadata, and spatial models, each watching a different fingerprint.</div></div></div>
+          <div className="point"><b>3</b><div><strong>Aphanis makes the invisible visible</strong><div style={{ color: "#5E5749", fontSize: 13, marginTop: 4, lineHeight: 1.5 }}>Audit first, understand the signals, then sanitize with control. Not blind paraphrasing.</div></div></div>
         </div>
       </div>
       <div className="reveal">
@@ -48,7 +48,7 @@ export default function Story() {
           <div className="reveal-card">
             <h4>After Aphanis — paranoid mode</h4>
             <div style={{ marginTop: 10, fontFamily: "var(--mono)", fontSize: 12.5, lineHeight: 1.7, color: "#D9D2BE" }}>
-              The study looks at how large language models are reshaping academic writing — where they help, where they fail, and what that means for evaluation.
+              The study looks at how large language models are reshaping academic writing: where they help, where they fail, and what that means for evaluation.
             </div>
             <div className="divider" style={{ background: "rgba(255,255,255,.08)", marginTop: 12 }} />
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
@@ -57,7 +57,7 @@ export default function Story() {
               <span style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--muted2)" }}>Clean score 89</span>
             </div>
           </div>
-          <div style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--muted2)", letterSpacing: ".06em", textTransform: "uppercase" }}>Every audit explains <em style={{ color: "white", fontStyle: "normal" }}>why</em> — not just a number.</div>
+          <div style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--muted2)", letterSpacing: ".06em", textTransform: "uppercase" }}>Every audit explains <em style={{ color: "white", fontStyle: "normal" }}>why</em>. Not just a number.</div>
         </div>
       </div>
     </section>

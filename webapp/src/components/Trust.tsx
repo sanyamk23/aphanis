@@ -1,4 +1,5 @@
 import Chapter from "./Chapter";
+import { IconDocument, IconSeal } from "./VectorIcons";
 
 export default function Trust() {
   return (
@@ -7,12 +8,12 @@ export default function Trust() {
         <Chapter n={7} label="The Vow" />
         <div className="kicker">Trust & privacy</div>
         <h2>Nothing leaves your browser. <em>Ever.</em></h2>
-        <p>Your text stays local — the lab calls your own API. No exfiltration, no training, no retention. Open source, auditable, SHA-256 certified.</p>
+        <p>Your text stays local. The lab calls your own API: no exfiltration, no training, no retention. Open source, auditable, SHA-256 certified.</p>
       </div>
 
       <div className="trust-diagram">
         <div className="trust-node">
-          <div className="trust-icon">◐</div>
+          <div className="trust-icon"><IconDocument /></div>
           <strong>Your text</strong>
           <span>paste or drop</span>
         </div>
@@ -24,7 +25,7 @@ export default function Trust() {
         </div>
         <div className="trust-arrow">→</div>
         <div className="trust-node">
-          <div className="trust-icon">⬡</div>
+          <div className="trust-icon"><IconSeal /></div>
           <strong>SHA-256 cert</strong>
           <span>APHANIS-CERT-2026-…</span>
         </div>
@@ -38,17 +39,17 @@ export default function Trust() {
       <div className="trust-grid">
         <div className="trust-card">
           <h4>SHA-256 audit trail</h4>
-          <p>Every clean issues a provenance certificate — hash of original + cleaned + mode, verifiable offline.</p>
+          <p>Every clean issues a provenance certificate: a hash of the original, the cleaned text, and the mode, verifiable offline.</p>
           <code className="mono">aphanis cert &quot;your text&quot;</code>
         </div>
         <div className="trust-card">
           <h4>Open source</h4>
-          <p>Python + TypeScript. Read the 7-stage pipeline, the lexicon, the DCT pass. No black box.</p>
+          <p>Python and TypeScript. Read the 7-stage pipeline, the lexicon, the DCT pass. No black box.</p>
           <a href="https://github.com/sanyamk23/aphanis" target="_blank" rel="noreferrer" className="mono">github.com/sanyamk23/aphanis →</a>
         </div>
         <div className="trust-card">
           <h4>Runs everywhere</h4>
-          <p>CLI, MCP server, Claude Code hook, GitHub Action, Cursor — same engine, any surface.</p>
+          <p>CLI, MCP server, Claude Code hook, GitHub Action, Cursor: same engine, any surface.</p>
           <span className="mono">pip install aphanis · npm i -g aphanis</span>
         </div>
       </div>
