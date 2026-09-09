@@ -1,3 +1,4 @@
+import BootSequence from "./components/BootSequence";
 import Nav from "./components/Nav";
 import SpineLine from "./components/SpineLine";
 import InkOverlay from "./components/InkOverlay";
@@ -24,6 +25,7 @@ function scrollTo(id: string) {
 export default function App() {
   return (
     <div>
+      <BootSequence />
       <SpineLine />
       <InkOverlay />
       <SaveFile />

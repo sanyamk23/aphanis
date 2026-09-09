@@ -399,3 +399,14 @@ a{color:inherit;text-decoration:none}
 
 /* ── number counter ── */
 .count-up{font-variant-numeric:tabular-nums}
+
+/* ── BOOT SEQUENCE ── */
+.boot-overlay{position:fixed;inset:0;z-index:9999;background:var(--ink);color:var(--paper);display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:8vw;cursor:pointer}
+.boot-lines{font-family:var(--mono);font-size:clamp(12px,1.6vw,15px);line-height:1.9;letter-spacing:.02em}
+.boot-line{opacity:0;animation:bootIn .35s ease-out forwards}
+.boot-line:last-child{color:var(--violet2)}
+@keyframes bootIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.boot-cursor{display:inline-block;width:8px;height:16px;background:var(--violet2);margin-top:6px;animation:bootBlink 1s step-end infinite}
+@keyframes bootBlink{0%,49%{opacity:1}50%,100%{opacity:0}}
+.boot-skip{position:absolute;bottom:24px;right:32px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(245,240,228,.35)}
+@media (max-width:640px){ .boot-overlay{padding:9vw 8vw} .boot-skip{right:24px;bottom:16px} }
