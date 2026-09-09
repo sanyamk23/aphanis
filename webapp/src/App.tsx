@@ -1,4 +1,6 @@
 import Nav from "./components/Nav";
+import SpineLine from "./components/SpineLine";
+import InkOverlay from "./components/InkOverlay";
 import HeroInk from "./components/HeroInk";
 import Marquee from "./components/Marquee";
 import Story from "./components/Story";
@@ -17,6 +19,8 @@ function scrollTo(id: string) {
 export default function App() {
   return (
     <div>
+      <SpineLine />
+      <InkOverlay />
       <Nav onLab={() => scrollTo("lab")} />
       <HeroInk onPrimary={() => scrollTo("lab")} onSecondary={() => scrollTo("exhibits")} />
       <Marquee />

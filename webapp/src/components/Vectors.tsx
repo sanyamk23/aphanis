@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Chapter from "./Chapter";
 gsap.registerPlugin(ScrollTrigger);
 
 const V = [
@@ -25,6 +26,7 @@ export default function Vectors() {
   }, []);
   return (
     <section ref={ref} id="vectors" className="vectors">
+      <Chapter n={4} label="The Vectors" />
       <div className="kicker">Four vectors, one firewall</div>
       <h2>The four fingerprints detectors read first.</h2>
       <p className="sub">Aphanis audits each vector independently — so you see exactly where the signal lives before you sanitize it.</p>

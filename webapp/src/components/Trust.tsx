@@ -1,7 +1,10 @@
+import Chapter from "./Chapter";
+
 export default function Trust() {
   return (
     <section id="trust" className="trust">
       <div className="trust-head">
+        <Chapter n={7} label="The Vow" />
         <div className="kicker">Trust & privacy</div>
         <h2>Nothing leaves your browser. <em>Ever.</em></h2>
         <p>Your text stays local — the lab calls your own API. No exfiltration, no training, no retention. Open source, auditable, SHA-256 certified.</p>

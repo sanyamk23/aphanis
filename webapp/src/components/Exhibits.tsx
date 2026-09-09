@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Chapter from "./Chapter";
 gsap.registerPlugin(ScrollTrigger);
 
 type Exhibit = { n: string; title: string; signal: string; before: string; after: string; fix: string; vector: string };
@@ -60,6 +61,7 @@ export default function Exhibits() {
   return (
     <section ref={ref} id="exhibits" className="exhibits">
       <div className="exhibits-kicker">
+        <Chapter n={3} label="Ten Exhibits" />
         <div className="kicker">The method — 10 exhibits</div>
         <h2>Every signal, shown before & after.</h2>
         <p>Ten forensic checks that detectors actually use. Click the rail to jump — each exhibit shows the raw tell and the exact fix Aphanis applies.</p>

@@ -49,7 +49,7 @@ export default function HeroInk({ onPrimary, onSecondary }: { onPrimary: () => v
     <section ref={ref} className="ink-hero">
       <div className="ink-hero-grid">
         <div className="ink-hero-copy">
-          <div className="ink-kicker"><span className="dot" /> Invisible Ink — the provenance firewall · v1.4.3</div>
+          <div className="ink-kicker"><span className="dot" /> Chapter I · The Signature — v1.4.3</div>
           <h1 className="ink-h1">
             <span className="line">Your AI wrote</span>
             <span className="line">more than <em>words.</em></span>

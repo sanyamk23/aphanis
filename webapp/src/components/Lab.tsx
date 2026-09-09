@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { api } from "../api";
 import type { AuditResponse, Mode, Tone } from "../types";
+import Chapter from "./Chapter";
 
 type Tab = "provenance" | "cert" | "heatmap";
 
@@ -87,6 +88,7 @@ export default function Lab() {
     <section id="lab" className="lab">
       <div className="lab-head">
         <div>
+          <Chapter n={6} label="The Lab" />
           <div className="kicker">Interactive lab</div>
           <h2>Audit. Understand. Sanitize.</h2>
           <p style={{ color: "#5A5F7A", marginTop: 6, lineHeight: 1.6, maxWidth: 640 }}>Paste text or drop a file — get a full provenance report across four vectors, then clean it with precise control.</p>
@@ -157,6 +159,7 @@ export default function Lab() {
               <div className="row">
                 <button className="btn primary" onClick={runForensics} disabled={forensicsBusy || !text.trim()}>{forensicsBusy ? "Generating…" : `Generate ${tab}`}</button>
               </div>
+              {forensics != null && tab === "cert" && <div className="stamp" style={{ textAlign: "center", margin: "10px 0" }}><span className="badge" style={{ background: "rgba(201,58,31,.1)", borderColor: "rgba(201,58,31,.3)", color: "var(--vermilion)" }}>◈ sealed — provenance certified</span></div>}
               {forensics != null && tab !== "heatmap" && <pre className="json-out">{JSON.stringify(forensics, null, 2)}</pre>}
               {forensics != null && tab === "heatmap" && <iframe className="heatmap-frame" srcDoc={(forensics as { html: string }).html} title="heatmap" />}
             </div>

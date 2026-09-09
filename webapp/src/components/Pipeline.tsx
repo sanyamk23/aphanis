@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Chapter from "./Chapter";
 gsap.registerPlugin(ScrollTrigger);
 
 const STEPS = [
@@ -26,6 +27,7 @@ export default function Pipeline() {
     <section ref={ref} id="pipeline" className="layers">
       <div className="layers-head">
         <div>
+          <Chapter n={5} label="The Pipeline" />
           <div className="kicker">How Aphanis works</div>
           <h2>A 7-layer sanitization pipeline.</h2>
           <p style={{ color: "#5A5F7A", marginTop: 8, maxWidth: 640, lineHeight: 1.6 }}>Audit → understand → sanitize with control. Each layer is measurable, reversible, and explained — no black-box paraphrasing.</p>
