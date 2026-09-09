@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Chapter from "./Chapter";
+import CountUp from "./CountUp";
 gsap.registerPlugin(ScrollTrigger);
 
 const V = [
@@ -41,7 +42,7 @@ export default function Vectors() {
             <p>{v.desc}</p>
             <div className="bento-meta">{v.chips.map((c) => <span key={c} className="chip">{c}</span>)}</div>
             <div className="bar2"><i data-w={String(v.pct)} /></div>
-            <div className="mono" style={{ fontSize: 11, color: "var(--muted)", marginTop: 6, letterSpacing: ".04em" }}>Typical signal strength — {v.pct}%</div>
+            <div className="mono" style={{ fontSize: 11, color: "var(--muted)", marginTop: 6, letterSpacing: ".04em" }}>Typical signal strength — <CountUp to={v.pct} suffix="%" /></div>
           </div>
         ))}
       </div>

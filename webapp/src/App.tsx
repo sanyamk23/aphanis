@@ -12,6 +12,9 @@ import Lab from "./components/Lab";
 import Trust from "./components/Trust";
 import Integrations from "./components/Integrations";
 import SaveFile from "./components/SaveFile";
+import Flourish from "./components/Flourish";
+import TiltCards from "./components/TiltCards";
+import AnimationSafetyNet from "./components/AnimationSafetyNet";
 
 function scrollTo(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -23,15 +26,21 @@ export default function App() {
       <SpineLine />
       <InkOverlay />
       <SaveFile />
+      <TiltCards />
+      <AnimationSafetyNet />
       <Nav onLab={() => scrollTo("lab")} />
       <HeroInk onPrimary={() => scrollTo("lab")} onSecondary={() => scrollTo("exhibits")} />
       <Marquee />
       <Story />
+      <Flourish />
       <Exhibits />
+      <Flourish />
       <Vectors />
       <Pipeline />
+      <Flourish />
       <Compare />
       <Lab />
+      <Flourish />
       <Trust />
       <Integrations />
       <footer className="footer">
