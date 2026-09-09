@@ -6,7 +6,7 @@ import Chapter from "./Chapter";
 
 export default function Integrations() {
   return (
-    <section className="integrations">
+    <section className="integrations" data-chapter="integrations">
       <div className="integrations-head">
         <Chapter n={8} label="Epilogue" />
         <div className="kicker">Everywhere you write</div>

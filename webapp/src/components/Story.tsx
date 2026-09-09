@@ -15,7 +15,7 @@ export default function Story() {
     return () => ctx.revert();
   }, []);
   return (
-    <section ref={ref} id="story" className="story">
+    <section ref={ref} id="story" className="story" data-chapter="story">
       <div className="story-copy">
         <Chapter n={2} label="The Tell" />
         <div className="kicker">The invisible problem</div>

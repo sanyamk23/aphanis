@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import Companion from "./Companion";
 
 const CHIPS = [
   { k: "invisible", label: "invisible · zero-width", color: "#F43F5E" },
@@ -46,7 +47,7 @@ export default function HeroInk({ onPrimary, onSecondary }: { onPrimary: () => v
   }
 
   return (
-    <section ref={ref} className="ink-hero">
+    <section ref={ref} className="ink-hero" data-chapter="hero">
       <div className="ink-hero-grid">
         <div className="ink-hero-copy">
           <div className="ink-kicker"><span className="dot" /> Chapter I · The Signature — v1.4.3</div>
@@ -70,6 +71,10 @@ export default function HeroInk({ onPrimary, onSecondary }: { onPrimary: () => v
             <span><strong>SHA-256</strong> cert</span><i>·</i>
             <span>CLI + MCP + Web</span>
           </div>
+          <Companion
+            onShort={() => document.getElementById("story")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+            onFull={() => document.getElementById("exhibits")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+          />
         </div>
 
         <div className="ink-hero-visual">

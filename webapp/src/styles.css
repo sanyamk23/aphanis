@@ -377,3 +377,26 @@ a{color:inherit;text-decoration:none}
   .story{grid-template-columns:1fr}
   .spine-track{display:none}
 }
+
+/* ── COMPANION dialogue ── */
+.companion{margin-top:20px;display:flex;gap:10px;background:white;border:1px solid var(--line);border-radius:16px;padding:12px;max-width:420px;box-shadow:0 8px 24px rgba(8,10,18,.05)}
+.companion-avatar{width:34px;height:34px;border-radius:50%;background:var(--indigo);color:white;display:grid;place-items:center;flex-shrink:0;font-size:15px}
+.companion-name{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.companion-line{font-family:var(--display);font-style:italic;font-size:14px;line-height:1.4;margin-top:4px;color:var(--ink)}
+.companion-choices{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.companion-choice{font-size:12px;font-weight:700;padding:7px 11px;border-radius:999px;border:1px solid var(--line);background:var(--paper);cursor:pointer;font-family:var(--sans);transition:all .2s var(--ease-brush)}
+.companion-choice:hover{border-color:var(--ink);transform:translateY(-1px)}
+.companion-choice.primary{background:var(--vermilion);color:white;border-color:var(--vermilion)}
+.companion-choice.primary:hover{background:var(--vermilion2)}
+
+/* ── SAVE FILE HUD ── */
+.save-file{position:fixed;right:16px;bottom:16px;z-index:50;display:flex;gap:10px;align-items:center;background:var(--ink);color:var(--paper);border-radius:14px;padding:10px 14px;box-shadow:0 12px 32px rgba(8,10,18,.28);opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .35s var(--ease-brush), transform .35s var(--ease-brush);border:1px solid rgba(255,248,240,.1)}
+.save-file.visible{opacity:1;transform:translateY(0)}
+.save-dot{width:7px;height:7px;border-radius:50%;background:var(--emerald);box-shadow:0 0 8px var(--emerald);flex-shrink:0}
+.save-title{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted2)}
+.save-line{font-size:11px;color:var(--muted2);margin-top:2px}
+.save-line strong{color:var(--paper);font-weight:700}
+@media (max-width: 640px){ .save-file{ left:16px; right:16px } }
+
+/* ── quest stamp ── */
+.quest-stamp{margin-top:8px;display:inline-block;font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--vermilion);border:1px solid rgba(201,58,31,.3);padding:2px 7px;border-radius:5px;transform:rotate(-2deg)}

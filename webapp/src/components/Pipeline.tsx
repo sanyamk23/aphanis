@@ -24,7 +24,7 @@ export default function Pipeline() {
     return () => ctx.revert();
   }, []);
   return (
-    <section ref={ref} id="pipeline" className="layers">
+    <section ref={ref} id="pipeline" className="layers" data-chapter="pipeline">
       <div className="layers-head">
         <div>
           <Chapter n={5} label="The Pipeline" />

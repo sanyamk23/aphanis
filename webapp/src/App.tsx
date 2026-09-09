@@ -11,6 +11,7 @@ import Compare from "./components/Compare";
 import Lab from "./components/Lab";
 import Trust from "./components/Trust";
 import Integrations from "./components/Integrations";
+import SaveFile from "./components/SaveFile";
 
 function scrollTo(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -21,6 +22,7 @@ export default function App() {
     <div>
       <SpineLine />
       <InkOverlay />
+      <SaveFile />
       <Nav onLab={() => scrollTo("lab")} />
       <HeroInk onPrimary={() => scrollTo("lab")} onSecondary={() => scrollTo("exhibits")} />
       <Marquee />
