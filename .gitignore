@@ -12,3 +12,24 @@ message (1).txt
 "ChatGPT Image Aug 19, 2026, 12_56-40 AM copy.png"
 "ChatGPT Image Aug 19, 2026, 12_56-40 AM.png"
 skills-lock.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+.pytest_cache/
+
+# Node / Vite
+node_modules/
+build/
+dist/
+*.tsbuildinfo
+
+# Misc local state
+.DS_Store
+.claude-flow/
+.claude/
+.swarm/
+*.db
+agentdb.rvf*
