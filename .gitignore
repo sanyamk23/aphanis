@@ -34,3 +34,4 @@ agentdb.rvf*
 
 # build deps
 node_modules/
+webapp/tsconfig.tsbuildinfo
