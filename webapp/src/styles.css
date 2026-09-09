@@ -463,6 +463,9 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible,input:focus-visibl
 .cursor-ring{width:36px;height:36px;border:1.5px solid rgba(201,58,31,.35)}
 .cursor-ring.hover{border-color:var(--violet);transform:translate(-50%,-50%) scale(1.4)}
 
+/* ── TOOLTIP ── */
+.aph-tip-bubble{font-family:var(--mono);font-size:11px;line-height:1.5}
+
 /* ── CONVERT PAGE ── */
 .convert-page{min-height:100vh;background:var(--paper);padding:80px 32px}
 .convert-header{text-align:center;margin-bottom:40px}

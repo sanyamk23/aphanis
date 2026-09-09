@@ -4,6 +4,7 @@ import type { AuditResponse, Mode, Tone, VerifyResponse } from "../types";
 import Chapter from "./Chapter";
 import HoldButton from "./HoldButton";
 import Achievement from "./Achievement";
+import { Tooltip } from "./Tooltip";
 
 type FilePreview = { url: string; type: string; filename: string; downloadName: string };
 
@@ -28,6 +29,12 @@ const VECTOR_LABELS: Record<string, string> = {
   vector_2_statistical_model: "Statistical Fingerprint",
   vector_3_metadata_container: "Metadata & Container",
   vector_4_spatial_frequency: "Spatial Frequency",
+};
+const VECTOR_TITLES: Record<string, string> = {
+  vector_1_unicode_steganography: "Zero-width chars, Bidi isolates, homoglyphs – invisible between letters.",
+  vector_2_statistical_model: "Vocabulary diversity, sentence rhythm, em-dash chains, cliché patterns.",
+  vector_3_metadata_container: "DOCX core.xml, EXIF headers, file creation metadata, container traces.",
+  vector_4_spatial_frequency: "Image DCT artifacts, GAN grid patterns, frequency-domain watermarks.",
 };
 function vectorSignals(v: { issues_found?: number; telltale_phrases?: number; em_dashes?: number; ai_comments_found?: number; status: string }): string[] {
   const out: string[] = [];
@@ -268,8 +275,12 @@ export default function Lab() {
                 <div style={{ fontWeight: 700, marginTop: 8 }}>No audit yet</div>
                 <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 6, lineHeight: 1.6 }}>Paste text on the left and hit <strong style={{ color: "var(--ink)" }}>Audit</strong> to see your full provenance report: clean score, four vectors, entropy, and AI likelihood.</p>
                 <div style={{ marginTop: 12, display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
-                  <span className="badge">vector_1 – unicode</span>
-                  <span className="badge">vector_2 – statistical</span>
+                  <Tooltip content="Zero-width chars, Bidi isolates, homoglyphs – invisible between letters.">
+                    <span className="badge" style={{ cursor: "help" }}>vector_1 – unicode</span>
+                  </Tooltip>
+                  <Tooltip content="Vocabulary diversity, sentence rhythm, em-dash chains, cliché patterns.">
+                    <span className="badge" style={{ cursor: "help" }}>vector_2 – statistical</span>
+                  </Tooltip>
                   <span className="badge">vector_3 – metadata</span>
                   <span className="badge">vector_4 – spatial</span>
                 </div>
@@ -281,39 +292,51 @@ export default function Lab() {
                     <h3>Provenance Report</h3>
                     <span className={`badge-risk ${riskClass(rm?.provenance_risk_level ?? "")}`}>{rm?.provenance_risk_level ?? "–"}</span>
                   </div>
-                  <div className="score-row">
-                    <svg viewBox="0 0 92 92" className="ring" role="img" aria-label={`Clean score ${Math.round(rm?.overall_clean_score ?? 0)} out of 100`}>
-                      <circle cx="46" cy="46" r="36" className="ring-bg" />
-                      <circle cx="46" cy="46" r="36" className="ring-fg" stroke={scoreColor(rm?.overall_clean_score ?? 0)} strokeDasharray={`${((rm?.overall_clean_score ?? 0) / 100) * 226} 226`} />
-                      <text x="46" y="51" textAnchor="middle" className="ring-text" style={{ fontSize: 22 }} aria-hidden="true">{Math.round(rm?.overall_clean_score ?? 0)}</text>
-                    </svg>
-                    <div>
-                      <div style={{ fontWeight: 800, letterSpacing: "-.02em" }}>Clean Score</div>
-                      <div style={{ color: "var(--muted)", fontSize: 12, marginTop: 2 }}>higher = fewer detectable signals</div>
-                      <div style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--muted)", marginTop: 6 }}>{rm?.provenance_risk_level} • entropy {ent?.shannon_entropy?.toFixed(2)}</div>
+                  <Tooltip content="Aggregate of all 4 vectors. 100 = no detectable provenance; 0 = heavy AI fingerprint.">
+                    <div className="score-row" style={{ cursor: "help" }}>
+                      <svg viewBox="0 0 92 92" className="ring" role="img" aria-label={`Clean score ${Math.round(rm?.overall_clean_score ?? 0)} out of 100`}>
+                        <circle cx="46" cy="46" r="36" className="ring-bg" />
+                        <circle cx="46" cy="46" r="36" className="ring-fg" stroke={scoreColor(rm?.overall_clean_score ?? 0)} strokeDasharray={`${((rm?.overall_clean_score ?? 0) / 100) * 226} 226`} />
+                        <text x="46" y="51" textAnchor="middle" className="ring-text" style={{ fontSize: 22 }} aria-hidden="true">{Math.round(rm?.overall_clean_score ?? 0)}</text>
+                      </svg>
+                      <div>
+                        <div style={{ fontWeight: 800, letterSpacing: "-.02em" }}>Clean Score</div>
+                        <div style={{ color: "var(--muted)", fontSize: 12, marginTop: 2 }}>higher = fewer detectable signals</div>
+                        <div style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--muted)", marginTop: 6 }}>{rm?.provenance_risk_level} • entropy {ent?.shannon_entropy?.toFixed(2)}</div>
+                      </div>
                     </div>
-                  </div>
+                  </Tooltip>
 
                   <div className="vector-grid">
                     {vectors.map(([key, v]) => (
-                      <div key={key} className="vector">
-                        <div className="vector-top">
-                          <span className="vector-label">{VECTOR_LABELS[key] ?? key}</span>
-                          <span style={{ fontWeight: 800, color: riskColor(v.risk_score) }}>{Math.round(v.risk_score)}</span>
+                      <Tooltip key={key} content={VECTOR_TITLES[key] ?? key}>
+                        <div className="vector" style={{ cursor: "help" }}>
+                          <div className="vector-top">
+                            <span className="vector-label">{VECTOR_LABELS[key] ?? key}</span>
+                            <span style={{ fontWeight: 800, color: riskColor(v.risk_score) }}>{Math.round(v.risk_score)}</span>
+                          </div>
+                          <div className="bar2" style={{ marginTop: 8 }}><i style={{ width: `${v.risk_score}%`, background: riskColor(v.risk_score) }} /></div>
+                          <ul style={{ listStyle: "none", marginTop: 8 }}>
+                            {vectorSignals(v).slice(0, 3).map((s, j) => <li key={j} style={{ fontSize: 11, color: "var(--muted)", padding: "2px 0" }}>{s}</li>)}
+                          </ul>
                         </div>
-                        <div className="bar2" style={{ marginTop: 8 }}><i style={{ width: `${v.risk_score}%`, background: riskColor(v.risk_score) }} /></div>
-                        <ul style={{ listStyle: "none", marginTop: 8 }}>
-                          {vectorSignals(v).slice(0, 3).map((s, j) => <li key={j} style={{ fontSize: 11, color: "var(--muted)", padding: "2px 0" }}>{s}</li>)}
-                        </ul>
-                      </div>
+                      </Tooltip>
                     ))}
                   </div>
 
                   <div className="entropy-strip">
-                    <div><strong>{ent?.shannon_entropy?.toFixed(2)}</strong><span>Shannon</span></div>
-                    <div><strong>{ent?.ttr?.toFixed(2)}</strong><span>T-T-R</span></div>
-                    <div><strong>{ent?.predictability_score}%</strong><span>predictability</span></div>
-                    <div><strong style={{ fontSize: 12 }}>{ent?.ai_likelihood}</strong><span>AI likelihood</span></div>
+                    <Tooltip content="Information entropy of character distribution. Higher = more random/natural; lower = more predictable/compressed.">
+                      <div style={{ cursor: "help" }}><strong>{ent?.shannon_entropy?.toFixed(2)}</strong><span>Shannon</span></div>
+                    </Tooltip>
+                    <Tooltip content="Type-Token Ratio: unique words / total words. Drops with AI repetition and template clichés.">
+                      <div style={{ cursor: "help" }}><strong>{ent?.ttr?.toFixed(2)}</strong><span>T-T-R</span></div>
+                    </Tooltip>
+                    <Tooltip content="Predictability score: how much the next word can be predicted from context. High = model-like rhythm.">
+                      <div style={{ cursor: "help" }}><strong>{ent?.predictability_score}%</strong><span>predictability</span></div>
+                    </Tooltip>
+                    <Tooltip content="Composite AI-likelihood: blends entropy, TTR, predictability, and em-dash cliché signals.">
+                      <div style={{ cursor: "help", fontSize: 12 }}><strong>{ent?.ai_likelihood}</strong><span>AI likelihood</span></div>
+                    </Tooltip>
                   </div>
                 </div>
 
@@ -323,8 +346,12 @@ export default function Lab() {
                     Clean score blends four vectors. <strong>Unicode</strong> catches ghosts between characters; <strong>Statistical</strong> reads vocabulary & predictability; <strong>Metadata</strong> reflects container risk; <strong>Spatial</strong> applies to images. Entropy and predictability tell you how “model-like” the rhythm feels to a detector.
                   </p>
                   <div style={{ marginTop: 10, display: "flex", gap: 8, flexWrap: "wrap" }}>
-                    <span className="badge">Tip: try paranoid → standard to compare</span>
-                    <span className="badge">Toggle perturb + humanize</span>
+                    <Tooltip content="Paranoid mode erases aggressively across all vectors; Standard keeps more readability.">
+                      <span className="badge" style={{ cursor: "help" }}>Tip: try paranoid → standard to compare</span>
+                    </Tooltip>
+                    <Tooltip content="Perturb adds random vocab swaps; Humanize smooths phrasing for readability.">
+                      <span className="badge" style={{ cursor: "help" }}>Toggle perturb + humanize</span>
+                    </Tooltip>
                   </div>
                 </div>
               </>
