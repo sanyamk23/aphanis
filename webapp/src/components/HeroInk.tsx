@@ -4,9 +4,9 @@ import Companion from "./Companion";
 
 const CHIPS = [
   { k: "invisible", label: "invisible · zero-width", color: "#F43F5E" },
-  { k: "cliche", label: "cliché · delve / tapestry", color: "#A78BFA" },
+  { k: "cliche", label: "cliché · delve / tapestry", color: "#4A5488" },
   { k: "emdash", label: "em-dash · — fingerprint", color: "#F59E0B" },
-  { k: "wordy", label: "wordy · it should be noted", color: "#06B6D4" },
+  { k: "wordy", label: "wordy · it should be noted", color: "#97907E" },
   { k: "contraction", label: "missing contraction", color: "#10B981" },
 ];
 

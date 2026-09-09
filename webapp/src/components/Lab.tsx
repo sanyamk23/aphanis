@@ -91,7 +91,7 @@ export default function Lab() {
           <Chapter n={6} label="The Lab" />
           <div className="kicker">Interactive lab</div>
           <h2>Audit. Understand. Sanitize.</h2>
-          <p style={{ color: "#5A5F7A", marginTop: 6, lineHeight: 1.6, maxWidth: 640 }}>Paste text or drop a file — get a full provenance report across four vectors, then clean it with precise control.</p>
+          <p style={{ color: "#5E5749", marginTop: 6, lineHeight: 1.6, maxWidth: 640 }}>Paste text or drop a file — get a full provenance report across four vectors, then clean it with precise control.</p>
         </div>
         <div style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--muted)", letterSpacing: ".06em", textTransform: "uppercase" }}>Live • POST /api/audit • /api/clean • /api/clean-file</div>
       </div>
@@ -226,7 +226,7 @@ export default function Lab() {
 
                 <div className="cardx">
                   <h3>What this means</h3>
-                  <p style={{ color: "#3A3E55", fontSize: 13, lineHeight: 1.6, marginTop: 8 }}>
+                  <p style={{ color: "#3A342A", fontSize: 13, lineHeight: 1.6, marginTop: 8 }}>
                     Clean score blends four vectors. <strong>Unicode</strong> catches ghosts between characters; <strong>Statistical</strong> reads vocabulary & predictability; <strong>Metadata</strong> reflects container risk; <strong>Spatial</strong> applies to images. Entropy and predictability tell you how “model-like” the rhythm feels to a detector.
                   </p>
                   <div style={{ marginTop: 10, display: "flex", gap: 8, flexWrap: "wrap" }}>
