@@ -1,4 +1,4 @@
-/* ── Aphanis — Editorial Provenance Firewall ── */
+/* ── Aphanis – Editorial Provenance Firewall ── */
 :root{
   --ink:#241F16;
   --ink2:#3A342A;
@@ -240,7 +240,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible,input:focus-visibl
   .nav-cta .btn-pill{padding:8px 12px;font-size:12.5px;white-space:nowrap}
 }
 
-/* ── INVISIBLE INK — Hero spotlight ── */
+/* ── INVISIBLE INK – Hero spotlight ── */
 .ink-hero{max-width:1280px;margin:0 auto;padding:28px 24px 18px}
 .ink-hero-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:18px;align-items:center}
 .ink-kicker{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:flex;gap:8px;align-items:center}
@@ -359,7 +359,7 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible,input:focus-visibl
   .trust-grid{grid-template-columns:1fr}
 }
 
-/* ── SAGA — inspired by ink/parchment/wax-seal manuscripts ── */
+/* ── SAGA – inspired by ink/parchment/wax-seal manuscripts ── */
 :root{
   --vermilion:#C93A1F; --vermilion2:#E85A3D;
   --indigo:#31375E; --indigo2:#4A5488;

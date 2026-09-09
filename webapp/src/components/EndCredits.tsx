@@ -52,7 +52,7 @@ export default function EndCredits() {
         </div>
 
         <div className="credits-bottom">
-          <span>◈ Aphanis — Zero-Trust AI Provenance Firewall · v1.4.3</span>
+          <span>◈ Aphanis – Zero-Trust AI Provenance Firewall · v1.4.3</span>
           <span>drawn from code · no trackers · reduced-motion honored</span>
         </div>
       </div>

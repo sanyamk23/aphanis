@@ -5,7 +5,7 @@ export default function Marquee() {
     <div className="marquee">
       <div className="marquee-track">
         {doubled.map((t, i) => (
-          <span key={i}><i>◈</i> {t} &nbsp; <i>—</i> &nbsp;</span>
+          <span key={i}><i>◈</i> {t} &nbsp; <i>–</i> &nbsp;</span>
         ))}
       </div>
     </div>

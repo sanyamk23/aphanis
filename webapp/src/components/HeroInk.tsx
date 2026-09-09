@@ -7,7 +7,7 @@ import ScrambleText from "./ScrambleText";
 const CHIPS = [
   { k: "invisible", label: "invisible · zero-width", color: "#F43F5E" },
   { k: "cliche", label: "cliché · delve / tapestry", color: "#4A5488" },
-  { k: "emdash", label: "em-dash · — fingerprint", color: "#F59E0B" },
+  { k: "emdash", label: "em-dash · – fingerprint", color: "#F59E0B" },
   { k: "wordy", label: "wordy · it should be noted", color: "#97907E" },
   { k: "contraction", label: "missing contraction", color: "#10B981" },
 ];
@@ -52,7 +52,7 @@ export default function HeroInk({ onPrimary, onSecondary }: { onPrimary: () => v
     <section ref={ref} className="ink-hero" data-chapter="hero">
       <div className="ink-hero-grid">
         <div className="ink-hero-copy">
-          <div className="ink-kicker"><span className="dot" /> Chapter I · The Signature — v1.4.3</div>
+          <div className="ink-kicker"><span className="dot" /> Chapter I · The Signature – v1.4.3</div>
           <h1 className="ink-h1">
             <span className="line">Your AI wrote</span>
             <span className="line">more than <em>words.</em></span>
@@ -98,7 +98,7 @@ export default function HeroInk({ onPrimary, onSecondary }: { onPrimary: () => v
               }}
             >
               <p ref={paraRef} className="ink-reveal-text">
-                The results <span className="hl hl-cliche" data-tip="cliché: delve / realm">delve into a tapestry</span> of findings — moreover, it should be noted that the approach is <span className="hl hl-wordy" data-tip="wordy hedge">crucial and comprehensive</span> — robust evaluation across <span className="hl hl-emdash" data-tip="em-dash fingerprint">benchmarks — including</span> <span className="hl hl-invis" data-tip="zero-width steganography">invisible​​ markers</span> — and it <span className="hl hl-contraction" data-tip="missing contraction: it is → it's">is not limited</span> to baseline.
+                The results <span className="hl hl-cliche" data-tip="cliché: delve / realm">delve into a tapestry</span> of findings – moreover, it should be noted that the approach is <span className="hl hl-wordy" data-tip="wordy hedge">crucial and comprehensive</span> – robust evaluation across <span className="hl hl-emdash" data-tip="em-dash fingerprint">benchmarks – including</span> <span className="hl hl-invis" data-tip="zero-width steganography">invisible​​ markers</span> – and it <span className="hl hl-contraction" data-tip="missing contraction: it is → it's">is not limited</span> to baseline.
               </p>
               <div
                 className="ink-spotlight"

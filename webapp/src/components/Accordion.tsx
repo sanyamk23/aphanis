@@ -3,8 +3,8 @@ import { useState } from "react";
 const QUESTIONS = [
   { q: "Does Aphanis modify the original file?", a: "No. It analyzes the copy in memory and outputs a cleaned version. Your source file is untouched." },
   { q: "Which models does it detect?", a: "All major LLMs that leave steganographic signatures: GPT-4 family, Claude, Gemini, Llama, Mistral. The detection lexicon updates weekly." },
-  { q: "Is the SHA-256 certificate verifiable offline?", a: "Yes. Anyone with the original and cleaned text can recompute the hash and confirm the certificate — no API call required." },
-  { q: "Does it work on images and audio?", a: "Phase 1 covers text provenance. Image and audio vector detection is in the roadmap — subscribe for the alpha invite." },
+  { q: "Is the SHA-256 certificate verifiable offline?", a: "Yes. Anyone with the original and cleaned text can recompute the hash and confirm the certificate – no API call required." },
+  { q: "Does it work on images and audio?", a: "Phase 1 covers text provenance. Image and audio vector detection is in the roadmap – subscribe for the alpha invite." },
   { q: "Is it open source?", a: "Fully. The pipeline, lexicon, and cert logic are on GitHub under an MIT license." },
 ];
 

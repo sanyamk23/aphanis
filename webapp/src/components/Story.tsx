@@ -32,7 +32,7 @@ export default function Story() {
         <div className="reveal-grid" />
         <div style={{ position: "relative", display: "grid", gap: 12 }}>
           <div className="reveal-card">
-            <h3>Raw input — what detectors see</h3>
+            <h3>Raw input – what detectors see</h3>
             <div style={{ marginTop: 10, fontFamily: "var(--mono)", fontSize: 12.5, lineHeight: 1.7, color: "#D9D2BE" }}>
               The study <span className="invis" data-label="zero-width">​</span> investigates the
               <span className="invis" data-label="AI vocab"> comprehensive</span> impact of
@@ -46,7 +46,7 @@ export default function Story() {
             </div>
           </div>
           <div className="reveal-card">
-            <h3>After Aphanis — paranoid mode</h3>
+            <h3>After Aphanis – paranoid mode</h3>
             <div style={{ marginTop: 10, fontFamily: "var(--mono)", fontSize: 12.5, lineHeight: 1.7, color: "#D9D2BE" }}>
               The study looks at how large language models are reshaping academic writing: where they help, where they fail, and what that means for evaluation.
             </div>

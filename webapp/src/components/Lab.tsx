@@ -46,7 +46,7 @@ function riskClass(l: string) {
   return "risk-clean";
 }
 
-const SAMPLE = "The results demonstrate a tapestry of findings that delve into robust evaluation. Moreover, it should be noted that the approach is crucial and comprehensive — a testament to the synergy — and it is not limited to baseline performance across benchmarks.";
+const SAMPLE = "The results demonstrate a tapestry of findings that delve into robust evaluation. Moreover, it should be noted that the approach is crucial and comprehensive – a testament to the synergy – and it is not limited to baseline performance across benchmarks.";
 
 export default function Lab() {
   const [text, setText] = useState(SAMPLE);
@@ -99,7 +99,7 @@ export default function Lab() {
     const isText = ["txt", "md", "py", "js", "ts", "json", "html", "svg", "csv"].includes(ext);
     if (isText) {
       const t = await f.text(); setText(t);
-      setFileInfo(`Loaded ${f.name} — ${t.length} chars`);
+      setFileInfo(`Loaded ${f.name} – ${t.length} chars`);
       try { setLoading(true); setAudit(await api.audit(t)); } catch (e) { setError((e as Error).message); } finally { setLoading(false); }
     } else {
       const mimeByExt: Record<string, string> = {
@@ -150,7 +150,7 @@ export default function Lab() {
 
       <div className="lab-shell">
         <div className="lab-top">
-          <span>◈ Aphanis Lab — paranoid by default</span>
+          <span>◈ Aphanis Lab – paranoid by default</span>
           <span style={{ display: "flex", gap: 8, alignItems: "center" }}><span style={{ width: 8, height: 8, borderRadius: 999, background: "var(--emerald)", display: "inline-block", boxShadow: "0 0 10px var(--emerald)" }} /> API: /api/health</span>
         </div>
 
@@ -237,7 +237,7 @@ export default function Lab() {
                   <button className="btn primary" onClick={runForensics} disabled={forensicsBusy || !text.trim()}>{forensicsBusy ? "Generating…" : `Generate ${tab}`}</button>
                 )}
               </div>
-              {forensics != null && tab === "cert" && <div className="stamp" style={{ textAlign: "center", margin: "10px 0" }}><span className="badge" style={{ background: "rgba(201,58,31,.1)", borderColor: "rgba(201,58,31,.3)", color: "var(--vermilion)" }}>◈ sealed — provenance certified</span></div>}
+              {forensics != null && tab === "cert" && <div className="stamp" style={{ textAlign: "center", margin: "10px 0" }}><span className="badge" style={{ background: "rgba(201,58,31,.1)", borderColor: "rgba(201,58,31,.3)", color: "var(--vermilion)" }}>◈ sealed – provenance certified</span></div>}
               {forensics != null && tab !== "heatmap" && <pre className="json-out">{JSON.stringify(forensics, null, 2)}</pre>}
               {forensics != null && tab === "heatmap" && <iframe className="heatmap-frame" srcDoc={(forensics as { html: string }).html} title="heatmap" />}
               <div className="row" style={{ marginTop: 14 }}>
@@ -268,10 +268,10 @@ export default function Lab() {
                 <div style={{ fontWeight: 700, marginTop: 8 }}>No audit yet</div>
                 <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 6, lineHeight: 1.6 }}>Paste text on the left and hit <strong style={{ color: "var(--ink)" }}>Audit</strong> to see your full provenance report: clean score, four vectors, entropy, and AI likelihood.</p>
                 <div style={{ marginTop: 12, display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
-                  <span className="badge">vector_1 — unicode</span>
-                  <span className="badge">vector_2 — statistical</span>
-                  <span className="badge">vector_3 — metadata</span>
-                  <span className="badge">vector_4 — spatial</span>
+                  <span className="badge">vector_1 – unicode</span>
+                  <span className="badge">vector_2 – statistical</span>
+                  <span className="badge">vector_3 – metadata</span>
+                  <span className="badge">vector_4 – spatial</span>
                 </div>
               </div>
             ) : (
@@ -279,7 +279,7 @@ export default function Lab() {
                 <div className="cardx">
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <h3>Provenance Report</h3>
-                    <span className={`badge-risk ${riskClass(rm?.provenance_risk_level ?? "")}`}>{rm?.provenance_risk_level ?? "—"}</span>
+                    <span className={`badge-risk ${riskClass(rm?.provenance_risk_level ?? "")}`}>{rm?.provenance_risk_level ?? "–"}</span>
                   </div>
                   <div className="score-row">
                     <svg viewBox="0 0 92 92" className="ring" role="img" aria-label={`Clean score ${Math.round(rm?.overall_clean_score ?? 0)} out of 100`}>

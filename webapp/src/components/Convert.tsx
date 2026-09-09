@@ -39,7 +39,7 @@ function vectorSignals(v: { issues_found?: number; telltale_phrases?: number; em
   return out.length ? out : [v.status];
 }
 
-const SAMPLE = "The results demonstrate a tapestry of findings that delve into robust evaluation. Moreover, it should be noted that the approach is crucial and comprehensive — a testament to the synergy — and it is not limited to baseline performance across benchmarks.";
+const SAMPLE = "The results demonstrate a tapestry of findings that delve into robust evaluation. Moreover, it should be noted that the approach is crucial and comprehensive – a testament to the synergy – and it is not limited to baseline performance across benchmarks.";
 
 export default function Convert() {
   const [text, setText] = useState(SAMPLE);
@@ -176,10 +176,10 @@ export default function Convert() {
                 Paste text on the left and hit <strong style={{ color: "var(--ink)" }}>Audit</strong> to see your full provenance report. Then hit Convert to clean & humanize.
               </p>
               <div style={{ marginTop: 12, display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
-                <span className="badge">vector_1 — unicode</span>
-                <span className="badge">vector_2 — statistical</span>
-                <span className="badge">vector_3 — metadata</span>
-                <span className="badge">vector_4 — spatial</span>
+                <span className="badge">vector_1 – unicode</span>
+                <span className="badge">vector_2 – statistical</span>
+                <span className="badge">vector_3 – metadata</span>
+                <span className="badge">vector_4 – spatial</span>
               </div>
             </div>
           ) : cleaned ? (
@@ -194,8 +194,8 @@ export default function Convert() {
             <>
               <div className="convert-label">Provenance Report</div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
-                <h3 style={{ fontSize: 13, letterSpacing: ".06em", textTransform: "uppercase", color: "#5E5749", fontFamily: "var(--mono)" }}>Risk: {rm?.provenance_risk_level ?? "—"}</h3>
-                <span className={`badge-risk ${riskClass(rm?.provenance_risk_level ?? "")}`}>{rm?.provenance_risk_level ?? "—"}</span>
+                <h3 style={{ fontSize: 13, letterSpacing: ".06em", textTransform: "uppercase", color: "#5E5749", fontFamily: "var(--mono)" }}>Risk: {rm?.provenance_risk_level ?? "–"}</h3>
+                <span className={`badge-risk ${riskClass(rm?.provenance_risk_level ?? "")}`}>{rm?.provenance_risk_level ?? "–"}</span>
               </div>
 
               <div className="score-row" style={{ marginTop: 16 }}>

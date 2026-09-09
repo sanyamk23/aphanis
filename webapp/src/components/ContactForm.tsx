@@ -17,7 +17,7 @@ export default function ContactForm() {
     <section className="contact-section" data-chapter="contact">
       <div className="contact-card">
         <h2>Join the provenance movement</h2>
-        <p>Get early access to the full Aphanis suite — forensic-grade watermark removal, zero-shot sanitization, and SHA-256 certified provenance.</p>
+        <p>Get early access to the full Aphanis suite – forensic-grade watermark removal, zero-shot sanitization, and SHA-256 certified provenance.</p>
         {status === "sent" ? (
           <div className="success-state">
             <div className="success-icon">✓</div>
