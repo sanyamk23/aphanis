@@ -1,37 +1,14 @@
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-env/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-.pytest_cache/
-.DS_Store
-.vscode/
-.idea/
-.swarm/
-.claude-flow/
-.claude/
-*.db
+# Local skill agents (do not deploy)
+.agents/
 
-
-# Agent memory DB
-agentdb.rvf*
-
-# build deps
-node_modules/
-webapp/tsconfig.tsbuildinfo
+# Local artifacts (do not deploy)
+cert.json
+heatmap.html
+install.html
+linkedin-visual.html
+"linkedin-visual.html 03-52-09-134.html"
+llm-cost-optimization-case-study.docx
+message (1).txt
+"ChatGPT Image Aug 19, 2026, 12_56-40 AM copy.png"
+"ChatGPT Image Aug 19, 2026, 12_56-40 AM.png"
+skills-lock.json
