@@ -9,6 +9,7 @@ import type {
   ProvenanceResponse,
   RiskMatrix,
   Tone,
+  VerifyResponse,
 } from "./types";
 
 async function postJSON<T>(path: string, body: unknown): Promise<T> {
@@ -37,6 +38,7 @@ export const api = {
     postJSON<ProvenanceResponse>("/api/provenance", { text }),
   cert: (text: string) => postJSON<CertResponse>("/api/cert", { text }),
   heatmap: (text: string) => postJSON<{ html: string }>("/api/heatmap", { text }),
+  verify: (text: string) => postJSON<VerifyResponse>("/api/verify", { text }),
 
   async cleanFile(file: File, mode: Mode, perturb: boolean, jitter: boolean): Promise<CleanFileResponse> {
     const fd = new FormData();

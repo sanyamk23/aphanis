@@ -88,3 +88,9 @@ export interface CleanFileResponse {
   size?: number;
   data_base64?: string;
 }
+
+export interface VerifyResponse {
+  ai_likelihood: number;
+  signals: string[];
+  breakdown: Record<string, number | string>;
+}

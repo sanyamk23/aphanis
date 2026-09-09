@@ -292,6 +292,93 @@ def _handle_health(handler: http.server.BaseHTTPRequestHandler) -> None:
     _json_response(handler, 200, {"status": "ok", "service": "aphanis-api"})
 
 
+_AI_TRANSITION_WORDS = {
+    "moreover", "furthermore", "additionally", "additionally", "likewise",
+    "notably", "significantly", "subsequently", "consequently", "therefore",
+    "thus", "hence", "nevertheless", "nonetheless", "rather", "meanwhile",
+    "furthermore", "in addition", "in conclusion", "to conclude",
+    "that said", "having said that", "it is important to note",
+    "it should be noted", "it is worth noting", "it is clear that",
+    "it is evident that", "it is obvious that", "this demonstrates",
+    "this illustrates", "this suggests", "this indicates", "this suggests",
+    "in today's landscape", "in today's era", "in today's world",
+    "in this landscape", "in this era", "in this world",
+    "leverage", "utilize", "facilitate", "demonstrate", "exemplify",
+    "delve", "tapestry", "robust", "comprehensive", "paradigm",
+    "synergy", "holistic", "at the end of the day", "going forward",
+    "it is crucial to note", "it is important to",
+}
+
+
+def _handle_verify(handler: http.server.BaseHTTPRequestHandler) -> None:
+    """Local-only AI detection heuristic — no external APIs consumed."""
+    content_length = int(handler.headers.get("Content-Length", 0))
+    raw = handler.rfile.read(content_length) if content_length else b"{}"
+    try:
+        payload = json.loads(raw) if raw else {}
+    except json.JSONDecodeError:
+        return _error(handler, 400, "invalid JSON")
+    text = payload.get("text", "")
+    if not isinstance(text, str) or not text.strip():
+        return _error(handler, 400, "text must be a non-empty string")
+
+    words = text.split()
+    sentences = []
+    for chunk in text.replace("\n", " ").replace("?", ".").replace("!", ".").split("."):
+        chunk = chunk.strip()
+        if len(chunk.split()) >= 3:
+            sentences.append(chunk)
+
+    result: Dict[str, Any] = {"ai_likelihood": 0.0, "signals": [], "breakdown": {}}
+
+    # 1. Sentence length consistency (AI tends toward uniform lengths)
+    if sentences:
+        lengths = [len(s.split()) for s in sentences]
+        avg_len = sum(lengths) / len(lengths)
+        if lengths:
+            variance = sum((l - avg_len) ** 2 for l in lengths) / len(lengths)
+            std_dev = variance ** 0.5
+            cv = std_dev / avg_len if avg_len > 0 else 0
+            length_score = min(1.0, max(0.0, 1.0 - cv))
+            result["signals"].append(f"Sentence length consistency: {length_score:.0%}")
+            result["breakdown"]["sentence_length_score"] = round(length_score, 4)
+            result["ai_likelihood"] += length_score * 0.30
+
+    # 2. Vocabulary diversity (TTR — AI tends to have lower diversity)
+    if words:
+        unique = len(set(w.lower().strip(".,;:!?()[]{}\"'") for w in words))
+        ttr = unique / len(words) if words else 0
+        ttr_score = min(1.0, max(0.0, 1.0 - ttr))
+        result["signals"].append(f"Vocabulary diversity (TTR): {ttr:.0%}")
+        result["breakdown"]["vocabulary_diversity_ttr"] = round(ttr, 4)
+        result["breakdown"]["vocabulary_score"] = round(ttr_score, 4)
+        result["ai_likelihood"] += ttr_score * 0.30
+
+    # 3. AI transition word frequency
+    lower = text.lower()
+    found = [w for w in _AI_TRANSITION_WORDS if w in lower]
+    if words:
+        freq = len(found) / len(words)
+        trans_score = min(1.0, freq * 20)
+        result["signals"].append(f"AI transition words found: {len(found)} ({found[:5]}{'...' if len(found) > 5 else ''})")
+        result["breakdown"]["transition_words_found"] = len(found)
+        result["breakdown"]["transition_word_freq"] = round(freq, 6)
+        result["breakdown"]["transition_score"] = round(trans_score, 4)
+        result["ai_likelihood"] += trans_score * 0.25
+
+    # 4. Predictability / cliché phrases
+    cliches = [w for w in found if w in ("tapestry", "delve", "robust", "comprehensive", "paradigm", "synergy", "holistic")]
+    if words and cliches:
+        clich_score = min(0.5, len(cliches) / len(words) * 50)
+        result["signals"].append(f"Cliché / predictable phrasing: {len(cliches)} ({list(set(cliches))})")
+        result["breakdown"]["cliche_count"] = len(cliches)
+        result["breakdown"]["cliche_score"] = round(clich_score, 4)
+        result["ai_likelihood"] += clich_score * 0.15
+
+    result["ai_likelihood"] = round(min(1.0, result["ai_likelihood"]), 4)
+    _json_response(handler, 200, result)
+
+
 # ---------------------------------------------------------------------------
 # Static file serving (built React SPA)
 # ---------------------------------------------------------------------------
@@ -347,12 +434,46 @@ class APIRequestHandler(http.server.BaseHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
 
+    def do_HEAD(self) -> None:
+        parsed = urllib.parse.urlparse(self.path)
+        if parsed.path in ("/", "/index.html") or not parsed.path.startswith("/api/"):
+            candidate = os.path.normpath(os.path.join(_STATIC_DIR, parsed.path.lstrip("/") or "index.html"))
+            if not candidate.startswith(_STATIC_DIR):
+                self.send_response(403); self.end_headers(); return
+            if os.path.isfile(candidate):
+                ctype, _ = mimetypes.guess_type(candidate)
+                self.send_response(200)
+                self.send_header("Content-Type", ctype or "application/octet-stream")
+                self.send_header("Content-Length", str(os.path.getsize(candidate)))
+                self.send_header("Cache-Control", "no-cache")
+                self.end_headers()
+            else:
+                self.send_response(200)
+                self.send_header("Content-Type", "text/html; charset=utf-8")
+                index_path = os.path.join(_STATIC_DIR, "index.html")
+                if os.path.isfile(index_path):
+                    self.send_header("Content-Length", str(os.path.getsize(index_path)))
+                self.end_headers()
+        elif parsed.path == "/api/health":
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+        else:
+            self.send_response(404)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+
     def do_GET(self) -> None:
         parsed = urllib.parse.urlparse(self.path)
         if parsed.path in ("/", "/index.html") or not parsed.path.startswith("/api/"):
             _serve_static(self)
-        elif parsed.path == "/api/health":
-            _handle_health(self)
+        elif parsed.path in ("/api/health", "/api/verify"):
+            if parsed.path == "/api/health":
+                _handle_health(self)
+            else:
+                _handle_verify(self)
         else:
             _error(self, 404, "not found")
 
@@ -370,6 +491,7 @@ class APIRequestHandler(http.server.BaseHTTPRequestHandler):
             "/api/cert": _handle_cert,
             "/api/heatmap": _handle_heatmap,
             "/api/clean-file": _handle_clean_file,
+            "/api/verify": _handle_verify,
         }
         fn = handlers.get(route)
         if fn:

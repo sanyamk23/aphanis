@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { api } from "../api";
-import type { AuditResponse, Mode, Tone } from "../types";
+import type { AuditResponse, Mode, Tone, VerifyResponse } from "../types";
 import Chapter from "./Chapter";
 import HoldButton from "./HoldButton";
 import Achievement from "./Achievement";
+
+type FilePreview = { url: string; type: string; filename: string; downloadName: string };
 
 type Tab = "provenance" | "cert" | "heatmap";
 
@@ -60,8 +62,10 @@ export default function Lab() {
   const [tab, setTab] = useState<Tab>("provenance");
   const [forensics, setForensics] = useState<unknown>(null);
   const [forensicsBusy, setForensicsBusy] = useState(false);
+  const [verifyResult, setVerifyResult] = useState<VerifyResponse | null>(null);
+  const [verifyBusy, setVerifyBusy] = useState(false);
   const [fileInfo, setFileInfo] = useState<string | null>(null);
-  const [cleanedFile, setCleanedFile] = useState<string | null>(null);
+  const [cleanedFile, setCleanedFile] = useState<FilePreview | null>(null);
   const [fileBusy, setFileBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -85,6 +89,11 @@ export default function Lab() {
       else setForensics(await api.heatmap(text));
     } catch (e) { setError((e as Error).message); } finally { setForensicsBusy(false); }
   }
+  async function runVerify() {
+    if (!text.trim()) return;
+    setVerifyBusy(true); setError(null);
+    try { setVerifyResult(await api.verify(text)); } catch (e) { setError((e as Error).message); } finally { setVerifyBusy(false); }
+  }
   async function handleFile(f: File) {
     const ext = f.name.split(".").pop()?.toLowerCase() ?? "";
     const isText = ["txt", "md", "py", "js", "ts", "json", "html", "svg", "csv"].includes(ext);
@@ -103,14 +112,21 @@ export default function Lab() {
       try {
         const res = await api.cleanFile(f, mode, perturb, false);
         setFileInfo(res.message);
-        setCleanedFile(res.message);
         if (res.success && res.data_base64) {
           const blob = new Blob([Uint8Array.from(atob(res.data_base64), (c) => c.charCodeAt(0))], { type: mimeType });
           const url = URL.createObjectURL(blob);
-          const a = document.createElement("a"); a.href = url;
-          if (viewable) { a.target = "_blank"; a.rel = "noopener"; a.click(); }
-          else { a.download = `aphanis_${res.filename}`; a.click(); }
-          URL.revokeObjectURL(url);
+          if (viewable) {
+            setCleanedFile({ url, type: mimeType, filename: res.filename ?? f.name, downloadName: `aphanis_${res.filename ?? f.name}` });
+          } else {
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `aphanis_${res.filename ?? f.name}`;
+            a.style.display = "none";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setCleanedFile({ url, type: mimeType, filename: res.filename ?? f.name, downloadName: a.download });
+          }
         }
       } catch (e) { setFileInfo((e as Error).message); } finally { setFileBusy(false); }
     }
@@ -169,7 +185,26 @@ export default function Lab() {
                 {fileInfo && <div className="file-name">{fileInfo}</div>}
                 {fileBusy && <div className="file-status">Cleaning…</div>}
               </div>
-              {cleanedFile && <div className="result-box"><pre>{cleanedFile}</pre></div>}
+              {cleanedFile && (
+                <div className="result-box file-result-box">
+                  <div className="file-result-header">
+                    <span className="file-result-name">{cleanedFile.filename}</span>
+                    <a href={cleanedFile.url} download={cleanedFile.downloadName} className="file-download-btn" aria-label={`Download ${cleanedFile.filename}`}>💾 Download</a>
+                  </div>
+                  {cleanedFile.type.startsWith("image/") && (
+                    <img src={cleanedFile.url} alt={cleanedFile.filename} className="file-preview-img" loading="lazy" />
+                  )}
+                  {cleanedFile.type === "application/pdf" && (
+                    <iframe src={cleanedFile.url} title={cleanedFile.filename} className="file-preview-frame" />
+                  )}
+                  {cleanedFile.type === "text/html" && (
+                    <iframe src={cleanedFile.url} title={cleanedFile.filename} className="file-preview-frame" />
+                  )}
+                  {cleanedFile.type === "image/svg+xml" && (
+                    <iframe src={cleanedFile.url} title={cleanedFile.filename} className="file-preview-frame" />
+                  )}
+                </div>
+              )}
               {error && <div className="error-box">{error}</div>}
             </div>
 
@@ -205,6 +240,23 @@ export default function Lab() {
               {forensics != null && tab === "cert" && <div className="stamp" style={{ textAlign: "center", margin: "10px 0" }}><span className="badge" style={{ background: "rgba(201,58,31,.1)", borderColor: "rgba(201,58,31,.3)", color: "var(--vermilion)" }}>◈ sealed — provenance certified</span></div>}
               {forensics != null && tab !== "heatmap" && <pre className="json-out">{JSON.stringify(forensics, null, 2)}</pre>}
               {forensics != null && tab === "heatmap" && <iframe className="heatmap-frame" srcDoc={(forensics as { html: string }).html} title="heatmap" />}
+              <div className="row" style={{ marginTop: 14 }}>
+                <button className="btn ghost" onClick={runVerify} disabled={verifyBusy || !text.trim()}>{verifyBusy ? "Verifying…" : "◬ Verify AI"}</button>
+              </div>
+              {verifyResult && (
+                <div style={{ marginTop: 14, padding: 14, borderRadius: 12, background: "var(--paper)", border: "1px solid var(--line)" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                    <span style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--muted)" }}>AI likelihood score</span>
+                    <div style={{ flex: 1, height: 6, background: "#ECE8E2", borderRadius: 999, overflow: "hidden" }}>
+                      <div style={{ width: `${verifyResult.ai_likelihood * 100}%`, height: "100%", background: `linear-gradient(90deg,var(--violet),var(--cyan))`, transition: "width .5s var(--ease)" }} />
+                    </div>
+                    <span style={{ fontFamily: "var(--mono)", fontSize: 12, fontWeight: 700 }}>{Math.round(verifyResult.ai_likelihood * 100)}%</span>
+                  </div>
+                  {verifyResult.signals.map((s, i) => (
+                    <div key={i} style={{ fontSize: 11, color: "#5E5749", marginBottom: 4, fontFamily: "var(--mono)" }}>• {s}</div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
