@@ -1,5 +1,6 @@
 import Chapter from "./Chapter";
 import { IconDocument, IconSeal } from "./VectorIcons";
+import WaxSeal from "./WaxSeal";
 
 export default function Trust() {
   return (
@@ -19,7 +20,7 @@ export default function Trust() {
         </div>
         <div className="trust-arrow">→</div>
         <div className="trust-node accent">
-          <div className="trust-icon">◈</div>
+          <div className="trust-icon trust-icon-seal"><WaxSeal /></div>
           <strong>Aphanis API</strong>
           <span>localhost / your Render</span>
         </div>

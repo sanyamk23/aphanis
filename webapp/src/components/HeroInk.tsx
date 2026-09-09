@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import Companion from "./Companion";
 import CountUp from "./CountUp";
+import ScrambleText from "./ScrambleText";
 
 const CHIPS = [
   { k: "invisible", label: "invisible · zero-width", color: "#F43F5E" },
@@ -55,8 +56,8 @@ export default function HeroInk({ onPrimary, onSecondary }: { onPrimary: () => v
           <h1 className="ink-h1">
             <span className="line">Your AI wrote</span>
             <span className="line">more than <em>words.</em></span>
-            <span className="line grad">It left a signature</span>
-            <span className="line grad">you can&apos;t see.</span>
+            <span className="line grad"><ScrambleText text="It left a signature" delay={1.15} /></span>
+            <span className="line grad"><ScrambleText text="you can't see." delay={1.35} /></span>
           </h1>
           <p className="ink-sub">
             Every model leaves forensic traces: zero-width steganography, statistical fingerprints, container metadata.

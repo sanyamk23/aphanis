@@ -15,6 +15,7 @@ import SaveFile from "./components/SaveFile";
 import Flourish from "./components/Flourish";
 import TiltCards from "./components/TiltCards";
 import AnimationSafetyNet from "./components/AnimationSafetyNet";
+import MagneticButtons from "./components/MagneticButtons";
 
 function scrollTo(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -28,6 +29,7 @@ export default function App() {
       <SaveFile />
       <TiltCards />
       <AnimationSafetyNet />
+      <MagneticButtons />
       <Nav onLab={() => scrollTo("lab")} />
       <HeroInk onPrimary={() => scrollTo("lab")} onSecondary={() => scrollTo("exhibits")} />
       <Marquee />
