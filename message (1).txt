@@ -1,0 +1,145 @@
+How We Cut a Client's LLM API Costs by 55% Without Reducing AI Quality
+A field report from a 7-week engagement: how a token-level spend audit, model routing, and prompt caching took a customer support platform's GPT-4 bill from $118,400 to $53,300 a month, with quality scores flat the whole time.
+
+Engineering · Case Study
+7-week engagement
+55% cost reduction
+0 quality regression
+Abstract dark visualization of a dense network simplifying into a clean, sparse teal mesh, representing LLM cost optimization
+TL;DR
+Client: a mid-size customer support SaaS platform, ~40,000 tickets/month through GPT-4
+Starting cost: $118,400/month, growing 22% month-over-month
+Ending cost: $53,300/month, a 55% reduction, via model routing, prompt caching, semantic caching, and context trimming
+Quality: task success rate held at 94.1% to 94.3% across a 1,200-ticket golden dataset; human quality score unchanged at 4.6/5
+The Problem
+Our client, a mid-size B2B customer support platform processing tens of thousands of support tickets a month for its own customers, came to us with a simple complaint: their LLM inference cost had become their second-largest infrastructure line item, behind only their database fleet.
+
+At the time we started the engagement:
+
+$118,400/month in combined OpenAI API spend across three product features: ticket triage, auto-drafted replies, and daily summarization digests
+LLM spend was ~9% of COGS, up from 4% two quarters earlier
+Month-over-month growth in API spend was outpacing revenue growth by roughly 3x, driven by both ticket volume and rising token volume per ticket. Prompts had grown every time a bug report suggested "just add more context"
+Every request, regardless of complexity, was going to GPT-4, the full model, no smaller variant in the mix
+The trigger for the engagement was a board conversation: at current growth rates, LLM spend would exceed database spend within two quarters, and nobody on the eng team had a clear model of why the bill looked the way it did. Fairly common starting point, and the right one. You can't optimize a cost you can't decompose.
+
+Diagnosis: Why an LLM Cost Optimization Case Study Starts With an Audit
+Before touching any code, we spent the first week purely on measurement. We instrumented every LLM call site with token-level logging (input tokens, output tokens, model used, feature/endpoint, cache hit/miss) and let it run for five business days to get a representative sample.
+
+Feature	% of Spend	Avg Input Tokens	Avg Output Tokens	Model
+Ticket triage (classification)	18%	2,400	60	GPT-4
+Auto-drafted replies	61%	3,900	340	GPT-4
+Daily summarization digests	21%	8,100	900	GPT-4
+Baseline token usage by feature, five-business-day sample.
+
+Dashboard mockup showing token usage broken down by feature: ticket triage, auto-drafted replies, and summarization digests
+Fig. 01. Token usage breakdown by feature, from our audit dashboard.
+Three things jumped out immediately:
+
+Ticket triage, a classification task with a fixed, small output space (route to one of ~12 categories), was burning full GPT-4 pricing on a task that didn't need frontier reasoning at all.
+Auto-drafted replies carried enormous input context: full ticket history, a full customer account object (mostly irrelevant), and a static 1,100-token system prompt repeated on every call, verbatim, with zero caching.
+Summarization re-fetched and re-summarized the same ticket threads multiple times a day as new replies came in, discarding all prior summarization work each time instead of updating it incrementally.
+No caching layer of any kind. No model routing (one model handled every request regardless of complexity). And nobody had audited the system prompt in about eight months, during which it had grown from roughly 300 tokens to 1,100 tokens via incremental "just add this instruction" edits.
+
+What We Tried
+Architecture diagram comparing a single large-model pipeline before optimization to a routed pipeline with a router, small and large models, and a cache layer after optimization
+Fig. 02. Pipeline before (single model, every request) vs. after (router, model tiers, shared cache layer).
+01
+Model routing and right-sizing
+The single highest-leverage change. We classified each call site by actual reasoning requirement and routed accordingly:
+
+model_router.py
+
+def select_model(task_type: str, complexity_signal: float) -> str:
+    if task_type == "triage_classification":
+        return "gpt-4o-mini"
+    if task_type == "summarization" and complexity_signal < 0.4:
+        return "gpt-4o-mini"
+    if task_type == "reply_draft" and complexity_signal >= 0.7:
+        return "gpt-4o"          # escalate on multi-issue or legal/refund language
+    return "gpt-4o-mini"          # everything else
+complexity_signal was a cheap heuristic (ticket length, keywords like "refund," "legal," "cancel," prior escalation count), not another LLM call. We deliberately avoided using an LLM to decide which LLM to use. Classic trap that just adds a second bill on top of the first.
+
+Routing results:
+Previously, 100% of calls on GPT-4 ($0.030 / 1K input tokens)
+After, 82% routed to GPT-4o-mini ($0.00015 / 1K), 18% escalated to GPT-4o
+Net impact: ~38% of total spend cut
+02
+Prompt compression and context trimming
+The 1,100-token system prompt restated formatting instructions three different ways, included stale examples, and carried dead instructions for a deprecated feature. We rewrote it against current behavior, cutting it to 340 tokens, and moved the customer account object from "dump the whole JSON" to a curated 6-field subset instead of the full 40+ field object.
+
+Previously, avg. 3,900 input tokens per reply-draft call
+After, avg. 1,650 input tokens per reply-draft call
+Net impact: ~58% reduction in input tokens, largest-volume feature
+03
+Prompt caching
+For reply-draft and summarization, the system prompt and a large chunk of static instructions were identical across every call. We split each prompt into a static cached prefix and a dynamic per-ticket suffix, billing the static portion at cached-token rates.
+
+prompt structure
+
+[CACHED PREFIX: system role, formatting rules, output schema: ~1,200 tokens]
+---
+[DYNAMIC SUFFIX: this ticket's content: ~450 tokens average]
+Previously, full input-token price on every call, cached or not
+After, ~73% cache hit rate on the static prefix, ~90% discount on cached tokens
+Net impact: ~14% additional reduction on top of routing and compression
+04
+Semantic caching for repeated queries
+Ticket triage had significant duplication. Near-identical tickets ("how do I reset my password," "I can't log in," "forgot password help") were classified from scratch every time. We added a semantic cache in front of triage: embed the incoming ticket, check cosine similarity against a rolling window of recently classified tickets, and reuse the classification above a 0.93 similarity threshold.
+
+Previously, 100% of triage requests hit the model
+After, 31% cache hit rate, served with no model call
+Net impact: ~31% reduction in triage-specific spend
+We set the similarity threshold deliberately low. A wrong cache hit on classification is cheap to make but expensive to undo downstream, so at the margin we preferred extra model calls over risky cache hits.
+
+05
+Reducing redundant context in the summarization pipeline
+The daily digest re-summarized entire ticket threads from scratch on every run, even for threads with only one new reply since the last digest. We switched to incremental summarization: store the prior summary, and on each run feed the model only the prior summary plus new messages since then, asking it to produce an updated summary rather than starting over.
+
+Previously, avg. 8,100 input tokens per summarization call (full thread, every time)
+After, avg. 2,300 input tokens per call (prior summary + delta)
+Net impact: ~72% reduction in summarization input tokens
+06
+Output token limits and structured output
+Reply drafts had no max_tokens cap and no output schema. The model would occasionally produce long, hedging, multi-paragraph drafts when two sentences would do. We added a hard ceiling per reply category and moved to structured JSON output (subject line, body, suggested tone flag) instead of free-form text.
+
+Previously, avg. 340 output tokens per reply draft
+After, avg. 210 output tokens per reply draft
+Net impact: ~38% reduction. Output tokens bill higher per-token than input.
+One of the engineers told us after the fact: "We bet on prompt compression being the big win. Routing ended up delivering nearly triple what compression did."
+What didn't work
+Two things we tried and abandoned, for the record:
+
+Fine-tuning a smaller model on historical triage data. It worked (91% accuracy vs. GPT-4o-mini's 89%) but the training and retraining pipeline overhead wasn't worth a 2-point accuracy gain when better prompting closed most of the gap for free.
+Aggressive batching of reply drafts. Batching multiple tickets into one API call cut a few more percent but introduced latency (waiting to fill a batch) that pushed turnaround outside the client's SLA. We reverted it. Prompt caching got most of the same saving without the latency tradeoff.
+How We Measured Quality Held Steady
+The "without reducing quality" claim only matters if the eval behind it holds up, so here's the methodology:
+
+Golden dataset: 1,200 historical tickets across all three features, hand-labeled for correct triage category and independently scored for reply-draft quality by two human reviewers (accuracy, tone, completeness) before any changes. This was our fixed regression baseline.
+Task success rate: classification accuracy against golden labels for triage; for reply drafts, a rating of 4/5 or higher with no factual errors.
+Human review sample: after each optimization phase, we re-ran the same 1,200 tickets and had the same reviewers blind-score a random 15% sample.
+Production shadow testing: two weeks running the new pipeline alongside the old one on live traffic (same tickets, both pipelines, only the old pipeline's output shown to agents). This caught a real regression before it reached anyone.
+User-facing metric: agent edit rate, meaning how often an agent significantly edited an auto-drafted reply before sending, tracked as a real-world quality proxy.
+The shadow test did catch one regression: the first compressed system prompt dropped an instruction about refund-request tone, which reviewers caught as a 0.3-point dip in the tone sub-score. We restored it (about 40 tokens) and the score recovered fully. Shadow testing before full cutover matters more than a single before/after eval, precisely for reasons like this.
+
+Results
+Metric	Before	After	Change
+Monthly LLM spend	$118,400	$53,300	−55%
+Avg. cost per ticket handled	$2.96	$1.33	−55%
+Avg. input tokens (reply drafts)	3,900	$1,650	−58%
+Avg. output tokens (reply drafts)	340	210	−38%
+Avg. p50 latency (reply drafts)	3.1s	2.4s	−23%
+Task success rate (golden set)	94.1%	94.3%	+0.2pp (noise)
+Human quality score (1–5)	4.6	4.6	unchanged
+Agent edit rate (production)	34%	33%	unchanged
+Bar chart comparing monthly LLM spend before and after optimization, showing a 55 percent drop
+Fig. 03. Monthly LLM spend, before vs. after.
+Three-column comparison of latency, cost, and quality score before and after optimization, showing latency and cost dropping while quality score stays flat
+Fig. 04. Latency and cost dropped; quality score didn't move.
+Latency dropped as a side effect, never a goal. Smaller models and shorter prompts just happen to be faster. Not something we set out to improve, but the agents waiting on these drafts in real time definitely appreciated it.
+
+What We'd Do Differently
+If we could redo this engagement, three things would change. First, we'd push for token logging on day one rather than waiting weeks for visibility. Second, we'd test latency impact of batching before writing a line of code, not after. Third, we'd set up prompt governance from the start, because prompt bloat is an ownership problem, not a tooling problem.
+What Actually Mattered Most
+The audit paid for itself in the first week. Routing requests to the right-sized model saved more than any prompt trick. Prompt caching was almost free money given our static prompt prefix. Semantic caching worked but required a low similarity threshold. Incremental summarization beat full reprocessing by miles. Output caps killed verbosity without hurting quality. And shadow testing caught a regression that a standard eval would have missed.
+Applicability
+Everything here (model routing, prompt caching, context trimming) applies whether you're on OpenAI, Anthropic, or Google. Provider-agnostic stuff. Ran a similar optimization on your own pipeline? We'd genuinely like to hear how it went.

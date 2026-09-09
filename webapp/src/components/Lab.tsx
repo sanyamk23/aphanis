@@ -105,9 +105,9 @@ export default function Lab() {
         if (res.success && res.data_base64) {
           const blob = new Blob([Uint8Array.from(atob(res.data_base64), (c) => c.charCodeAt(0))], { type: mimeType });
           const url = URL.createObjectURL(blob);
-          const a = document.createElement("a"); a.href = url; a.download = `aphanis_${res.filename}`;
+          const a = document.createElement("a"); a.href = url;
           if (viewable) { a.target = "_blank"; a.rel = "noopener"; a.click(); }
-          else { a.click(); }
+          else { a.download = `aphanis_${res.filename}`; a.click(); }
           URL.revokeObjectURL(url);
         }
       } catch (e) { setFileInfo((e as Error).message); } finally { setFileBusy(false); }
