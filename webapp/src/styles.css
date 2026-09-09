@@ -466,6 +466,9 @@ a:focus-visible,button:focus-visible,[tabindex]:focus-visible,input:focus-visibl
 /* ── CONVERT PAGE ── */
 .convert-page{min-height:100vh;background:var(--paper);padding:80px 32px}
 .convert-header{text-align:center;margin-bottom:40px}
+.convert-branding{display:flex;align-items:center;gap:6px;justify-content:center;margin-bottom:4px}
+.brand-symbol{font-family:var(--mono);font-size:18px;color:var(--violet);line-height:1}
+.brand-wordmark{font-family:var(--display);font-size:15px;font-weight:800;letter-spacing:-.02em;color:var(--ink)}
 .convert-kicker{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--violet);margin-bottom:8px}
 .convert-header h2{font-family:var(--display);font-size:clamp(28px,4vw,44px);letter-spacing:-.03em;color:var(--ink)}
 .convert-shell{display:grid;grid-template-columns:1fr auto 1fr;gap:24px;max-width:1280px;margin:0 auto;align-items:start}

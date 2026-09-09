@@ -1,8 +1,6 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { api } from "../api";
-import type { AuditResponse, Mode, Tone, VerifyResponse, CleanFileResponse } from "../types";
-
-type FilePreview = { url: string; type: string; filename: string; downloadName: string };
+import type { AuditResponse, Mode, Tone, VerifyResponse } from "../types";
 
 const MODES: Mode[] = ["paranoid", "aggressive", "standard", "minimal"];
 const TONES: Tone[] = ["conversational", "casual", "tech-lead", "academic", "executive"];
@@ -56,10 +54,6 @@ export default function Convert() {
   const [humanize, setHumanize] = useState(true);
   const [verifyResult, setVerifyResult] = useState<VerifyResponse | null>(null);
   const [verifyBusy, setVerifyBusy] = useState(false);
-  const [fileInfo, setFileInfo] = useState<string | null>(null);
-  const [cleanedFile, setCleanedFile] = useState<FilePreview | null>(null);
-  const [fileBusy, setFileBusy] = useState(false);
-  const fileRef = useRef<HTMLInputElement>(null);
 
   async function runAudit() {
     if (!text.trim()) return;
@@ -83,55 +77,26 @@ export default function Convert() {
     try { setVerifyResult(await api.verify(text)); } catch (e) { setError((e as Error).message); } finally { setVerifyBusy(false); }
   }
 
-  async function handleFile(f: File) {
-    const ext = f.name.split(".").pop()?.toLowerCase() ?? "";
-    const isText = ["txt", "md", "py", "js", "ts", "json", "html", "svg", "csv"].includes(ext);
-    if (isText) {
-      const t = await f.text(); setText(t);
-      setFileInfo(`Loaded ${f.name} — ${t.length} chars`);
-      try { setLoading(true); setAudit(await api.audit(t)); } catch (e) { setError((e as Error).message); } finally { setLoading(false); }
-    } else {
-      const mimeByExt: Record<string, string> = {
-        png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", gif: "image/gif",
-        pdf: "application/pdf", html: "text/html", svg: "image/svg+xml",
-      };
-      const mimeType = mimeByExt[ext] ?? "application/octet-stream";
-      const viewable = ["png","jpg","jpeg","gif","pdf","html","svg"].includes(ext);
-      setFileBusy(true); setFileInfo(null);
-      try {
-        const res: CleanFileResponse = await api.cleanFile(f, mode, perturb, false);
-        setFileInfo(res.message);
-        if (res.success && res.data_base64) {
-          const blob = new Blob([Uint8Array.from(atob(res.data_base64), (c) => c.charCodeAt(0))], { type: mimeType });
-          const url = URL.createObjectURL(blob);
-          if (viewable) {
-            setCleanedFile({ url, type: mimeType, filename: res.filename ?? f.name, downloadName: `aphanis_${res.filename ?? f.name}` });
-          } else {
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `aphanis_${res.filename ?? f.name}`;
-            a.style.display = "none";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            setCleanedFile({ url, type: mimeType, filename: res.filename ?? f.name, downloadName: a.download });
-          }
-        }
-      } catch (e) { setFileInfo((e as Error).message); } finally { setFileBusy(false); }
-    }
-  }
-
   const rm = audit?.risk_matrix; const ent = audit?.entropy;
   const vectors = rm?.vectors ? Object.entries(rm.vectors) : [];
 
   return (
     <section className="convert-page">
       <div className="convert-header">
-        <span className="convert-kicker">Aphanis Convert</span>
+        <div className="convert-branding">
+          <span className="brand-symbol" aria-hidden>◲</span>
+          <span className="brand-wordmark">Aphanis</span>
+        </div>
+        <span className="convert-kicker">Convert</span>
         <h2>Audit &middot; Verify &middot; Convert</h2>
         <p style={{ color: "#5E5749", marginTop: 8, fontSize: 15, lineHeight: 1.6, maxWidth: 640, margin: "8px auto 0" }}>
-          Paste text or drop a file to get a full provenance report, then convert with precise control.
+          Paste text to get a full provenance report, then convert with precise control.
         </p>
+        <div className="convert-details" style={{ marginTop: 10, display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "center" }}>
+          <span className="badge" style={{ fontSize: 9 }}>4-vector provenance scan</span>
+          <span className="badge" style={{ fontSize: 9 }}>local-only · no logins</span>
+          <span className="badge" style={{ fontSize: 9 }}>paranoid→standard modes</span>
+        </div>
       </div>
 
       <div className="convert-shell">
@@ -172,29 +137,9 @@ export default function Convert() {
             </button>
           </div>
 
-          <div className="drop" style={{ marginTop: 12 }} onDragOver={(e) => e.preventDefault()} onDrop={(e) => { e.preventDefault(); const f = e.dataTransfer.files?.[0]; if (f) handleFile(f); }} onClick={() => fileRef.current?.click()}>
-            <input ref={fileRef} type="file" accept=".txt,.md,.py,.js,.ts,.json,.html,.svg,.docx,.pptx,.xlsx,.ipynb,.pdf,.png,.jpg,.jpeg,.csv" style={{ display: "none" }} onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
-            <div style={{ fontSize: 18 }}>📂</div>
-            <div style={{ fontWeight: 700, fontSize: 13, marginTop: 4 }}>Drop a file or click to upload</div>
-            <div style={{ color: "var(--muted)", fontSize: 12, marginTop: 4 }}>Text files scan inline. DOCX / PDF / PNG / IPYNB are cleaned server-side.</div>
-            {fileInfo && <div className="file-name">{fileInfo}</div>}
-            {fileBusy && <div className="file-status">Cleaning…</div>}
+          <div className="row" style={{ marginTop: 8, gap: 6 }}>
+            <a href="/" className="btn ghost" style={{ flex: 1, justifyContent: "center" }}>← Back to Aphanis Lab</a>
           </div>
-
-          {cleanedFile && (
-            <div className="result-box file-result-box" style={{ marginTop: 12 }}>
-              <div className="file-result-header">
-                <span className="file-result-name">{cleanedFile.filename}</span>
-                <a href={cleanedFile.url} download={cleanedFile.downloadName} className="file-download-btn" aria-label={`Download ${cleanedFile.filename}`}>💾 Download</a>
-              </div>
-              {cleanedFile.type.startsWith("image/") && (
-                <img src={cleanedFile.url} alt={cleanedFile.filename} className="file-preview-img" loading="lazy" />
-              )}
-              {(cleanedFile.type === "application/pdf" || cleanedFile.type === "text/html" || cleanedFile.type === "image/svg+xml") && (
-                <iframe src={cleanedFile.url} title={cleanedFile.filename} className="file-preview-frame" />
-              )}
-            </div>
-          )}
 
           {verifyResult && (
             <div style={{ marginTop: 14, padding: 14, borderRadius: 12, background: "var(--paper)", border: "1px solid var(--line)" }}>
