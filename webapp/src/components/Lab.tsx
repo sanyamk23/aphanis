@@ -91,7 +91,7 @@ export default function Lab() {
           <Chapter n={6} label="The Lab" />
           <div className="kicker">Interactive lab</div>
           <h2>Audit. Understand. Sanitize.</h2>
-          <p style={{ color: "#5E5749", marginTop: 6, lineHeight: 1.6, maxWidth: 640 }}>Paste text or drop a file — get a full provenance report across four vectors, then clean it with precise control.</p>
+          <p style={{ color: "#5E5749", marginTop: 6, lineHeight: 1.6, maxWidth: 640 }}>Paste text or drop a file to get a full provenance report across four vectors, then clean it with precise control.</p>
         </div>
         <div style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--muted)", letterSpacing: ".06em", textTransform: "uppercase" }}>Live • POST /api/audit • /api/clean • /api/clean-file</div>
       </div>
@@ -118,7 +118,7 @@ export default function Lab() {
                   {TONES.map((t) => <option key={t} value={t}>{t}</option>)}
                 </select>
               </div>
-              <textarea className="textarea" placeholder="Paste your text — essay, email, code, anything. We'll scan for invisible watermarks, AI vocabulary tells, and statistical fingerprints." value={text} onChange={(e) => setText(e.target.value)} />
+              <textarea className="textarea" placeholder="Paste your text: essay, email, code, anything. We'll scan for invisible watermarks, AI vocabulary tells, and statistical fingerprints." value={text} onChange={(e) => setText(e.target.value)} />
               <div className="row">
                 <button className="btn primary" onClick={runAudit} disabled={loading || !text.trim()}>{loading ? "Scanning…" : "🔍 Audit"}</button>
                 <button className="btn ghost" onClick={() => { setText(""); setAudit(null); setCleaned(null); setForensics(null); setError(null); }}>Clear</button>
@@ -171,7 +171,7 @@ export default function Lab() {
               <div className="empty">
                 <div style={{ fontSize: 22 }}>◈</div>
                 <div style={{ fontWeight: 700, marginTop: 8 }}>No audit yet</div>
-                <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 6, lineHeight: 1.6 }}>Paste text on the left and hit <strong style={{ color: "var(--ink)" }}>Audit</strong> — your full provenance report appears here: clean score, four vectors, entropy, and AI likelihood.</p>
+                <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 6, lineHeight: 1.6 }}>Paste text on the left and hit <strong style={{ color: "var(--ink)" }}>Audit</strong> to see your full provenance report: clean score, four vectors, entropy, and AI likelihood.</p>
                 <div style={{ marginTop: 12, display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
                   <span className="badge">vector_1 — unicode</span>
                   <span className="badge">vector_2 — statistical</span>

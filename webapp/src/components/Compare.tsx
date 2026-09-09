@@ -12,7 +12,7 @@ export default function Compare() {
       </div>
       <div className="compare-card" style={{ outline: "2px solid var(--ink)", outlineOffset: 0 }}>
         <h3>With Aphanis — paranoid + conversational</h3>
-        <p>“Here’s what changed: the analysis actually moves the needle. What stood out was how much careful evaluation mattered — not just the numbers, but how they were checked.”</p>
+        <p>“Here’s what changed: the analysis actually moves the needle. What stood out was how much careful evaluation mattered: not just the numbers, but how they were checked.”</p>
         <div style={{ marginTop: 10, display: "flex", gap: 8, flexWrap: "wrap" }}>
           <span className="badge" style={{ background: "rgba(16,185,129,.12)", borderColor: "rgba(16,185,129,.22)", color: "#0B7A5A" }}>Clean — AI likelihood: low</span>
           <span className="badge">Predictability 32%</span>
