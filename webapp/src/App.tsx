@@ -1,81 +1,38 @@
-import { useState } from "react";
+import Nav from "./components/Nav";
 import Hero from "./components/Hero";
-import TextPanel from "./components/TextPanel";
-import FileDrop from "./components/FileDrop";
-import ScoreCards from "./components/ScoreCards";
-import CleanPanel from "./components/CleanPanel";
-import ForensicsPanel from "./components/ForensicsPanel";
-import ModePicker from "./components/ModePicker";
-import { api } from "./api";
-import type { AuditResponse, Mode, Tone } from "./types";
+import Marquee from "./components/Marquee";
+import Story from "./components/Story";
+import Vectors from "./components/Vectors";
+import Pipeline from "./components/Pipeline";
+import Compare from "./components/Compare";
+import Lab from "./components/Lab";
+
+function scrollTo(id: string) {
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
 
 export default function App() {
-  const [text, setText] = useState("");
-  const [mode, setMode] = useState<Mode>("paranoid");
-  const [tone, setTone] = useState<Tone>("conversational");
-  const [audit, setAudit] = useState<AuditResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  async function runAudit(input: string) {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await api.audit(input);
-      setAudit(res);
-    } catch (e) {
-      setError((e as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   return (
-    <div className="app">
-      <header className="topbar">
-        <div className="brand">
-          <span className="brand-mark">🛡️</span>
-          <span className="brand-name">Aphanis</span>
-        </div>
-        <ModePicker mode={mode} tone={tone} onMode={setMode} onTone={setTone} />
-      </header>
-
-      <Hero />
-
-      <section className="workspace">
-        <div className="panel-left">
-          <TextPanel
-            text={text}
-            setText={setText}
-            onAudit={() => runAudit(text)}
-            loading={loading}
-          />
-          <FileDrop
-            onTextLoaded={(t) => {
-              setText(t);
-              runAudit(t);
-            }}
-          />
-          {error && <div className="error-box">{error}</div>}
-        </div>
-
-        <div className="panel-right">
-          {audit ? (
-            <>
-              <ScoreCards audit={audit} />
-              <CleanPanel text={text} mode={mode} tone={tone} />
-              <ForensicsPanel text={text} />
-            </>
-          ) : (
-            <div className="empty-state">
-              <p>Drop text on the left and hit <strong>Audit</strong> to see your full provenance report.</p>
-            </div>
-          )}
-        </div>
-      </section>
-
+    <div>
+      <Nav onLab={() => scrollTo("lab")} />
+      <Hero onPrimary={() => scrollTo("lab")} onSecondary={() => scrollTo("pipeline")} />
+      <Marquee />
+      <Story />
+      <Vectors />
+      <Pipeline />
+      <Compare />
+      <Lab />
       <footer className="footer">
-        <span>Aphanis :: Zero-Trust AI Provenance Firewall</span>
+        <div className="footer-inner">
+          <span>◈ Aphanis — Zero-Trust AI Provenance Firewall · v1.4.3</span>
+          <span>
+            <a href="https://github.com/sanyamk23/aphanis" target="_blank" rel="noreferrer">GitHub</a>
+            {" · "}
+            <a href="#lab" onClick={(e) => { e.preventDefault(); scrollTo("lab"); }}>Open Lab</a>
+            {" · "}
+            <span style={{ color: "var(--muted)" }}>CLI: pip install aphanis · MCP · REST /api/*</span>
+          </span>
+        </div>
       </footer>
     </div>
   );
