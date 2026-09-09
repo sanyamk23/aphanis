@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import Companion from "./Companion";
+import CountUp from "./CountUp";
 
 const CHIPS = [
   { k: "invisible", label: "invisible · zero-width", color: "#F43F5E" },
@@ -66,8 +67,8 @@ export default function HeroInk({ onPrimary, onSecondary }: { onPrimary: () => v
             <button className="btn-pill ghost" onClick={onSecondary}>See the 10 exhibits</button>
           </div>
           <div className="ink-meta">
-            <span><strong>4</strong> vectors</span><i>·</i>
-            <span><strong>7</strong> stages</span><i>·</i>
+            <span><strong><CountUp to={4} /></strong> vectors</span><i>·</i>
+            <span><strong><CountUp to={7} /></strong> stages</span><i>·</i>
             <span><strong>SHA-256</strong> cert</span><i>·</i>
             <span>CLI + MCP + Web</span>
           </div>
@@ -116,8 +117,8 @@ export default function HeroInk({ onPrimary, onSecondary }: { onPrimary: () => v
             </div>
 
             <div className="ink-scores">
-              <div className="ink-score bad"><span>Before</span><strong>28</strong><em>High risk</em></div>
-              <div className="ink-score good"><span>After · paranoid</span><strong>89</strong><em>Clean</em></div>
+              <div className="ink-score bad"><span>Before</span><strong><CountUp to={28} duration={1} /></strong><em>High risk</em></div>
+              <div className="ink-score good"><span>After · paranoid</span><strong><CountUp to={89} duration={1.4} /></strong><em>Clean</em></div>
               <div className="ink-score-bar"><i style={{ width: "72%" }} /></div>
             </div>
 
