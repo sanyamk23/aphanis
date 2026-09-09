@@ -111,7 +111,9 @@ a{color:inherit;text-decoration:none}
 .layers-head h2{font-family:var(--display);font-size:clamp(26px,3.5vw,42px);letter-spacing:-.03em}
 .steps{margin-top:36px;display:grid;grid-template-columns:repeat(7,1fr);gap:16px}
 .step{background:white;border:1px solid var(--line);border-radius:18px;padding:22px 16px;position:relative}
-.step n{position:absolute;top:10px;right:12px;font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:700}
+.step-top{display:flex;align-items:center;justify-content:space-between}
+.step-num{width:28px;height:28px;border-radius:999px;background:var(--ink);color:white;display:grid;place-items:center;font-size:12px;font-family:var(--mono)}
+.step-icon{color:var(--violet);opacity:.85}
 .step h4{font-size:13px;letter-spacing:-.01em;margin-top:14px}
 .step p{font-size:12.5px;color:#5E5749;line-height:1.55;margin-top:8px}
 .step.active{outline:2px solid var(--ink);outline-offset:0}
@@ -286,6 +288,7 @@ a{color:inherit;text-decoration:none}
 .trust-node.accent{background:var(--ink);color:white;border-color:var(--ink)}
 .trust-icon{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;margin:0 auto 8px;background:rgba(0,0,0,.06);font-size:16px}
 .trust-node.accent .trust-icon{background:rgba(255,255,255,.12)}
+.trust-icon-seal{width:48px;height:48px;background:transparent!important;color:var(--violet2)}
 .trust-node strong{display:block;font-size:13px}
 .trust-node span{font-family:var(--mono);font-size:11px;color:var(--muted)}
 .trust-node.accent span{color:var(--muted2)}

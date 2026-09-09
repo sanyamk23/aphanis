@@ -2,16 +2,17 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Chapter from "./Chapter";
+import { IconStrip, IconNormalize, IconSwap, IconWave, IconVoice, IconTag, IconSeal } from "./VectorIcons";
 gsap.registerPlugin(ScrollTrigger);
 
 const STEPS = [
-  { n: "01", t: "Strip", d: "Remove zero-width, NBSP, homoglyphs." },
-  { n: "02", t: "Normalize", d: "Collapse whitespace, quotes, dashes." },
-  { n: "03", t: "De-lex", d: "Swap AI vocab for human terms." },
-  { n: "04", t: "Reshape", d: "Break predictable n-grams & burst." },
-  { n: "05", t: "Humanize", d: "Rewrite cadence in chosen voice." },
-  { n: "06", t: "Metadata", d: "Scrub DOCX/PDF/IPYNB traces." },
-  { n: "07", t: "Certify", d: "Issue SHA-256 provenance record." },
+  { n: "01", t: "Strip", d: "Remove zero-width, NBSP, homoglyphs.", Icon: IconStrip },
+  { n: "02", t: "Normalize", d: "Collapse whitespace, quotes, dashes.", Icon: IconNormalize },
+  { n: "03", t: "De-lex", d: "Swap AI vocab for human terms.", Icon: IconSwap },
+  { n: "04", t: "Reshape", d: "Break predictable n-grams & burst.", Icon: IconWave },
+  { n: "05", t: "Humanize", d: "Rewrite cadence in chosen voice.", Icon: IconVoice },
+  { n: "06", t: "Metadata", d: "Scrub DOCX/PDF/IPYNB traces.", Icon: IconTag },
+  { n: "07", t: "Certify", d: "Issue SHA-256 provenance record.", Icon: IconSeal },
 ];
 
 export default function Pipeline() {
@@ -37,7 +38,10 @@ export default function Pipeline() {
       <div className="steps">
         {STEPS.map((s) => (
           <div key={s.n} className="step">
-            <div style={{ width: 28, height: 28, borderRadius: 999, background: "var(--ink)", color: "white", display: "grid", placeItems: "center", fontSize: 12, marginTop: 4 }}>{s.n}</div>
+            <div className="step-top">
+              <div className="step-num">{s.n}</div>
+              <div className="step-icon"><s.Icon /></div>
+            </div>
             <h4>{s.t}</h4>
             <p>{s.d}</p>
           </div>
