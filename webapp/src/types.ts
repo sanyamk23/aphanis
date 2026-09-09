@@ -10,9 +10,12 @@ export interface AuditResult {
 }
 
 export interface RiskVector {
-  score: number;
-  label: string;
-  signals: string[];
+  risk_score: number;
+  status: string;
+  issues_found?: number;
+  telltale_phrases?: number;
+  em_dashes?: number;
+  ai_comments_found?: number;
 }
 
 export interface RiskMatrix {
