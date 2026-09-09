@@ -1,0 +1,16 @@
+# Render Blueprint — Aphanis Full-Stack Dashboard
+# Deploy: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: aphanis
+    runtime: python
+    plan: free
+    region: oregon
+    buildCommand: bash start.sh
+    startCommand: aphanis dashboard --no-open
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      - key: PIP_NO_CACHE_DIR
+        value: "1"
