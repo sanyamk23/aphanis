@@ -17,7 +17,7 @@ export default function Vectors() {
   const ref = useRef<HTMLElement>(null);
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from(".vectors h2, .vectors .sub", { y: 16, opacity: 0, duration: .6, stagger: .08, ease: "expo.out", scrollTrigger: { trigger: ".vectors", start: "top 82%" } });
+      gsap.from(".vectors h2, .vectors .sub", { y: 16, opacity: 0, duration: .6, stagger: .08, ease: "expo.out", scrollTrigger: { trigger: ref.current, start: "top 82%" } });
       gsap.from(".bento-card", { y: 20, opacity: 0, duration: .6, stagger: .08, ease: "expo.out", scrollTrigger: { trigger: ".bento", start: "top 82%" } });
       ScrollTrigger.create({
         trigger: ".bento", start: "top 75%",

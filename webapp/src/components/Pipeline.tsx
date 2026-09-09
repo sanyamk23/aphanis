@@ -19,7 +19,7 @@ export default function Pipeline() {
   const ref = useRef<HTMLElement>(null);
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from(".layers-head > *", { y: 16, opacity: 0, duration: .6, stagger: .08, ease: "expo.out", scrollTrigger: { trigger: ".layers", start: "top 82%" } });
+      gsap.from(".layers-head > *", { y: 16, opacity: 0, duration: .6, stagger: .08, ease: "expo.out", scrollTrigger: { trigger: ref.current, start: "top 82%" } });
       gsap.from(".step", { y: 18, opacity: 0, duration: .55, stagger: .06, ease: "expo.out", scrollTrigger: { trigger: ".steps", start: "top 82%" } });
     }, ref);
     return () => ctx.revert();
@@ -42,7 +42,7 @@ export default function Pipeline() {
               <div className="step-num">{s.n}</div>
               <div className="step-icon"><s.Icon /></div>
             </div>
-            <h4>{s.t}</h4>
+            <h3>{s.t}</h3>
             <p>{s.d}</p>
           </div>
         ))}

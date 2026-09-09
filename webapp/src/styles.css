@@ -21,6 +21,7 @@ html{scroll-behavior:smooth}
 body{font-family:var(--sans);background:var(--paper);color:var(--ink);overflow-x:hidden;-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
 ::selection{background:var(--violet);color:white}
+a:focus-visible,button:focus-visible,[tabindex]:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--violet);outline-offset:3px;border-radius:4px}
 
 /* ── NAV ── */
 .nav-wrap{position:sticky;top:0;z-index:40;backdrop-filter:blur(16px);background:rgba(245,240,228,0.78);border-bottom:1px solid var(--line)}
@@ -84,7 +85,7 @@ a{color:inherit;text-decoration:none}
 .reveal{position:relative;background:var(--ink);color:var(--paper);border-radius:24px;padding:28px;overflow:hidden;min-height:440px}
 .reveal-grid{position:absolute;inset:0;opacity:.18;background-image:linear-gradient(rgba(255,255,255,.12) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.12) 1px, transparent 1px);background-size:28px 28px}
 .reveal-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);border-radius:16px;padding:20px;position:relative}
-.reveal-card h4{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted2);font-family:var(--mono)}
+.reveal-card h3{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted2);font-family:var(--mono)}
 .mono{font-family:var(--mono)}
 .invis{position:relative;display:inline-block;padding:2px 4px;border-radius:6px;background:rgba(244,63,94,.14);border:1px dashed rgba(244,63,94,.35);margin:2px}
 .invis::after{content:attr(data-label);position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:9px;letter-spacing:.08em;text-transform:uppercase;background:var(--rose);color:white;padding:2px 6px;border-radius:999px;white-space:nowrap}
@@ -114,7 +115,7 @@ a{color:inherit;text-decoration:none}
 .step-top{display:flex;align-items:center;justify-content:space-between}
 .step-num{width:28px;height:28px;border-radius:999px;background:var(--ink);color:white;display:grid;place-items:center;font-size:12px;font-family:var(--mono)}
 .step-icon{color:var(--violet);opacity:.85}
-.step h4{font-size:13px;letter-spacing:-.01em;margin-top:14px}
+.step h3{font-size:13px;letter-spacing:-.01em;margin-top:14px}
 .step p{font-size:12.5px;color:#5E5749;line-height:1.55;margin-top:8px}
 .step.active{outline:2px solid var(--ink);outline-offset:0}
 
@@ -208,6 +209,12 @@ a{color:inherit;text-decoration:none}
   .nav-mobile-toggle{display:block}
 }
 
+@media (max-width: 640px){
+  .nav{padding:14px 16px;gap:8px}
+  .nav-tagline{display:none}
+  .nav-cta .btn-pill{padding:8px 12px;font-size:12.5px;white-space:nowrap}
+}
+
 /* ── INVISIBLE INK — Hero spotlight ── */
 .ink-hero{max-width:1280px;margin:0 auto;padding:28px 24px 18px}
 .ink-hero-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:18px;align-items:center}
@@ -297,7 +304,7 @@ a{color:inherit;text-decoration:none}
 .trust-cross span{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.16);color:#0B7A5A;padding:6px 10px;border-radius:999px}
 .trust-grid{margin-top:28px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
 .trust-card{background:white;border:1px solid var(--line);border-radius:18px;padding:24px}
-.trust-card h4{font-size:13px;letter-spacing:-.02em}
+.trust-card h3{font-size:13px;letter-spacing:-.02em}
 .trust-card p{margin-top:6px;color:#5E5749;font-size:13px;line-height:1.6}
 .trust-card .mono{margin-top:10px;display:inline-block;font-size:11px;background:var(--paper);border:1px solid var(--line);padding:6px 8px;border-radius:999px}
 

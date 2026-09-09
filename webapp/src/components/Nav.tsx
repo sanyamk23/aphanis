@@ -5,7 +5,7 @@ export default function Nav({ onLab }: { onLab: () => void }) {
         <a href="#" className="nav-brand">
           <span className="nav-mark">◈</span>
           Aphanis
-          <span style={{ fontWeight: 400, color: "var(--muted)", fontSize: 12, letterSpacing: ".08em", textTransform: "uppercase", marginLeft: 6 }}>Provenance Firewall</span>
+          <span className="nav-tagline" style={{ fontWeight: 400, color: "var(--muted)", fontSize: 12, letterSpacing: ".08em", textTransform: "uppercase", marginLeft: 6 }}>Provenance Firewall</span>
         </a>
         <div className="nav-links">
           <a href="#story">the tell</a>
