@@ -1,0 +1,16 @@
+# Local skill agents (do not deploy to dashboard_static)
+../.agents/
+../.agents
+.agents/
+
+# Local artifacts
+../cert.json
+../heatmap.html
+../install.html
+../linkedin-visual.html
+../"linkedin-visual.html 03-52-09-134.html"
+../llm-cost-optimization-case-study.docx
+../message (1).txt
+../"ChatGPT Image Aug 19, 2026, 12_56-40 AM copy.png"
+../"ChatGPT Image Aug 19, 2026, 12_56-40 AM.png"
+../skills-lock.json
