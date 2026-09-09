@@ -322,20 +322,6 @@ a{color:inherit;text-decoration:none}
   .trust-grid{grid-template-columns:1fr}
 }
 
-/* ── dark: blacklight room ── */
-@media (prefers-color-scheme: dark){
-  :root{ --paper:#0A080C; --paper2:#14101E; --ink:#F5F0E8; --line:rgba(255,240,230,.08) }
-  body{ background:#0A080C; color:#F5F0E8 }
-  .nav-wrap{ background:rgba(10,8,12,.78) }
-  .nav-links{ color:#B8B2D6 }
-  .nav-links a:hover{ color:white }
-  .bento-card,.step,.panel,.cardx,.compare-card,.trust-card,.exhibit-card,.exhibits-rail,.trust-diagram,.integrations-marquee{ background:#14111E; border-color:rgba(255,255,255,.08) }
-  .vector,.entropy-strip>div,.result-box,.json-out,.heatmap-frame,.exhibit-before,.exhibit-after,.trust-node{ background:#1A1628; border-color:rgba(255,255,255,.08) }
-  .exhibit-after{ background:rgba(16,185,129,.08) }
-  .exhibits-kicker p,.vectors .sub,.layers-head p,.trust-head p{ color:#B8B2D6 }
-  .lab-shell{ background:#0F0D18 }
-}
-
 /* ── SAGA — inspired by ink/parchment/wax-seal manuscripts ── */
 :root{
   --vermilion:#C93A1F; --vermilion2:#E85A3D;
@@ -356,8 +342,6 @@ a{color:inherit;text-decoration:none}
 .ink-grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.05;mix-blend-mode:multiply;
   background-image:radial-gradient(circle at 20% 30%, #000 0, transparent 45%),radial-gradient(circle at 80% 70%, #000 0, transparent 40%),radial-gradient(circle at 50% 90%, #000 0, transparent 35%);
 }
-@media (prefers-color-scheme: dark){ .ink-grain{ mix-blend-mode:overlay; opacity:.08 } }
-
 @keyframes stampIn{0%{transform:scale(2.4) rotate(-14deg);opacity:0}60%{transform:scale(.92) rotate(-2deg);opacity:1}100%{transform:scale(1) rotate(-4deg);opacity:1}}
 .stamp{animation:stampIn .5s var(--ease-stamp)}
 
