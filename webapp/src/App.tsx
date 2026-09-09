@@ -1,5 +1,6 @@
 import BootSequence from "./components/BootSequence";
 import Nav from "./components/Nav";
+import Convert from "./components/Convert";
 import SpineLine from "./components/SpineLine";
 import InkOverlay from "./components/InkOverlay";
 import HeroInk from "./components/HeroInk";
@@ -28,6 +29,10 @@ function scrollTo(id: string) {
 }
 
 export default function App() {
+  if (window.location.pathname === "/convert") {
+    return <Convert />;
+  }
+
   return (
     <div>
       <BootSequence />

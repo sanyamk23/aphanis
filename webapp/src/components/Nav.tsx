@@ -12,6 +12,7 @@ export default function Nav({ onLab }: { onLab: () => void }) {
           <a href="#exhibits">exhibits</a>
           <a href="#lab">the lab</a>
           <a href="#trust">the vow</a>
+          <a href="/convert">convert</a>
           <a href="https://github.com/sanyamk23/aphanis" target="_blank" rel="noreferrer">github</a>
         </div>
         <div className="nav-cta">
