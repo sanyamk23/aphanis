@@ -18,6 +18,10 @@ import TiltCards from "./components/TiltCards";
 import AnimationSafetyNet from "./components/AnimationSafetyNet";
 import MagneticButtons from "./components/MagneticButtons";
 import EndCredits from "./components/EndCredits";
+import Cursor from "./components/Cursor";
+import Particles from "./components/Particles";
+import ContactForm from "./components/ContactForm";
+import Accordion from "./components/Accordion";
 
 function scrollTo(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -33,6 +37,8 @@ export default function App() {
       <TiltCards />
       <AnimationSafetyNet />
       <MagneticButtons />
+      <Cursor />
+      <Particles />
       <Nav onLab={() => scrollTo("lab")} />
       <HeroInk onPrimary={() => scrollTo("lab")} onSecondary={() => scrollTo("exhibits")} />
       <Marquee />
@@ -48,6 +54,8 @@ export default function App() {
       <Flourish />
       <Trust />
       <Integrations />
+      <ContactForm />
+      <Accordion />
       <EndCredits />
     </div>
   );

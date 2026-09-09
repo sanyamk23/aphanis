@@ -92,13 +92,23 @@ export default function Lab() {
       setFileInfo(`Loaded ${f.name} — ${t.length} chars`);
       try { setLoading(true); setAudit(await api.audit(t)); } catch (e) { setError((e as Error).message); } finally { setLoading(false); }
     } else {
+      const mimeByExt: Record<string, string> = {
+        png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", gif: "image/gif",
+        pdf: "application/pdf", html: "text/html", svg: "image/svg+xml",
+      };
+      const mimeType = mimeByExt[ext] ?? "application/octet-stream";
+      const viewable = ["png","jpg","jpeg","gif","pdf","html","svg"].includes(ext);
       setFileBusy(true); setFileInfo(null);
       try {
         const res = await api.cleanFile(f, mode, perturb, false);
         setFileInfo(res.message);
         if (res.success && res.data_base64) {
-          const blob = new Blob([Uint8Array.from(atob(res.data_base64), (c) => c.charCodeAt(0))], { type: "application/octet-stream" });
-          const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = `aphanis_${res.filename}`; a.click(); URL.revokeObjectURL(url);
+          const blob = new Blob([Uint8Array.from(atob(res.data_base64), (c) => c.charCodeAt(0))], { type: mimeType });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a"); a.href = url; a.download = `aphanis_${res.filename}`;
+          if (viewable) { a.target = "_blank"; a.rel = "noopener"; a.click(); }
+          else { a.click(); }
+          URL.revokeObjectURL(url);
         }
       } catch (e) { setFileInfo((e as Error).message); } finally { setFileBusy(false); }
     }

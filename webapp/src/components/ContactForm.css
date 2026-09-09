@@ -1,0 +1,11 @@
+.contact-section { display: flex; justify-content: center; padding: 80px 20px; }
+.contact-card { background: radial-gradient(ellipse at center, #241F16 0%, #1A150F 100%); border: 1px solid rgba(201,58,31,.35); border-radius: 20px; padding: 40px; max-width: 420px; width: 100%; text-align: center; }
+.contact-section h2 { color: #F5F0E4; font-size: 24px; margin-bottom: 12px; }
+.contact-section p { color: #5E5749; font-size: 14px; line-height: 1.6; margin-bottom: 24px; }
+.contact-form { display: flex; gap: 8px; }
+.contact-input { flex: 1; background: rgba(255,255,255,.05); border: 1px solid rgba(201,58,31,.2); border-radius: 8px; padding: 10px 14px; color: #F5F0E4; font-size: 14px; outline: none; transition: border-color .2s; }
+.contact-input:focus { border-color: var(--violet); }
+.contact-btn { flex-shrink: 0; }
+.error-hint { color: var(--rose); font-size: 12px; position: absolute; margin-top: 24px; }
+.success-state { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.success-icon { font-size: 32px; color: var(--emerald); }
