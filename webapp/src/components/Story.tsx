@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Chapter from "./Chapter";
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Story() {
@@ -16,6 +17,7 @@ export default function Story() {
   return (
     <section ref={ref} id="story" className="story">
       <div className="story-copy">
+        <Chapter n={2} label="The Tell" />
         <div className="kicker">The invisible problem</div>
         <h2>AI doesn&apos;t just write.<br /><em>It leaves a trace.</em></h2>
         <p>Detectors don&apos;t read meaning — they read <em>micro-signals</em>. Zero-width characters tucked between letters. Words LLMs overuse. Predictable cadence. Hidden metadata in files. Even a human essay can trigger a false positive.</p>

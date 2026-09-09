@@ -335,3 +335,45 @@ a{color:inherit;text-decoration:none}
   .exhibits-kicker p,.vectors .sub,.layers-head p,.trust-head p{ color:#B8B2D6 }
   .lab-shell{ background:#0F0D18 }
 }
+
+/* ── SAGA — inspired by ink/parchment/wax-seal manuscripts ── */
+:root{
+  --vermilion:#C93A1F; --vermilion2:#E85A3D;
+  --indigo:#31375E; --indigo2:#4A5488;
+  --sg1:5px; --sg2:8px; --sg3:13px; --sg4:21px; --sg5:34px; --sg6:55px; --sg7:89px; --sg8:144px;
+  --ease-brush:cubic-bezier(.65,0,.35,1);
+  --ease-stamp:cubic-bezier(.2,1.4,.4,1);
+  --golden:1.618fr;
+}
+
+.chapter-mark{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.chapter-roman{font-family:var(--display);font-style:italic;font-weight:700;font-size:15px;color:var(--vermilion);border:1px solid rgba(201,58,31,.35);width:30px;height:30px;border-radius:50%;display:grid;place-items:center;flex-shrink:0;background:rgba(201,58,31,.06)}
+.chapter-label{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--graphite,var(--muted))}
+
+.spine-track{position:fixed;left:0;top:0;bottom:0;width:3px;z-index:60;background:var(--line);pointer-events:none}
+.spine-fill{width:100%;background:linear-gradient(180deg,var(--vermilion),var(--indigo));transition:height .1s linear;box-shadow:0 0 8px rgba(201,58,31,.4)}
+
+.ink-grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.05;mix-blend-mode:multiply;
+  background-image:radial-gradient(circle at 20% 30%, #000 0, transparent 45%),radial-gradient(circle at 80% 70%, #000 0, transparent 40%),radial-gradient(circle at 50% 90%, #000 0, transparent 35%);
+}
+@media (prefers-color-scheme: dark){ .ink-grain{ mix-blend-mode:overlay; opacity:.08 } }
+
+@keyframes stampIn{0%{transform:scale(2.4) rotate(-14deg);opacity:0}60%{transform:scale(.92) rotate(-2deg);opacity:1}100%{transform:scale(1) rotate(-4deg);opacity:1}}
+.stamp{animation:stampIn .5s var(--ease-stamp)}
+
+/* golden-ratio nudge for hero + story, tasteful not literal */
+.ink-hero-grid{grid-template-columns:1.6fr 1fr}
+.story{grid-template-columns:1fr 1.6fr}
+
+/* vermilion accent touches */
+.ink-kicker .dot{background:var(--vermilion);box-shadow:0 0 10px rgba(201,58,31,.5)}
+.exhibit-num{background:var(--vermilion)}
+.rail-item.active{background:var(--indigo);border-color:var(--indigo)}
+.btn-pill.dark{transition:all .25s var(--ease-brush)}
+.btn.primary{transition:transform .2s var(--ease-stamp), box-shadow .2s var(--ease-brush)}
+
+@media (max-width: 980px){
+  .ink-hero-grid{grid-template-columns:1fr}
+  .story{grid-template-columns:1fr}
+  .spine-track{display:none}
+}
