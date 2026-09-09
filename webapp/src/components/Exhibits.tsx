@@ -25,7 +25,7 @@ export default function Exhibits() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from(".exhibits-kicker > *", { y: 14, opacity: 0, duration: .6, stagger: .08, ease: "expo.out", scrollTrigger: { trigger: ".exhibits", start: "top 82%" } });
+      gsap.from(".exhibits-kicker > *", { y: 14, opacity: 0, duration: .6, stagger: .08, ease: "expo.out", scrollTrigger: { trigger: ref.current, start: "top 82%" } });
       // pin the rail on desktop
       ScrollTrigger.matchMedia({
         "(min-width: 981px)": () => {

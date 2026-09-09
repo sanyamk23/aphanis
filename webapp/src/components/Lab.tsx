@@ -187,10 +187,10 @@ export default function Lab() {
                     <span className={`badge-risk ${riskClass(rm?.provenance_risk_level ?? "")}`}>{rm?.provenance_risk_level ?? "—"}</span>
                   </div>
                   <div className="score-row">
-                    <svg viewBox="0 0 92 92" className="ring">
+                    <svg viewBox="0 0 92 92" className="ring" role="img" aria-label={`Clean score ${Math.round(rm?.overall_clean_score ?? 0)} out of 100`}>
                       <circle cx="46" cy="46" r="36" className="ring-bg" />
                       <circle cx="46" cy="46" r="36" className="ring-fg" stroke={scoreColor(rm?.overall_clean_score ?? 0)} strokeDasharray={`${((rm?.overall_clean_score ?? 0) / 100) * 226} 226`} />
-                      <text x="46" y="51" textAnchor="middle" className="ring-text" style={{ fontSize: 22 }}>{Math.round(rm?.overall_clean_score ?? 0)}</text>
+                      <text x="46" y="51" textAnchor="middle" className="ring-text" style={{ fontSize: 22 }} aria-hidden="true">{Math.round(rm?.overall_clean_score ?? 0)}</text>
                     </svg>
                     <div>
                       <div style={{ fontWeight: 800, letterSpacing: "-.02em" }}>Clean Score</div>
