@@ -1,11 +1,14 @@
 import Nav from "./components/Nav";
-import Hero from "./components/Hero";
+import HeroInk from "./components/HeroInk";
 import Marquee from "./components/Marquee";
 import Story from "./components/Story";
+import Exhibits from "./components/Exhibits";
 import Vectors from "./components/Vectors";
 import Pipeline from "./components/Pipeline";
 import Compare from "./components/Compare";
 import Lab from "./components/Lab";
+import Trust from "./components/Trust";
+import Integrations from "./components/Integrations";
 
 function scrollTo(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -15,13 +18,16 @@ export default function App() {
   return (
     <div>
       <Nav onLab={() => scrollTo("lab")} />
-      <Hero onPrimary={() => scrollTo("lab")} onSecondary={() => scrollTo("pipeline")} />
+      <HeroInk onPrimary={() => scrollTo("lab")} onSecondary={() => scrollTo("exhibits")} />
       <Marquee />
       <Story />
+      <Exhibits />
       <Vectors />
       <Pipeline />
       <Compare />
       <Lab />
+      <Trust />
+      <Integrations />
       <footer className="footer">
         <div className="footer-inner">
           <span>◈ Aphanis — Zero-Trust AI Provenance Firewall · v1.4.3</span>
